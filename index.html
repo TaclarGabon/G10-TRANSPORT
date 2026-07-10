@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>G10 Transports - Application</title>
+  <title>G10 Transports - V11 Firebase</title>
   <style>
     :root {
       --navy:#073763;
@@ -613,6 +613,8 @@
 
   <div id="toast" class="toast"></div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 <script>
 const today = new Date().toLocaleDateString('fr-FR');
 let currentScreen = 'home';
@@ -620,6 +622,23 @@ let adminTab = 'groups';
 let opTab = 'assign';
 let selectedGroup = 1;
 let selectedDriverBusId = null;
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC_JNVVGrd2whXRGfHuOlShhmZfaLQFLfw",
+  authDomain: "taclar-52e72.firebaseapp.com",
+  projectId: "taclar-52e72",
+  storageBucket: "taclar-52e72.firebasestorage.app",
+  messagingSenderId: "501812718028",
+  appId: "1:501812718028:web:6c03cb3d47fcc1c5ec9569"
+};
+
+let firebaseReady = false;
+let applyingRemoteState = false;
+let syncTimer = null;
+let stateUnsubscribe = null;
+let db = null;
+let stateRef = null;
+
 const ACCESS_PINS = { admin:'1234', operations:'2345', driver:'1111', dashboard:'9999' };
 
 function hasMasterAccess() {
@@ -703,16 +722,127 @@ const defaultBuses = [
   {id:6, capacity:23, plate:"G10-006-AA", routeId:"lbv-bit", sold:0, status:"Chargement", departureTime:"", arrivalTime:"", closed:false}
 ];
 
-function load(k, fallback) {
-  try { return JSON.parse(localStorage.getItem(k)) || fallback; }
-  catch { return fallback; }
+function cloneData(value) {
+  return JSON.parse(JSON.stringify(value));
 }
-function save(k, value) { localStorage.setItem(k, JSON.stringify(value)); }
+function load(k, fallback) {
+  try { return JSON.parse(localStorage.getItem(k)) || cloneData(fallback); }
+  catch { return cloneData(fallback); }
+}
+function persistLocalState() {
+  localStorage.setItem('g10_demo_v11_groups', JSON.stringify(groups));
+  localStorage.setItem('g10_demo_v11_routes', JSON.stringify(routes));
+  localStorage.setItem('g10_demo_v11_buses', JSON.stringify(buses));
+  localStorage.setItem('g10_demo_v11_report', JSON.stringify(report));
+}
+function save(k, value) {
+  localStorage.setItem(k.replace('g10_demo_v9_', 'g10_demo_v11_'), JSON.stringify(value));
+  if (!applyingRemoteState) scheduleCloudSync();
+}
 
-let groups = load('g10_demo_v9_groups', defaultGroups);
-let routes = load('g10_demo_v9_routes', defaultRoutes);
-let buses = load('g10_demo_v9_buses', defaultBuses);
-let report = load('g10_demo_v9_report', []);
+let groups = load('g10_demo_v11_groups', defaultGroups);
+let routes = load('g10_demo_v11_routes', defaultRoutes);
+let buses = load('g10_demo_v11_buses', defaultBuses);
+let report = load('g10_demo_v11_report', []);
+
+function setConnectionStatus(message, online) {
+  const pill = document.querySelector('.userPill');
+  if (!pill) return;
+  pill.textContent = (online ? '🟢 ' : '🟠 ') + message;
+  pill.title = online ? 'Données synchronisées avec Firebase' : 'Mode local temporaire';
+}
+
+function statePayload() {
+  return {
+    groups: cloneData(groups),
+    routes: cloneData(routes),
+    buses: cloneData(buses),
+    report: cloneData(report),
+    version: 'V11',
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+}
+
+function scheduleCloudSync() {
+  if (!firebaseReady || !stateRef || applyingRemoteState) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(async () => {
+    try {
+      await stateRef.set(statePayload(), { merge: true });
+      setConnectionStatus('Synchronisé Firebase', true);
+    } catch (error) {
+      console.error('Erreur de synchronisation Firebase:', error);
+      setConnectionStatus('Hors connexion', false);
+    }
+  }, 250);
+}
+
+function renderCurrentScreen() {
+  try {
+    if (currentScreen === 'admin') renderAdmin();
+    if (currentScreen === 'operations') renderOperations();
+    if (currentScreen === 'driver') {
+      if (selectedDriverBusId && busById(selectedDriverBusId) && groupByBus(selectedDriverBusId)) renderDriverBus();
+      else renderDriverLogin();
+    }
+    if (currentScreen === 'dashboard') renderDashboard();
+  } catch (error) {
+    console.warn('Rendu après synchronisation:', error);
+  }
+}
+
+function applyRemoteState(data) {
+  applyingRemoteState = true;
+  try {
+    if (Array.isArray(data.groups)) groups = data.groups;
+    if (Array.isArray(data.routes)) routes = data.routes;
+    if (Array.isArray(data.buses)) buses = data.buses;
+    if (Array.isArray(data.report)) report = data.report;
+    persistLocalState();
+    renderCurrentScreen();
+  } finally {
+    applyingRemoteState = false;
+  }
+}
+
+async function initializeFirebaseSync() {
+  try {
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    stateRef = db.collection('G10_transport').doc('state');
+    setConnectionStatus('Connexion Firebase…', false);
+
+    const snapshot = await stateRef.get();
+    if (snapshot.exists) {
+      applyRemoteState(snapshot.data() || {});
+    } else {
+      groups = cloneData(defaultGroups);
+      routes = cloneData(defaultRoutes);
+      buses = cloneData(defaultBuses);
+      report = [];
+      persistLocalState();
+      await stateRef.set(statePayload(), { merge: true });
+    }
+
+    firebaseReady = true;
+    setConnectionStatus('Synchronisé Firebase', true);
+
+    stateUnsubscribe = stateRef.onSnapshot((doc) => {
+      if (doc.exists) {
+        applyRemoteState(doc.data() || {});
+        setConnectionStatus('Synchronisé Firebase', true);
+      }
+    }, (error) => {
+      console.error('Écoute Firebase interrompue:', error);
+      setConnectionStatus('Hors connexion', false);
+    });
+  } catch (error) {
+    console.error('Initialisation Firebase impossible:', error);
+    firebaseReady = false;
+    setConnectionStatus('Mode local', false);
+    alert('Firebase est momentanément indisponible. L’application continue en mode local sur cet appareil.');
+  }
+}
 
 function money(n) { return Number(n || 0).toLocaleString('fr-FR') + ' FCFA'; }
 function esc(s) { return String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
@@ -799,7 +929,7 @@ function saveGroupAndNext() {
   g.chauffeurTel = document.getElementById('g_cht').value.trim();
   g.chargeur = document.getElementById('g_cg').value.trim();
   g.chargeurTel = document.getElementById('g_cgt').value.trim();
-  save('g10_demo_v9_groups', groups);
+  save('g10_demo_v11_groups', groups);
   if (selectedGroup < groups.length) {
     selectedGroup++;
     renderAdminGroups();
@@ -885,7 +1015,7 @@ function savePrices() {
     if (departInput) r.depart = departInput.value.trim() || r.depart;
     if (arriveInput) r.arrive = arriveInput.value.trim() || r.arrive;
   });
-  save('g10_demo_v9_routes', routes);
+  save('g10_demo_v11_routes', routes);
   toast('Tarifs enregistrés.');
   renderAdminPrices();
 }
@@ -918,7 +1048,7 @@ function addRoute() {
     arrive: arrive || 'Arrivée'
   });
 
-  save('g10_demo_v9_routes', routes);
+  save('g10_demo_v11_routes', routes);
   toast('Nouvel axe ajouté.');
   renderAdminPrices();
 }
@@ -946,7 +1076,7 @@ function renderAdminBuses() {
 }
 function saveCapacities() {
   buses.forEach(b => b.capacity = Number(document.getElementById('cap_' + b.id).value || 0));
-  save('g10_demo_v9_buses', buses);
+  save('g10_demo_v11_buses', buses);
   toast('Capacités enregistrées.');
   renderAdminBuses();
 }
@@ -968,13 +1098,13 @@ function assignGroup(gid, bid) {
     if (old) old.busId = '';
   }
   g.busId = bid;
-  save('g10_demo_v9_groups', groups);
+  save('g10_demo_v11_groups', groups);
   renderAssign();
 }
 function setBusRoute(busId, routeId) {
   const b = busById(busId);
   b.routeId = routeId;
-  save('g10_demo_v9_buses', buses);
+  save('g10_demo_v11_buses', buses);
   renderAssign();
 }
 function renderAssign() {
@@ -1118,13 +1248,13 @@ function cashPlus() {
   const b = busById(selectedDriverBusId);
   if (remaining(b) <= 0) { alert('Bus complet.'); return; }
   b.sold++;
-  save('g10_demo_v9_buses', buses);
+  save('g10_demo_v11_buses', buses);
   renderDriverBus();
 }
 function cashMinus() {
   const b = busById(selectedDriverBusId);
   b.sold = Math.max(0, b.sold - 1);
-  save('g10_demo_v9_buses', buses);
+  save('g10_demo_v11_buses', buses);
   renderDriverBus();
 }
 function departBus() {
@@ -1135,7 +1265,7 @@ function departBus() {
   }
   b.status = 'En route';
   if (!b.departureTime) b.departureTime = nowTime();
-  save('g10_demo_v9_buses', buses);
+  save('g10_demo_v11_buses', buses);
   renderDriverBus();
 }
 function arriveBus() {
@@ -1146,7 +1276,7 @@ function arriveBus() {
   }
   b.status = 'Arrivé';
   if (!b.arrivalTime) b.arrivalTime = nowTime();
-  save('g10_demo_v9_buses', buses);
+  save('g10_demo_v11_buses', buses);
   renderDriverBus();
 }
 function closeTrip() {
@@ -1181,8 +1311,8 @@ function closeTrip() {
   if (existingIndex >= 0) report[existingIndex] = row;
   else report.push(row);
 
-  save('g10_demo_v9_buses', buses);
-  save('g10_demo_v9_report', report);
+  save('g10_demo_v11_buses', buses);
+  save('g10_demo_v11_report', report);
   toast('Tournée clôturée.');
   renderDriverBus();
 }
@@ -1312,8 +1442,8 @@ function resetDay() {
   });
 
   report = [];
-  save('g10_demo_v9_buses', buses);
-  save('g10_demo_v9_report', report);
+  save('g10_demo_v11_buses', buses);
+  save('g10_demo_v11_report', report);
   toast('Journée réinitialisée.');
   if (currentScreen === 'dashboard') renderDashboard();
 }
@@ -1405,6 +1535,12 @@ function exportReport() {
 
 
 openScreen('home');
+initializeFirebaseSync().finally(() => {
+  const requestedScreen = new URLSearchParams(window.location.search).get('screen');
+  if (['admin','operations','driver','dashboard'].includes(requestedScreen)) {
+    setTimeout(() => requestAccess(requestedScreen), 100);
+  }
+});
 </script>
 </body>
 </html>

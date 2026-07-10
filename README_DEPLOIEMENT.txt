@@ -1,27 +1,48 @@
-G10 Transport - V10
+G10 TRANSPORTS — V11 FIREBASE
+================================
 
-Contenu :
+FICHIERS
 - index.html : application complète
+- admin.html : lien direct Administration
+- exploitation.html : lien direct Chef d'exploitation
+- chauffeur.html : lien direct Espace chauffeur
+- dashboard.html : lien direct Tableau de bord / Direction
 
-Déploiement GitHub Pages :
-1. Créer un dépôt GitHub.
-2. Ajouter index.html à la racine.
-3. Dans Settings > Pages, choisir la branche main et le dossier /root.
-4. Ouvrir l'URL GitHub Pages générée.
-
-Déploiement Firebase Hosting :
-1. Installer Firebase CLI.
-2. Exécuter firebase login.
-3. Exécuter firebase init hosting.
-4. Choisir ce dossier comme dossier public ou copier index.html dans le dossier public choisi.
-5. Exécuter firebase deploy.
-
-Codes d'accès de démo :
+CODES DE TEST
 - Administration : 1234
 - Chef d'exploitation : 2345
 - Espace chauffeur : 1111
-- Tableau de bord : 9999
+- Tableau de bord / Direction : 9999
 
-Important :
-Cette version utilise le stockage local du navigateur. Chaque appareil ou navigateur garde ses propres données.
-Pour un essai multi-utilisateur réellement synchronisé entre plusieurs personnes, il faudra connecter l'application à Firebase Authentication et Firestore.
+Le code 9999 est un code maître dans le même onglet : après ouverture du Tableau de bord, les autres modules s'ouvrent sans redemander de code durant cette session.
+
+FIREBASE
+Projet : taclar-52e72
+Collection : G10_transport
+Document partagé : state
+
+La V11 synchronise en temps réel :
+- groupes chauffeur / aide chauffeur
+- tarifs et axes
+- capacités et affectations des bus
+- places vendues et recettes
+- statuts Chargement / En route / Arrivé / Clôturé
+- rapport journalier
+
+DÉPLOIEMENT GITHUB
+1. Décompresser ce ZIP.
+2. Ouvrir le dépôt GitHub G10-TRANSPORT.
+3. Add file > Upload files.
+4. Déposer les 5 fichiers extraits, pas le ZIP.
+5. Commit changes.
+6. GitHub Pages étant déjà activé, attendre 1 à 3 minutes.
+
+LIENS APRÈS DÉPLOIEMENT
+- Accueil : https://taclargabon.github.io/G10-TRANSPORT/
+- Admin : https://taclargabon.github.io/G10-TRANSPORT/admin.html
+- Exploitation : https://taclargabon.github.io/G10-TRANSPORT/exploitation.html
+- Chauffeur : https://taclargabon.github.io/G10-TRANSPORT/chauffeur.html
+- Direction : https://taclargabon.github.io/G10-TRANSPORT/dashboard.html
+
+IMPORTANT
+Les règles Firestore sont ouvertes pour le test pilote. Avant une diffusion publique durable, activer Firebase Authentication et resserrer les règles.
