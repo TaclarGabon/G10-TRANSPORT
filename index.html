@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>G10 Transports - V11 Firebase</title>
+  <title>G10 Transports - V11.3 Firebase</title>
   <style>
     :root {
       --navy:#073763;
@@ -480,6 +480,45 @@
     }
     .homeOverlay,.heroTag,.heroInfo,.infoBox { display:none !important; }
 
+
+    .driverFleetStatus {
+      margin-top:12px;
+      display:flex;
+      flex-direction:column;
+      gap:7px;
+    }
+    .driverFleetItem {
+      display:grid;
+      grid-template-columns:38px 1fr;
+      gap:9px;
+      align-items:center;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:12px;
+      padding:7px 8px;
+      color:#fff;
+    }
+    .driverFleetNum {
+      width:38px;height:38px;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;
+      background:#fff;color:var(--navy);font-weight:900;font-size:18px;
+    }
+    .driverFleetText strong { display:block; font-size:13px; }
+    .driverFleetText small { display:block; margin-top:2px; font-size:11px; color:#dbeafe; min-height:13px; }
+    .driverFleetItem.activeService {
+      background:linear-gradient(90deg,rgba(215,167,47,.95),rgba(21,150,107,.88));
+      border-color:rgba(255,255,255,.25);
+    }
+    .driverFleetItem.incidentService { background:rgba(245,158,11,.9); }
+    .driverFleetItem.routeService { background:rgba(11,79,138,.95); }
+    .driverFleetItem.arrivedService { background:rgba(21,150,107,.9); }
+    .incidentPanel {
+      margin-top:10px;padding:12px;border-radius:16px;
+      border:1px solid #fed7aa;background:#fff7ed;
+    }
+    .incidentPanel h5 { margin:0 0 8px;color:#9a3412;font-size:15px; }
+    .incidentPanel textarea { width:100%;min-height:70px;padding:10px;border:1px solid #cbd5e1;border-radius:12px;font-family:inherit; }
+    .incidentLive { margin-top:10px;padding:11px;border-radius:14px;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-weight:800; }
     @media(max-width:980px) {
       .app { grid-template-columns:1fr; }
       .sidebar { min-height:auto; border-radius:0 0 26px 26px; }
@@ -517,6 +556,7 @@
       <button class="navBtn" data-nav="operations" onclick="requestAccess('operations')">🧭 Chef d’exploitation</button>
       <button class="navBtn" data-nav="driver" onclick="requestAccess('driver')">🚌 Espace chauffeur</button>
       <button class="navBtn" data-nav="dashboard" onclick="requestAccess('dashboard')">📊 Direction</button>
+      <div id="driverFleetStatus" class="driverFleetStatus" style="display:none;"></div>
 
       <div class="sidePhoto"></div>
       <div class="support">
@@ -744,12 +784,12 @@ const defaultRoutes = [
 ];
 
 const defaultBuses = [
-  {id:1, capacity:23, plate:"G10-001-AA", routeId:"lbv-lam", sold:0, status:"Chargement", departureTime:"", arrivalTime:"", closed:false},
-  {id:2, capacity:23, plate:"G10-002-AA", routeId:"lbv-lam", sold:0, status:"Chargement", departureTime:"", arrivalTime:"", closed:false},
-  {id:3, capacity:23, plate:"G10-003-AA", routeId:"lbv-lam", sold:0, status:"Chargement", departureTime:"", arrivalTime:"", closed:false},
-  {id:4, capacity:23, plate:"G10-004-AA", routeId:"lbv-lam", sold:0, status:"Chargement", departureTime:"", arrivalTime:"", closed:false},
-  {id:5, capacity:23, plate:"G10-005-AA", routeId:"lbv-mou", sold:0, status:"Chargement", departureTime:"", arrivalTime:"", closed:false},
-  {id:6, capacity:23, plate:"G10-006-AA", routeId:"lbv-bit", sold:0, status:"Chargement", departureTime:"", arrivalTime:"", closed:false}
+  {id:1, capacity:23, plate:"G10-001-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:""},
+  {id:2, capacity:23, plate:"G10-002-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:""},
+  {id:3, capacity:23, plate:"G10-003-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:""},
+  {id:4, capacity:23, plate:"G10-004-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:""},
+  {id:5, capacity:23, plate:"G10-005-AA", routeId:"lbv-mou", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:""},
+  {id:6, capacity:23, plate:"G10-006-AA", routeId:"lbv-bit", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:""}
 ];
 
 function cloneData(value) {
@@ -788,7 +828,7 @@ function statePayload() {
     routes: cloneData(routes),
     buses: cloneData(buses),
     report: cloneData(report),
-    version: 'V11.2',
+    version: 'V11.3',
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 }
@@ -809,6 +849,7 @@ function scheduleCloudSync() {
 
 function renderCurrentScreen() {
   try {
+    renderDriverFleetStatus();
     if (currentScreen === 'admin') renderAdmin();
     if (currentScreen === 'operations') renderOperations();
     if (currentScreen === 'driver') {
@@ -826,7 +867,7 @@ function applyRemoteState(data) {
   try {
     if (Array.isArray(data.groups)) groups = data.groups;
     if (Array.isArray(data.routes)) routes = data.routes;
-    if (Array.isArray(data.buses)) buses = data.buses;
+    if (Array.isArray(data.buses)) buses = data.buses.map(normalizeBusState);
     if (Array.isArray(data.report)) report = data.report;
     persistLocalState();
     renderCurrentScreen();
@@ -883,6 +924,62 @@ function busById(id) { return buses.find(b => b.id === Number(id)); }
 function routeById(id) { return routes.find(r => r.id === id) || routes[0]; }
 function remaining(bus) { return Math.max(0, Number(bus.capacity || 0) - Number(bus.sold || 0)); }
 function receipt(bus) { const r = routeById(bus.routeId); return Number(bus.sold || 0) * Number(r.price || 0); }
+function normalizeBusState(bus) {
+  return Object.assign({
+    sold:0, status:'Hors service', departureTime:'', arrivalTime:'', closed:false,
+    serviceActive:false, serviceStartTime:'', serviceEndTime:'', incidentActive:false,
+    incidentType:'', incidentNote:'', incidentStartTime:'', incidentEndTime:'',
+    resumeTime:'', previousStatus:''
+  }, bus || {});
+}
+buses = buses.map(normalizeBusState);
+
+function destinationFromRoute(route) {
+  const name = String(route?.name || '');
+  const parts = name.split('→').map(x => x.trim());
+  return parts[parts.length - 1] || 'destination';
+}
+function departureFromRoute(route) {
+  const name = String(route?.name || '');
+  const parts = name.split('→').map(x => x.trim());
+  return parts[0] || 'départ';
+}
+function reverseRouteId(routeId) {
+  const pairs = {
+    'lbv-lam':'lam-lbv','lam-lbv':'lbv-lam',
+    'lbv-mou':'mou-lbv','mou-lbv':'lbv-mou',
+    'lbv-oye':'oye-lbv','oye-lbv':'lbv-oye',
+    'lbv-bit':'bit-lbv','bit-lbv':'lbv-bit',
+    'lbv-mak':'mak-lbv','mak-lbv':'lbv-mak'
+  };
+  return pairs[routeId] || routeId;
+}
+function enRouteStatus(bus) {
+  return 'En route vers ' + destinationFromRoute(routeById(bus.routeId));
+}
+function arrivedStatus(bus) {
+  return 'Arrivé à ' + destinationFromRoute(routeById(bus.routeId));
+}
+function renderDriverFleetStatus() {
+  const box = document.getElementById('driverFleetStatus');
+  if (!box) return;
+  const show = roleMode === 'driver' || currentScreen === 'driver';
+  box.style.display = show ? 'flex' : 'none';
+  if (!show) return;
+  box.innerHTML = buses.map(b => {
+    const activeText = b.serviceActive ? esc(b.status || 'En service') : '';
+    let cls = '';
+    if (b.incidentActive) cls = 'incidentService';
+    else if (String(b.status).startsWith('En route')) cls = 'routeService';
+    else if (String(b.status).startsWith('Arrivé')) cls = 'arrivedService';
+    else if (b.serviceActive) cls = 'activeService';
+    return `<div class="driverFleetItem ${cls}">
+      <div class="driverFleetNum">${b.id}</div>
+      <div class="driverFleetText"><strong>Bus ${b.id}</strong><small>${activeText}</small></div>
+    </div>`;
+  }).join('');
+}
+
 
 function toast(msg) {
   const el = document.getElementById('toast');
@@ -902,6 +999,7 @@ function openScreen(id) {
     return;
   }
   currentScreen = id;
+  renderDriverFleetStatus();
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.navBtn').forEach(b => b.classList.toggle('active', b.dataset.nav === id));
@@ -1205,7 +1303,7 @@ function busCardSummary(b) {
   const g = groupByBus(b.id);
   const r = routeById(b.routeId);
   return `
-    <div class="busCard ${b.status === 'En route' ? 'route' : (g ? 'assigned' : '')}">
+    <div class="busCard ${String(b.status).startsWith('En route') ? 'route' : (g ? 'assigned' : '')}">
       <div class="busTop">
         <div class="busLeft">
           <div class="busNum">${b.id}</div>
@@ -1219,6 +1317,7 @@ function busCardSummary(b) {
       <div class="crewBox">
         ${g ? `Chauffeur : <b>${esc(g.chauffeur)}</b><br>Aide chauffeur : <b>${esc(g.chargeur)}</b>` : 'Non affecté'}
       </div>
+      ${b.incidentActive ? `<div class="incidentLive">⚠ ${esc(b.status)}<br><small>${esc(b.incidentNote || 'Aucun commentaire')}</small></div>` : ''}
       <div class="grid3" style="margin-top:12px;">
         <div class="stat"><span>Places vendues</span><strong>${b.sold}</strong></div>
         <div class="stat"><span>Places restantes</span><strong>${remaining(b)}</strong></div>
@@ -1228,13 +1327,18 @@ function busCardSummary(b) {
   `;
 }
 function statusClass(status) {
-  if (status === 'En route') return 'orange';
-  if (status === 'Arrivé') return 'blue';
-  if (status === 'Clôturé') return 'gray';
+  const s = String(status || '');
+  if (s.startsWith('Incident')) return 'orange';
+  if (s.startsWith('En route')) return 'orange';
+  if (s.startsWith('Arrivé')) return 'blue';
+  if (s === 'Fin de service' || s === 'Hors service') return 'gray';
+  if (s === 'En service') return '';
   return '';
 }
 
+
 function renderDriverLogin() {
+  renderDriverFleetStatus();
   const assigned = buses.filter(b => groupByBus(b.id));
   if (!assigned.length) {
     document.getElementById('driverContent').innerHTML = `
@@ -1276,10 +1380,36 @@ function openDriverBus() {
     return;
   }
   selectedDriverBusId = Number(document.getElementById('driverBusSelect').value);
+  const b = busById(selectedDriverBusId);
+  if (!b) return;
+
+  // Une nouvelle prise de service prépare le prochain trajet sans toucher aux rapports archivés.
+  if (!b.serviceActive) {
+    if (b.status === 'Fin de service' || b.status === 'Hors service') {
+      b.sold = 0;
+      b.departureTime = '';
+      b.arrivalTime = '';
+      b.closed = false;
+      b.incidentActive = false;
+      b.incidentType = '';
+      b.incidentNote = '';
+      b.incidentStartTime = '';
+      b.incidentEndTime = '';
+      b.resumeTime = '';
+      b.previousStatus = '';
+    }
+    b.serviceActive = true;
+    b.serviceStartTime = nowTime();
+    b.serviceEndTime = '';
+    b.status = 'En service';
+    save('g10_demo_v11_buses', buses);
+  }
+  renderDriverFleetStatus();
   renderDriverBus();
 }
 function cashPlus() {
   const b = busById(selectedDriverBusId);
+  if (!b.serviceActive || b.closed) return;
   if (remaining(b) <= 0) { alert('Bus complet.'); return; }
   b.sold++;
   save('g10_demo_v11_buses', buses);
@@ -1287,51 +1417,101 @@ function cashPlus() {
 }
 function cashMinus() {
   const b = busById(selectedDriverBusId);
+  if (!b.serviceActive || b.closed) return;
   b.sold = Math.max(0, b.sold - 1);
   save('g10_demo_v11_buses', buses);
   renderDriverBus();
 }
 function departBus() {
   const b = busById(selectedDriverBusId);
-  if (b.sold === 0) {
-    const ok = confirm('Aucune place vendue. Confirmer quand même un départ à vide ?');
-    if (!ok) return;
+  const r = routeById(b.routeId);
+  if (b.status !== 'En service') {
+    alert('Le départ ne peut être confirmé que lorsque le bus est En service.');
+    return;
   }
-  b.status = 'En route';
-  if (!b.departureTime) b.departureTime = nowTime();
+  const emptyNote = b.sold === 0 ? '\nAttention : aucune place n’a été enregistrée.' : '';
+  const ok = confirm(`Confirmez-vous ${r.depart.toLowerCase()} vers ${destinationFromRoute(r)} ?${emptyNote}`);
+  if (!ok) return;
+  b.status = enRouteStatus(b);
+  b.departureTime = nowTime();
   save('g10_demo_v11_buses', buses);
+  renderDriverFleetStatus();
+  renderDriverBus();
+}
+function declareIncident() {
+  const b = busById(selectedDriverBusId);
+  if (!String(b.status).startsWith('En route') || b.incidentActive) {
+    alert('Un incident peut être déclaré uniquement pendant le trajet.');
+    return;
+  }
+  const type = document.getElementById('incidentType')?.value || '';
+  const note = document.getElementById('incidentNote')?.value.trim() || '';
+  if (!type) { alert('Choisissez le type d’incident.'); return; }
+  if (!confirm(`Confirmez-vous la déclaration de l’incident : ${type} ?`)) return;
+  b.previousStatus = b.status;
+  b.incidentActive = true;
+  b.incidentType = type;
+  b.incidentNote = note;
+  b.incidentStartTime = nowTime();
+  b.incidentEndTime = '';
+  b.resumeTime = '';
+  b.status = 'Incident en cours — ' + type;
+  save('g10_demo_v11_buses', buses);
+  renderDriverFleetStatus();
+  renderDriverBus();
+}
+function closeIncident() {
+  const b = busById(selectedDriverBusId);
+  if (!b.incidentActive) return;
+  if (!confirm('L’incident est-il résolu et le trajet reprend-il maintenant ?')) return;
+  b.incidentActive = false;
+  b.incidentEndTime = nowTime();
+  b.resumeTime = b.incidentEndTime;
+  b.status = b.previousStatus || enRouteStatus(b);
+  b.previousStatus = '';
+  save('g10_demo_v11_buses', buses);
+  renderDriverFleetStatus();
   renderDriverBus();
 }
 function arriveBus() {
   const b = busById(selectedDriverBusId);
-  if (b.status !== 'En route') {
-    alert('Impossible de marquer Arrivé : le départ n’a pas encore été confirmé.');
+  const r = routeById(b.routeId);
+  if (b.incidentActive) {
+    alert('Clôturez d’abord l’incident avant de confirmer l’arrivée.');
     return;
   }
-  b.status = 'Arrivé';
-  if (!b.arrivalTime) b.arrivalTime = nowTime();
+  if (!String(b.status).startsWith('En route')) {
+    alert('Impossible de confirmer l’arrivée : le départ n’a pas encore été validé.');
+    return;
+  }
+  if (!confirm(`Confirmez-vous ${r.arrive.toLowerCase()} ?`)) return;
+  b.status = arrivedStatus(b);
+  b.arrivalTime = nowTime();
   save('g10_demo_v11_buses', buses);
+  renderDriverFleetStatus();
   renderDriverBus();
 }
-function closeTrip() {
+function endService() {
   const b = busById(selectedDriverBusId);
-  if (b.status !== 'Arrivé') {
-    alert('Impossible de clôturer : le bus doit d’abord être marqué Arrivé.');
+  if (!String(b.status).startsWith('Arrivé')) {
+    alert('La fin de service est possible uniquement après confirmation de l’arrivée.');
     return;
   }
+  if (!confirm('Confirmez-vous la fin de service pour ce trajet ?')) return;
   const g = groupByBus(b.id);
   const r = routeById(b.routeId);
-  b.status = 'Clôturé';
-  b.closed = true;
-  if (!b.arrivalTime) b.arrivalTime = nowTime();
+  const tripId = `G10-${new Date().toISOString().slice(0,10).replaceAll('-','')}-BUS${b.id}-${Date.now().toString().slice(-5)}`;
+  b.serviceEndTime = nowTime();
 
-  const existingIndex = report.findIndex(x => x.date === today && Number(x.bus) === Number(b.id) && x.axis === r.name);
   const row = {
+    tripId,
     date: today,
     bus: b.id,
     axis: r.name,
     departureTime: b.departureTime || '',
     arrivalTime: b.arrivalTime || '',
+    serviceStartTime: b.serviceStartTime || '',
+    serviceEndTime: b.serviceEndTime || '',
     group: g ? 'Groupe ' + g.id : '',
     chauffeur: g ? g.chauffeur : '',
     chargeur: g ? g.chargeur : '',
@@ -1340,20 +1520,44 @@ function closeTrip() {
     remaining: remaining(b),
     price: r.price,
     total: receipt(b),
-    status: b.status
+    incidentType: b.incidentType || '',
+    incidentNote: b.incidentNote || '',
+    incidentStartTime: b.incidentStartTime || '',
+    incidentEndTime: b.incidentEndTime || '',
+    resumeTime: b.resumeTime || '',
+    status: 'Fin de service'
   };
-  if (existingIndex >= 0) report[existingIndex] = row;
-  else report.push(row);
+  report.push(row);
 
+  // Préparer automatiquement le sens retour sans écraser le rapport terminé.
+  b.routeId = reverseRouteId(b.routeId);
+  b.status = 'Fin de service';
+  b.closed = true;
+  b.serviceActive = false;
   save('g10_demo_v11_buses', buses);
   save('g10_demo_v11_report', report);
-  toast('Tournée clôturée.');
+  toast('Fin de service enregistrée. Le trajet retour est préparé.');
+  renderDriverFleetStatus();
   renderDriverBus();
+}
+function driverLogout() {
+  selectedDriverBusId = null;
+  renderDriverFleetStatus();
+  renderDriverLogin();
 }
 function renderDriverBus() {
   const b = busById(selectedDriverBusId);
   const g = groupByBus(b.id);
   const r = routeById(b.routeId);
+  const departed = Boolean(b.departureTime);
+  const arrived = Boolean(b.arrivalTime) && String(b.status).startsWith('Arrivé');
+  const serviceEnded = b.status === 'Fin de service';
+  const canDepart = b.status === 'En service' && !b.incidentActive;
+  const canIncident = String(b.status).startsWith('En route') && !b.incidentActive;
+  const canCloseIncident = b.incidentActive;
+  const canArrive = String(b.status).startsWith('En route') && !b.incidentActive;
+  const canEnd = String(b.status).startsWith('Arrivé') && !b.incidentActive;
+
   document.getElementById('driverContent').innerHTML = `
     <div class="grid2">
       <div class="busCard assigned">
@@ -1372,6 +1576,7 @@ function renderDriverBus() {
           Chauffeur : <b>${esc(g.chauffeur)}</b><br>
           Aide chauffeur : <b>${esc(g.chargeur)}</b>
         </div>
+        ${b.incidentActive ? `<div class="incidentLive">⚠ ${esc(b.status)}<br><small>${esc(b.incidentNote || 'Aucun commentaire')}</small></div>` : ''}
         <div class="grid3" style="margin-top:12px;">
           <div class="stat"><span>Places vendues</span><strong>${b.sold}</strong></div>
           <div class="stat"><span>Places restantes</span><strong>${remaining(b)}</strong></div>
@@ -1382,17 +1587,33 @@ function renderDriverBus() {
       <div class="cashPanel">
         <h4 style="margin:0;color:#047857;">Cash encaissé</h4>
         <div class="cashAmount">${money(receipt(b))}</div>
-        <button class="btn green big" onclick="cashPlus()" ${b.closed ? 'disabled' : ''}>Cash +1</button>
+        <button class="btn green big" onclick="cashPlus()" ${(!b.serviceActive || b.closed || departed) ? 'disabled' : ''}>Cash +1</button>
         <div class="actionRow">
-          <button class="btn light" onclick="cashMinus()" ${b.closed ? 'disabled' : ''}>Annuler -1</button>
-          <button class="btn" onclick="departBus()" ${b.closed ? 'disabled' : ''}>${esc(r.depart)}</button>
+          <button class="btn light" onclick="cashMinus()" ${(!b.serviceActive || b.closed || departed) ? 'disabled' : ''}>Annuler -1</button>
+          <button class="btn" onclick="departBus()" ${canDepart ? '' : 'disabled'}>${esc(r.depart)}</button>
         </div>
+
+        <div class="incidentPanel">
+          <h5>Incident de trajet</h5>
+          <select id="incidentType" ${canIncident ? '' : 'disabled'}>
+            <option value="">-- Type d’incident --</option>
+            <option>Panne mécanique</option><option>Accident</option><option>Contrôle routier</option>
+            <option>Problème passager</option><option>Route bloquée</option><option>Crevaison</option>
+            <option>Retard important</option><option>Autre</option>
+          </select>
+          <textarea id="incidentNote" placeholder="Motif / commentaire" ${canIncident ? '' : 'disabled'}></textarea>
+          <div class="actionRow">
+            <button class="btn orange" onclick="declareIncident()" ${canIncident ? '' : 'disabled'}>Déclarer incident</button>
+            <button class="btn light" onclick="closeIncident()" ${canCloseIncident ? '' : 'disabled'}>Clôturer incident</button>
+          </div>
+        </div>
+
         <div class="actionRow">
-          <button class="btn green" onclick="arriveBus()" ${(b.closed || b.status !== 'En route') ? 'disabled' : ''}>${esc(r.arrive)}</button>
-          <button class="btn gold" onclick="closeTrip()" ${b.status !== 'Arrivé' ? 'disabled' : ''}>Clôturer tournée</button>
+          <button class="btn green" onclick="arriveBus()" ${canArrive ? '' : 'disabled'}>${esc(r.arrive)}</button>
+          <button class="btn gold" onclick="endService()" ${canEnd ? '' : 'disabled'}>Fin de service</button>
         </div>
         <div style="margin-top:10px;">
-          <button class="btn light" style="width:100%;" onclick="renderDriverLogin()">Changer bus</button>
+          <button class="btn light" style="width:100%;" onclick="driverLogout()">Se déconnecter</button>
         </div>
       </div>
     </div>
@@ -1402,8 +1623,8 @@ function renderDriverBus() {
 function renderDashboard() {
   const totalSold = buses.reduce((s,b) => s + Number(b.sold || 0), 0);
   const totalReceipt = buses.reduce((s,b) => s + receipt(b), 0);
-  const enRoute = buses.filter(b => b.status === 'En route').length;
-  const arrived = buses.filter(b => b.status === 'Arrivé' || b.status === 'Clôturé').length;
+  const enRoute = buses.filter(b => String(b.status).startsWith('En route')).length;
+  const arrived = buses.filter(b => String(b.status).startsWith('Arrivé') || b.status === 'Fin de service').length;
   const rows = buses.map(busCardSummary).join('');
 
   document.getElementById('dashboardContent').innerHTML = `
@@ -1476,10 +1697,20 @@ function resetDay() {
   buses.forEach(b => {
     const initialBus = defaultBuses.find(x => Number(x.id) === Number(b.id));
     b.sold = 0;
-    b.status = 'Chargement';
+    b.status = 'Hors service';
     b.departureTime = '';
     b.arrivalTime = '';
     b.closed = false;
+    b.serviceActive = false;
+    b.serviceStartTime = '';
+    b.serviceEndTime = '';
+    b.incidentActive = false;
+    b.incidentType = '';
+    b.incidentNote = '';
+    b.incidentStartTime = '';
+    b.incidentEndTime = '';
+    b.resumeTime = '';
+    b.previousStatus = '';
     // L'axe du jour est également remis à sa valeur de départ.
     if (initialBus) b.routeId = initialBus.routeId;
   });
@@ -1494,7 +1725,7 @@ function resetDay() {
 
 function exportReport() {
   if (!report.length) {
-    alert('Aucune tournée clôturée. Le rapport Excel ne peut être exporté qu’après clôture d’au moins une tournée.');
+    alert('Aucune fin de service enregistrée. Le rapport Excel ne peut être exporté qu’après clôture d’au moins une tournée.');
     return;
   }
 
@@ -1543,7 +1774,7 @@ function exportReport() {
     </style>
   </head>
   <body>
-    <div class="title">G10 Transport — Rapport journalier clôturé</div>
+    <div class="title">G10 Transport — Rapport journalier — fins de service</div>
     <div class="subtitle">Export du ${todayFile}</div>
     <div class="summary">Recette totale du jour : ${totalAmount.toLocaleString('fr-FR')} FCFA</div>
     <table>
@@ -1585,6 +1816,7 @@ if (['admin','operations','driver','dashboard'].includes(requestedScreen)) {
   applyRoleNavigation(null);
 }
 openScreen('home');
+renderDriverFleetStatus();
 initializeFirebaseSync().finally(() => {
   if (['admin','operations','driver','dashboard'].includes(requestedScreen)) {
     setTimeout(() => requestAccess(requestedScreen), 100);
