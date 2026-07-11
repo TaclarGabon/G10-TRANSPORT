@@ -455,10 +455,10 @@
 
     /* ACCUEIL FINAL : modèle officiel validé, affiché à l’identique */
     .homeHero {
-      width:min(100%, 1180px);
-      height:calc(100vh - 165px);
-      max-height:680px;
-      min-height:360px;
+      width:100%;
+      height:calc(100vh - 125px);
+      max-height:780px;
+      min-height:500px;
       margin:0 auto;
       border-radius:22px;
       overflow:hidden;
@@ -468,6 +468,7 @@
       display:flex;
       align-items:center;
       justify-content:center;
+      padding:10px;
     }
     .homeHero img {
       display:block;
@@ -487,9 +488,11 @@
       .grid2,.grid3,.grid4,.groupSteps,.kpiStrip { grid-template-columns:1fr; }
       .topbar { height:auto; align-items:flex-start; gap:12px; flex-direction:column; }
       .homeHero {
+        width:100%;
         height:auto;
         min-height:0;
         max-height:none;
+        padding:6px;
       }
       .homeHero img {
         width:100%;
@@ -513,7 +516,7 @@
       <button class="navBtn" data-nav="admin" onclick="requestAccess('admin')">⚙️ Administration</button>
       <button class="navBtn" data-nav="operations" onclick="requestAccess('operations')">🧭 Chef d’exploitation</button>
       <button class="navBtn" data-nav="driver" onclick="requestAccess('driver')">🚌 Espace chauffeur</button>
-      <button class="navBtn" data-nav="dashboard" onclick="requestAccess('dashboard')">📊 Tableau de bord</button>
+      <button class="navBtn" data-nav="dashboard" onclick="requestAccess('dashboard')">📊 Direction</button>
 
       <div class="sidePhoto"></div>
       <div class="support">
@@ -596,7 +599,7 @@
         <div class="panel">
           <div class="panelHead">
             <div>
-              <h3>Tableau de bord</h3>
+              <h3>Direction</h3>
               <p>Vue direction : statut des bus, recettes et rapport du jour.</p>
             </div>
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -622,6 +625,7 @@ let adminTab = 'groups';
 let opTab = 'assign';
 let selectedGroup = 1;
 let selectedDriverBusId = null;
+let roleMode = null;
 
 const firebaseConfig = {
   apiKey: "AIzaSyC_JNVVGrd2whXRGfHuOlShhmZfaLQFLfw",
@@ -657,8 +661,32 @@ function unlockAllRoles() {
   sessionStorage.setItem('g10_master_access', 'true');
   sessionStorage.setItem('g10_unlocked_roles', JSON.stringify(['admin','operations','driver','dashboard']));
 }
+function applyRoleNavigation(role) {
+  roleMode = role || null;
+  const allowedByRole = {
+    admin: ['home','admin'],
+    operations: ['home','operations'],
+    driver: ['home','driver'],
+    dashboard: ['home','admin','operations','driver','dashboard']
+  };
+  const allowed = role ? allowedByRole[role] : ['home','admin','operations','driver','dashboard'];
+  document.querySelectorAll('.navBtn').forEach(btn => {
+    btn.style.display = allowed.includes(btn.dataset.nav) ? 'flex' : 'none';
+  });
+}
+
+function roleCanOpen(screenId) {
+  if (!roleMode) return true;
+  if (roleMode === 'dashboard') return true;
+  return screenId === 'home' || screenId === roleMode;
+}
+
 function requestAccess(screenId) {
   if (screenId === 'home') { openScreen('home'); return; }
+  if (!roleCanOpen(screenId)) {
+    alert('Cet accès n’est pas autorisé dans cette session.');
+    return;
+  }
 
   const unlocked = getUnlockedRoles();
   if (hasMasterAccess() || unlocked.has(screenId)) {
@@ -670,19 +698,21 @@ function requestAccess(screenId) {
     admin:'Administration',
     operations:'Chef d’exploitation',
     driver:'Espace chauffeur',
-    dashboard:'Tableau de bord / Direction'
+    dashboard:'Direction'
   };
   const pin = prompt('Code d’accès – ' + labels[screenId]);
   if (pin === null) return;
 
   if (screenId === 'dashboard' && pin === ACCESS_PINS.dashboard) {
     unlockAllRoles();
+    applyRoleNavigation('dashboard');
     openScreen('dashboard');
     return;
   }
 
   if (pin === ACCESS_PINS[screenId]) {
     unlockRole(screenId);
+    if (roleMode) applyRoleNavigation(roleMode);
     openScreen(screenId);
     return;
   }
@@ -758,7 +788,7 @@ function statePayload() {
     routes: cloneData(routes),
     buses: cloneData(buses),
     report: cloneData(report),
-    version: 'V11',
+    version: 'V11.2',
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 }
@@ -867,6 +897,10 @@ function setTitle(title, subtitle) {
 }
 
 function openScreen(id) {
+  if (!roleCanOpen(id)) {
+    alert('Cet accès n’est pas autorisé dans cette session.');
+    return;
+  }
   currentScreen = id;
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -876,7 +910,7 @@ function openScreen(id) {
   if (id === 'admin') { setTitle('Administration', 'Groupes, tarifs et capacités modifiables.'); renderAdmin(); }
   if (id === 'operations') { setTitle('Chef d’exploitation', 'Affectation des bus et suivi simple.'); renderOperations(); }
   if (id === 'driver') { setTitle('Espace chauffeur', 'Le chauffeur ne voit que le bus qui lui est affecté.'); renderDriverLogin(); }
-  if (id === 'dashboard') { setTitle('Tableau de bord', 'Vue direction et rapport du jour.'); renderDashboard(); }
+  if (id === 'dashboard') { setTitle('Direction', 'Vue générale, recettes et rapport du jour.'); renderDashboard(); }
 }
 
 function setAdminTab(tab) {
@@ -1430,22 +1464,32 @@ function renderReportTable() {
 }
 
 function resetDay() {
-  const ok = confirm('Réinitialiser la journée de test ? Les groupes, tarifs et capacités seront conservés.');
+  const ok = confirm('Réinitialiser complètement la journée de test ? Les noms des chauffeurs, aides chauffeurs, tarifs et capacités seront conservés. Les affectations des bus, ventes, statuts, heures et rapports seront supprimés.');
   if (!ok) return;
 
+  // Retirer toutes les affectations Groupe → Bus.
+  groups.forEach(g => {
+    g.busId = '';
+  });
+
+  // Remettre chaque bus dans son état initial d'exploitation.
   buses.forEach(b => {
+    const initialBus = defaultBuses.find(x => Number(x.id) === Number(b.id));
     b.sold = 0;
     b.status = 'Chargement';
     b.departureTime = '';
     b.arrivalTime = '';
     b.closed = false;
+    // L'axe du jour est également remis à sa valeur de départ.
+    if (initialBus) b.routeId = initialBus.routeId;
   });
 
   report = [];
+  save('g10_demo_v11_groups', groups);
   save('g10_demo_v11_buses', buses);
   save('g10_demo_v11_report', report);
-  toast('Journée réinitialisée.');
-  if (currentScreen === 'dashboard') renderDashboard();
+  toast('Démo réinitialisée : bus non affectés et journée remise à zéro.');
+  renderCurrentScreen();
 }
 
 function exportReport() {
@@ -1534,9 +1578,14 @@ function exportReport() {
 }
 
 
+const requestedScreen = new URLSearchParams(window.location.search).get('screen');
+if (['admin','operations','driver','dashboard'].includes(requestedScreen)) {
+  applyRoleNavigation(requestedScreen);
+} else {
+  applyRoleNavigation(null);
+}
 openScreen('home');
 initializeFirebaseSync().finally(() => {
-  const requestedScreen = new URLSearchParams(window.location.search).get('screen');
   if (['admin','operations','driver','dashboard'].includes(requestedScreen)) {
     setTimeout(() => requestAccess(requestedScreen), 100);
   }
