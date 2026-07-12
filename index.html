@@ -837,7 +837,7 @@ function statePayload() {
     routes: cloneData(routes),
     buses: cloneData(buses),
     report: cloneData(report),
-    version: 'V11.4',
+    version: 'V11.7',
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 }
@@ -973,12 +973,9 @@ function placeFleetStatus() {
   const box = document.getElementById('driverFleetStatus');
   if (!box) return;
 
-  let anchorRole = null;
-  if (roleMode === 'operations') anchorRole = 'operations';
-  else if (roleMode === 'driver') anchorRole = 'driver';
-  else if (roleMode === 'dashboard') anchorRole = 'driver';
-
-  const anchor = anchorRole ? document.querySelector(`.navBtn[data-nav="${anchorRole}"]`) : null;
+  // Le suivi visuel des bus connectés appartient uniquement à l'onglet
+  // « Espace chauffeur », quel que soit le profil qui consulte le menu.
+  const anchor = document.querySelector('.navBtn[data-nav="driver"]');
   if (anchor && anchor.parentNode) anchor.insertAdjacentElement('afterend', box);
 }
 
@@ -988,13 +985,15 @@ function renderDriverFleetStatus() {
 
   placeFleetStatus();
 
-  // Chauffeur : la liste apparaît seulement après sa connexion au bus.
-  // Chef d'exploitation : la liste apparaît dans son espace.
-  // Direction : elle voit l'ensemble des menus et la flotte sous Espace chauffeur.
-  const show =
-    (roleMode === 'driver' && Boolean(selectedDriverBusId)) ||
-    roleMode === 'operations' ||
-    roleMode === 'dashboard';
+  // N'afficher que les bus dont un chauffeur a réellement pris le service.
+  // Les bus non connectés ne créent aucune carte. L'ordre reste toujours croissant.
+  const connectedBuses = buses
+    .filter(b => Boolean(b.serviceActive))
+    .sort((a, b) => Number(a.id) - Number(b.id));
+
+  const driverNav = document.querySelector('.navBtn[data-nav="driver"]');
+  const driverNavVisible = driverNav && driverNav.style.display !== 'none';
+  const show = Boolean(driverNavVisible && connectedBuses.length);
 
   box.style.display = show ? 'flex' : 'none';
   if (!show) {
@@ -1002,13 +1001,12 @@ function renderDriverFleetStatus() {
     return;
   }
 
-  box.innerHTML = buses.map(b => {
-    const activeText = b.serviceActive ? esc(b.status || 'En service') : '';
-    let cls = '';
+  box.innerHTML = connectedBuses.map(b => {
+    const activeText = esc(b.status || 'En service');
+    let cls = 'activeService';
     if (b.incidentActive) cls = 'incidentService';
     else if (String(b.status).startsWith('En route')) cls = 'routeService';
     else if (String(b.status).startsWith('Arrivé')) cls = 'arrivedService';
-    else if (b.serviceActive) cls = 'activeService';
     return `<div class="driverFleetItem ${cls}">
       <div class="driverFleetNum">${b.id}</div>
       <div class="driverFleetText"><strong>Bus ${b.id}</strong><small>${activeText}</small></div>
