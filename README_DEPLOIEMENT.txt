@@ -25,10 +25,18 @@ Nouveautés V11.3 :
 - Suppression du bouton Changer bus
 - Réinitialisation complète conservée
 
-MISE À JOUR V11.4 — PRÉSENTATION ACCORDÉON PAR RÔLE
+MISE À JOUR V11.5 — PRÉSENTATION ACCORDÉON PAR RÔLE
 - Au départ, aucun Bus 1 à Bus 6 n'est affiché dans l'accueil général.
 - Chauffeur : la flotte apparaît sous « Espace chauffeur » seulement après connexion au bus avec le PIN.
 - Chef d'exploitation : la flotte apparaît sous « Chef d'exploitation » après connexion.
 - Direction : tous les menus restent visibles, les six bus apparaissent sous « Espace chauffeur » et « Direction » reste le dernier onglet.
 - Administration : aucun bandeau Bus 1 à Bus 6 n'est affiché.
 - Les six bus restent affichés dans les espaces autorisés; seuls les bus connectés affichent un statut.
+
+
+MISE À JOUR V11.5 — CODES COULEURS DES STATUTS
+- En service : dégradé orangé vers vert (conservé)
+- En route : dégradé orangé vers jaune, sans fond bleu
+- Incident : dégradé orangé vers violet
+- Arrivé : dégradé orangé vers gris
+- Les cartes de tournée en cours utilisent aussi une teinte orangée claire au lieu du bleu

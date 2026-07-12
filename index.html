@@ -314,7 +314,7 @@
       box-shadow:0 8px 20px rgba(15,23,42,.04);
     }
     .busCard.assigned { background:#f0fdf4; border-color:#86efac; }
-    .busCard.route { background:#eff6ff; border-color:#93c5fd; }
+    .busCard.route { background:#fff7ed; border-color:#fdba74; }
     .busTop {
       display:flex;
       justify-content:space-between;
@@ -509,9 +509,18 @@
       background:linear-gradient(90deg,rgba(215,167,47,.95),rgba(21,150,107,.88));
       border-color:rgba(255,255,255,.25);
     }
-    .driverFleetItem.incidentService { background:rgba(245,158,11,.9); }
-    .driverFleetItem.routeService { background:rgba(11,79,138,.95); }
-    .driverFleetItem.arrivedService { background:rgba(21,150,107,.9); }
+    .driverFleetItem.incidentService {
+      background:linear-gradient(90deg,rgba(234,88,12,.96),rgba(126,34,206,.90));
+      border-color:rgba(255,255,255,.25);
+    }
+    .driverFleetItem.routeService {
+      background:linear-gradient(90deg,rgba(234,88,12,.96),rgba(234,179,8,.92));
+      border-color:rgba(255,255,255,.25);
+    }
+    .driverFleetItem.arrivedService {
+      background:linear-gradient(90deg,rgba(234,88,12,.92),rgba(100,116,139,.94));
+      border-color:rgba(255,255,255,.25);
+    }
     .incidentPanel {
       margin-top:10px;padding:12px;border-radius:16px;
       border:1px solid #fed7aa;background:#fff7ed;
@@ -1357,7 +1366,7 @@ function statusClass(status) {
   const s = String(status || '');
   if (s.startsWith('Incident')) return 'orange';
   if (s.startsWith('En route')) return 'orange';
-  if (s.startsWith('Arrivé')) return 'blue';
+  if (s.startsWith('Arrivé')) return 'gray';
   if (s === 'Fin de service' || s === 'Hors service') return 'gray';
   if (s === 'En service') return '';
   return '';
