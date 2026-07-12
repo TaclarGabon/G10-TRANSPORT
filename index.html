@@ -555,8 +555,8 @@
       <button class="navBtn" data-nav="admin" onclick="requestAccess('admin')">⚙️ Administration</button>
       <button class="navBtn" data-nav="operations" onclick="requestAccess('operations')">🧭 Chef d’exploitation</button>
       <button class="navBtn" data-nav="driver" onclick="requestAccess('driver')">🚌 Espace chauffeur</button>
-      <button class="navBtn" data-nav="dashboard" onclick="requestAccess('dashboard')">📊 Direction</button>
       <div id="driverFleetStatus" class="driverFleetStatus" style="display:none;"></div>
+      <button class="navBtn" data-nav="dashboard" onclick="requestAccess('dashboard')">📊 Direction</button>
 
       <div class="sidePhoto"></div>
       <div class="support">
@@ -752,7 +752,7 @@ function requestAccess(screenId) {
 
   if (pin === ACCESS_PINS[screenId]) {
     unlockRole(screenId);
-    if (roleMode) applyRoleNavigation(roleMode);
+    applyRoleNavigation(screenId);
     openScreen(screenId);
     return;
   }
@@ -828,7 +828,7 @@ function statePayload() {
     routes: cloneData(routes),
     buses: cloneData(buses),
     report: cloneData(report),
-    version: 'V11.3',
+    version: 'V11.4',
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 }
@@ -960,12 +960,39 @@ function enRouteStatus(bus) {
 function arrivedStatus(bus) {
   return 'Arrivé à ' + destinationFromRoute(routeById(bus.routeId));
 }
+function placeFleetStatus() {
+  const box = document.getElementById('driverFleetStatus');
+  if (!box) return;
+
+  let anchorRole = null;
+  if (roleMode === 'operations') anchorRole = 'operations';
+  else if (roleMode === 'driver') anchorRole = 'driver';
+  else if (roleMode === 'dashboard') anchorRole = 'driver';
+
+  const anchor = anchorRole ? document.querySelector(`.navBtn[data-nav="${anchorRole}"]`) : null;
+  if (anchor && anchor.parentNode) anchor.insertAdjacentElement('afterend', box);
+}
+
 function renderDriverFleetStatus() {
   const box = document.getElementById('driverFleetStatus');
   if (!box) return;
-  const show = roleMode === 'driver' || currentScreen === 'driver';
+
+  placeFleetStatus();
+
+  // Chauffeur : la liste apparaît seulement après sa connexion au bus.
+  // Chef d'exploitation : la liste apparaît dans son espace.
+  // Direction : elle voit l'ensemble des menus et la flotte sous Espace chauffeur.
+  const show =
+    (roleMode === 'driver' && Boolean(selectedDriverBusId)) ||
+    roleMode === 'operations' ||
+    roleMode === 'dashboard';
+
   box.style.display = show ? 'flex' : 'none';
-  if (!show) return;
+  if (!show) {
+    box.innerHTML = '';
+    return;
+  }
+
   box.innerHTML = buses.map(b => {
     const activeText = b.serviceActive ? esc(b.status || 'En service') : '';
     let cls = '';

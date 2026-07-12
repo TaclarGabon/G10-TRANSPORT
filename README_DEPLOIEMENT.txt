@@ -24,3 +24,11 @@ Nouveautés V11.3 :
 - Basculement automatique vers l’axe retour
 - Suppression du bouton Changer bus
 - Réinitialisation complète conservée
+
+MISE À JOUR V11.4 — PRÉSENTATION ACCORDÉON PAR RÔLE
+- Au départ, aucun Bus 1 à Bus 6 n'est affiché dans l'accueil général.
+- Chauffeur : la flotte apparaît sous « Espace chauffeur » seulement après connexion au bus avec le PIN.
+- Chef d'exploitation : la flotte apparaît sous « Chef d'exploitation » après connexion.
+- Direction : tous les menus restent visibles, les six bus apparaissent sous « Espace chauffeur » et « Direction » reste le dernier onglet.
+- Administration : aucun bandeau Bus 1 à Bus 6 n'est affiché.
+- Les six bus restent affichés dans les espaces autorisés; seuls les bus connectés affichent un statut.
