@@ -1259,12 +1259,46 @@ function renderOperations() {
   if (opTab === 'assign') renderAssign();
   else renderFollow();
 }
+function busAssignmentLocked(bus) {
+  if (!bus) return false;
+  const status = String(bus.status || 'Hors service');
+  return Boolean(
+    bus.serviceActive ||
+    bus.departureTime ||
+    bus.arrivalTime ||
+    bus.incidentActive ||
+    (status !== 'Hors service' && status !== 'Disponible')
+  );
+}
 function assignGroup(gid, bid) {
   const g = groups.find(x => x.id === Number(gid));
-  if (bid) {
-    const old = groups.find(x => x.id !== g.id && String(x.busId) === String(bid));
-    if (old) old.busId = '';
+  if (!g) return;
+
+  const currentBus = g.busId ? busById(g.busId) : null;
+  if (currentBus && busAssignmentLocked(currentBus) && String(bid) !== String(g.busId)) {
+    toast(`Impossible : le Bus ${currentBus.id} est déjà actif (${currentBus.status}). L’affectation est verrouillée jusqu’à la fin de service.`);
+    renderAssign();
+    return;
   }
+
+  if (bid) {
+    const requestedBus = busById(bid);
+    const owner = groups.find(x => x.id !== g.id && String(x.busId) === String(bid));
+    if (owner) {
+      const detail = requestedBus && busAssignmentLocked(requestedBus)
+        ? ` et actif (${requestedBus.status})`
+        : '';
+      toast(`Impossible : le Bus ${bid} est déjà affecté au Groupe ${owner.id}${detail}. Libérez-le d’abord.`);
+      renderAssign();
+      return;
+    }
+    if (requestedBus && busAssignmentLocked(requestedBus) && String(g.busId) !== String(bid)) {
+      toast(`Impossible : le Bus ${bid} est déjà en mouvement (${requestedBus.status}).`);
+      renderAssign();
+      return;
+    }
+  }
+
   g.busId = bid;
   save('g10_demo_v11_groups', groups);
   renderAssign();
@@ -1277,18 +1311,29 @@ function setBusRoute(busId, routeId) {
 }
 function renderAssign() {
   const groupCards = groups.map(g => {
-    const options = buses.map(b => `<option value="${b.id}" ${String(g.busId) === String(b.id) ? 'selected' : ''}>Bus ${b.id}</option>`).join('');
+    const currentBus = g.busId ? busById(g.busId) : null;
+    const currentLocked = currentBus && busAssignmentLocked(currentBus);
+    const options = buses.map(b => {
+      const owner = groupByBus(b.id);
+      const belongsToCurrentGroup = owner && owner.id === g.id;
+      const unavailable = (owner && !belongsToCurrentGroup) || (busAssignmentLocked(b) && !belongsToCurrentGroup);
+      const suffix = unavailable
+        ? ` — Indisponible${owner ? ` (Groupe ${owner.id})` : ''}`
+        : (busAssignmentLocked(b) ? ` — Verrouillé (${b.status})` : '');
+      return `<option value="${b.id}" ${String(g.busId) === String(b.id) ? 'selected' : ''} ${unavailable ? 'disabled' : ''}>Bus ${b.id}${esc(suffix)}</option>`;
+    }).join('');
     return `
-      <div class="miniCard">
+      <div class="miniCard ${currentLocked ? 'softGold' : ''}">
         <h4>Groupe ${g.id}</h4>
         <p class="muted" style="margin:0 0 10px;">
           Chauffeur : <b>${esc(g.chauffeur || 'Non renseigné')}</b><br>
           Aide chauffeur : <b>${esc(g.chargeur || 'Non renseigné')}</b>
         </p>
-        <select onchange="assignGroup(${g.id}, this.value)" ${groupReady(g) ? '' : 'disabled'}>
+        <select onchange="assignGroup(${g.id}, this.value)" ${(groupReady(g) && !currentLocked) ? '' : 'disabled'}>
           <option value="">-- Choisir bus --</option>
           ${options}
         </select>
+        ${currentLocked ? `<div class="muted" style="margin-top:8px; font-weight:800; color:#9a3412;">🔒 Affectation verrouillée : Bus ${currentBus.id} ${esc(currentBus.status)}.</div>` : ''}
       </div>
     `;
   }).join('');

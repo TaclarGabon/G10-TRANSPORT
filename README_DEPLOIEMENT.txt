@@ -40,3 +40,9 @@ MISE À JOUR V11.5 — CODES COULEURS DES STATUTS
 - Incident : dégradé orangé vers violet
 - Arrivé : dégradé orangé vers gris
 - Les cartes de tournée en cours utilisent aussi une teinte orangée claire au lieu du bleu
+
+V11.6 — Sécurisation des affectations
+- Un bus déjà affecté à un autre groupe ne peut plus être repris silencieusement.
+- Un bus En service, En route, en incident ou arrivé est verrouillé jusqu’à la fin de service.
+- Les bus indisponibles sont désactivés dans les listes d’affectation.
+- Un message explicite s’affiche en cas de tentative interdite.
