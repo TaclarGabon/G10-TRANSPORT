@@ -837,7 +837,7 @@ function statePayload() {
     routes: cloneData(routes),
     buses: cloneData(buses),
     report: cloneData(report),
-    version: 'V11.7',
+    version: 'V11.8',
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 }
@@ -1425,42 +1425,57 @@ function renderDriverLogin() {
     `;
     return;
   }
+  const availableCount = assigned.filter(b => !b.serviceActive).length;
   document.getElementById('driverContent').innerHTML = `
     <div class="miniCard">
       <h4>Connexion chauffeur</h4>
-      <p class="muted">Pour la démo, le PIN chauffeur est <b>1111</b>.</p>
+      <p class="muted">Pour la démo, le PIN chauffeur est <b>1111</b>. Les bus déjà pris restent visibles, mais ils sont verrouillés.</p>
       <div class="grid2">
         <div>
           <label>Bus affecté</label>
-          <select id="driverBusSelect">
+          <select id="driverBusSelect" ${availableCount ? '' : 'disabled'}>
             ${assigned.map(b => {
               const g = groupByBus(b.id);
-              return `<option value="${b.id}">Bus ${b.id} - ${esc(g.chauffeur)} - ${esc(routeById(b.routeId).name)}</option>`;
+              const locked = Boolean(b.serviceActive);
+              const suffix = locked ? ` — Déjà occupé (${esc(b.status || 'En service')})` : '';
+              return `<option value="${b.id}" ${locked ? 'disabled' : ''}>Bus ${b.id} - ${esc(g.chauffeur)} - ${esc(routeById(b.routeId).name)}${suffix}</option>`;
             }).join('')}
           </select>
         </div>
         <div>
           <label>PIN chauffeur</label>
-          <input id="driverPin" type="password" inputmode="numeric" placeholder="1111">
+          <input id="driverPin" type="password" inputmode="numeric" placeholder="1111" ${availableCount ? '' : 'disabled'}>
         </div>
       </div>
       <div class="actionRow" style="margin-top:16px;">
-        <button class="btn green" onclick="openDriverBus()">Connexion</button>
+        <button class="btn green" onclick="openDriverBus()" ${availableCount ? '' : 'disabled'}>Connexion</button>
         <button class="btn light" onclick="openScreen('home')">Fermer</button>
       </div>
-      <div id="driverError" class="empty" style="display:none; color:#991b1b; background:#fef2f2; border-color:#fecaca; margin-top:12px;">PIN incorrect.</div>
+      ${availableCount ? '' : '<div class="empty" style="margin-top:12px;">Tous les bus affectés sont déjà occupés.</div>'}
+      <div id="driverError" class="empty" style="display:none; color:#991b1b; background:#fef2f2; border-color:#fecaca; margin-top:12px;"></div>
     </div>
   `;
 }
 function openDriverBus() {
+  const errorBox = document.getElementById('driverError');
   const pin = document.getElementById('driverPin').value.trim();
   if (pin !== '1111') {
-    document.getElementById('driverError').style.display = 'block';
+    errorBox.textContent = 'PIN incorrect.';
+    errorBox.style.display = 'block';
     return;
   }
   selectedDriverBusId = Number(document.getElementById('driverBusSelect').value);
   const b = busById(selectedDriverBusId);
   if (!b) return;
+
+  // Double contrôle obligatoire : même si deux chauffeurs tentent la connexion
+  // presque au même moment, un bus déjà pris ne peut jamais être rouvert ni écrasé.
+  if (b.serviceActive) {
+    errorBox.textContent = `Impossible : le Bus ${b.id} est déjà occupé (${b.status || 'En service'}). Choisissez uniquement le bus qui vous a été affecté et qui est encore disponible.`;
+    errorBox.style.display = 'block';
+    renderDriverLogin();
+    return;
+  }
 
   // Une nouvelle prise de service prépare le prochain trajet sans toucher aux rapports archivés.
   if (!b.serviceActive) {

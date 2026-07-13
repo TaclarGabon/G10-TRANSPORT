@@ -46,3 +46,8 @@ V11.6 — Sécurisation des affectations
 - Un bus En service, En route, en incident ou arrivé est verrouillé jusqu’à la fin de service.
 - Les bus indisponibles sont désactivés dans les listes d’affectation.
 - Un message explicite s’affiche en cas de tentative interdite.
+
+V11.8 — Sécurité connexion chauffeur
+- Les bus déjà en service restent visibles dans la liste mais sont désactivés.
+- Un chauffeur ne peut sélectionner qu'un bus affecté encore disponible.
+- Double vérification au clic sur Connexion pour empêcher tout écrasement d'une session active.
