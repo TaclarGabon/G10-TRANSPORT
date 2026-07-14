@@ -1,17 +1,15 @@
-G10 TRANSPORT — VERSION V12.2 FIREBASE
+G10 TRANSPORT — VERSION V12.3 FIREBASE
 
-MODIFICATIONS PRINCIPALES
-- Bouton Départ-retour après la fin de service.
-- Durées prévisionnelles affichées en heures.
-- Codes couleurs doux par paire d’axes dans Administration > Tarifs par axe.
-- L’aller et le retour d’une même destination utilisent exactement la même couleur.
+Fichiers à déposer à la racine du dépôt GitHub G10-TRANSPORT :
+- index.html
+- admin.html
+- exploitation.html
+- chauffeur.html
+- dashboard.html
+- README_DEPLOIEMENT.txt
 
-COULEURS
-- Lambaréné : jaune crème
-- Mouila : vert clair
-- Oyem : violet clair
-- Bitam : orangé clair
-- Makokou : turquoise clair
+Commit conseillé :
+Version V12.3 reconnexion chauffeur codes axes aller retour et export admin
 
-DEPLOIEMENT GITHUB
-Décompresser le ZIP, déposer les six fichiers dans G10-TRANSPORT, puis valider le commit.
+PIN onglets : Administration 1234 | Chef exploitation 2345 | Direction 9999
+PIN bus : Bus 1 001 | Bus 2 002 | Bus 3 003 | Bus 4 004 | Bus 5 005 | Bus 6 006
