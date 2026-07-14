@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>G10 Transports - V11.3 Firebase</title>
+  <title>G10 Transports - V12.0 Firebase</title>
   <style>
     :root {
       --navy:#073763;
@@ -547,7 +547,18 @@
         height:auto;
       }
     }
-  </style>
+  
+    .timeGrid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:12px; }
+    .timeBox { border:1px solid var(--line); border-radius:14px; padding:11px; background:#fff; }
+    .timeBox span { display:block; color:var(--muted); font-size:12px; font-weight:800; margin-bottom:5px; }
+    .timeBox strong { font-size:17px; }
+    .time-blue { background:#eff6ff; border-color:#93c5fd; color:#1d4ed8; }
+    .time-green { background:#ecfdf5; border-color:#86efac; color:#047857; }
+    .time-orange { background:#fff7ed; border-color:#fdba74; color:#c2410c; }
+    .time-red { background:#fef2f2; border-color:#fca5a5; color:#b91c1c; }
+    .scheduleNote { margin-top:10px; padding:10px 12px; border-radius:12px; font-weight:900; }
+    @media(max-width:800px){ .timeGrid{grid-template-columns:1fr 1fr;} }
+</style>
 </head>
 <body>
   <div class="app">
@@ -614,12 +625,13 @@
           <div class="panelHead">
             <div>
               <h3>Chef d’exploitation</h3>
-              <p>Affectation des groupes aux bus, puis suivi simple.</p>
+              <p>Assignation des bus, planification des axes et horaires, puis suivi de l’exploitation.</p>
             </div>
           </div>
 
           <div class="tabs">
-            <button id="opTabAssign" class="tabBtn active" onclick="setOpTab('assign')">Assigner les bus</button>
+            <button id="opTabAssign" class="tabBtn active" onclick="setOpTab('assign')">Assignation des bus</button>
+            <button id="opTabPlan" class="tabBtn" onclick="setOpTab('plan')">Affectation des axes & horaires</button>
             <button id="opTabFollow" class="tabBtn" onclick="setOpTab('follow')">Suivi des bus</button>
           </div>
 
@@ -793,12 +805,12 @@ const defaultRoutes = [
 ];
 
 const defaultBuses = [
-  {id:1, capacity:23, plate:"G10-001-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:""},
-  {id:2, capacity:23, plate:"G10-002-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:""},
-  {id:3, capacity:23, plate:"G10-003-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:""},
-  {id:4, capacity:23, plate:"G10-004-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:""},
-  {id:5, capacity:23, plate:"G10-005-AA", routeId:"lbv-mou", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:""},
-  {id:6, capacity:23, plate:"G10-006-AA", routeId:"lbv-bit", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:""}
+  {id:1, capacity:23, plate:"G10-001-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:""},
+  {id:2, capacity:23, plate:"G10-002-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:""},
+  {id:3, capacity:23, plate:"G10-003-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:""},
+  {id:4, capacity:23, plate:"G10-004-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:""},
+  {id:5, capacity:23, plate:"G10-005-AA", routeId:"lbv-mou", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:""},
+  {id:6, capacity:23, plate:"G10-006-AA", routeId:"lbv-bit", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:""}
 ];
 
 function cloneData(value) {
@@ -824,6 +836,17 @@ let routes = load('g10_demo_v11_routes', defaultRoutes);
 let buses = load('g10_demo_v11_buses', defaultBuses);
 let report = load('g10_demo_v11_report', []);
 
+// Migration V12 : enrichir les anciennes données sans les effacer.
+buses.forEach(b => {
+  if (typeof b.plannedDate === 'undefined') b.plannedDate = '';
+  if (typeof b.plannedDeparture === 'undefined') b.plannedDeparture = '';
+  if (typeof b.plannedDuration === 'undefined') b.plannedDuration = 240;
+  if (typeof b.plannedArrival === 'undefined') b.plannedArrival = '';
+  if (typeof b.earlyDepartureAuthorized === 'undefined') b.earlyDepartureAuthorized = false;
+  if (typeof b.earlyDepartureAuthorizedAt === 'undefined') b.earlyDepartureAuthorizedAt = '';
+  if (typeof b.earlyDepartureAuthorizedBy === 'undefined') b.earlyDepartureAuthorizedBy = '';
+});
+
 function setConnectionStatus(message, online) {
   const pill = document.querySelector('.userPill');
   if (!pill) return;
@@ -837,7 +860,7 @@ function statePayload() {
     routes: cloneData(routes),
     buses: cloneData(buses),
     report: cloneData(report),
-    version: 'V11.8',
+    version: 'V12.0',
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 }
@@ -1253,8 +1276,10 @@ function setOpTab(tab) {
 }
 function renderOperations() {
   document.getElementById('opTabAssign').classList.toggle('active', opTab === 'assign');
+  document.getElementById('opTabPlan').classList.toggle('active', opTab === 'plan');
   document.getElementById('opTabFollow').classList.toggle('active', opTab === 'follow');
   if (opTab === 'assign') renderAssign();
+  else if (opTab === 'plan') renderPlanning();
   else renderFollow();
 }
 function busAssignmentLocked(bus) {
@@ -1323,6 +1348,8 @@ function clearBusRuntimeForCorrection(b) {
   b.incidentEndTime = '';
   b.resumeTime = '';
   b.previousStatus = '';
+  b.plannedDate = ''; b.plannedDeparture = ''; b.plannedArrival = ''; b.plannedDuration = 240;
+  b.earlyDepartureAuthorized = false; b.earlyDepartureAuthorizedAt = ''; b.earlyDepartureAuthorizedBy = '';
 }
 function correctAssignment(groupId) {
   const g = groups.find(x => x.id === groupId);
@@ -1358,62 +1385,77 @@ function renderAssign() {
       const owner = groupByBus(b.id);
       const belongsToCurrentGroup = owner && owner.id === g.id;
       const unavailable = (owner && !belongsToCurrentGroup) || (busAssignmentLocked(b) && !belongsToCurrentGroup);
-      const suffix = unavailable
-        ? ` — Indisponible${owner ? ` (Groupe ${owner.id})` : ''}`
-        : (busAssignmentLocked(b) ? ` — Verrouillé (${b.status})` : '');
+      const suffix = unavailable ? ` — Indisponible${owner ? ` (Groupe ${owner.id})` : ''}` : '';
       return `<option value="${b.id}" ${String(g.busId) === String(b.id) ? 'selected' : ''} ${unavailable ? 'disabled' : ''}>Bus ${b.id}${esc(suffix)}</option>`;
     }).join('');
-    return `
-      <div class="miniCard ${currentLocked ? 'softGold' : ''}">
-        <h4>Groupe ${g.id}</h4>
-        <p class="muted" style="margin:0 0 10px;">
-          Chauffeur : <b>${esc(g.chauffeur || 'Non renseigné')}</b><br>
-          Aide chauffeur : <b>${esc(g.chargeur || 'Non renseigné')}</b>
-        </p>
-        <select onchange="assignGroup(${g.id}, this.value)" ${(groupReady(g) && !currentLocked) ? '' : 'disabled'}>
-          <option value="">-- Choisir bus --</option>
-          ${options}
-        </select>
-        ${currentLocked ? `<div class="muted" style="margin-top:8px; font-weight:800; color:#9a3412;">🔒 Affectation verrouillée : Bus ${currentBus.id} ${esc(currentBus.status)}.</div>` : ''}
-        ${currentBus ? `<button class="btn light" style="margin-top:10px; width:100%;" onclick="correctAssignment(${g.id})">${currentLocked ? 'Déblocage exceptionnel' : 'Corriger / désaffecter'}</button>` : ''}
-      </div>
-    `;
+    return `<div class="miniCard ${currentLocked ? 'softGold' : ''}">
+      <h4>Groupe ${g.id}</h4>
+      <p class="muted">Chauffeur : <b>${esc(g.chauffeur || 'Non renseigné')}</b><br>Aide chauffeur : <b>${esc(g.chargeur || 'Non renseigné')}</b></p>
+      <select onchange="assignGroup(${g.id}, this.value)" ${(groupReady(g) && !currentLocked) ? '' : 'disabled'}>
+        <option value="">-- Choisir bus --</option>${options}
+      </select>
+      ${currentLocked ? `<div class="muted" style="margin-top:8px;font-weight:800;color:#9a3412;">🔒 Affectation verrouillée : Bus ${currentBus.id} ${esc(currentBus.status)}.</div>` : ''}
+      ${currentBus ? `<button class="btn light" style="margin-top:10px;width:100%;" onclick="correctAssignment(${g.id})">${currentLocked ? 'Déblocage exceptionnel' : 'Corriger / désaffecter'}</button>` : ''}
+    </div>`;
   }).join('');
-
-  const busCards = buses.map(b => {
-    const g = groupByBus(b.id);
-    const routeOptions = routes.map(r => `<option value="${r.id}" ${b.routeId === r.id ? 'selected' : ''}>${esc(r.name)}</option>`).join('');
-    return `
-      <div class="busCard ${g ? 'assigned' : ''}">
-        <div class="busTop">
-          <div class="busLeft">
-            <div class="busNum">${b.id}</div>
-            <div class="busInfo">
-              <h4>Bus ${b.id}</h4>
-              <p>${esc(routeById(b.routeId).name)}</p>
-            </div>
-          </div>
-          <span class="badge ${g ? 'blue' : 'orange'}">${g ? 'Affecté' : 'Libre'}</span>
-        </div>
-        <div class="crewBox">
-          ${g ? `Groupe ${g.id}<br>Chauffeur : <b>${esc(g.chauffeur)}</b><br>Aide chauffeur : <b>${esc(g.chargeur)}</b>` : 'Aucun groupe affecté.'}
-        </div>
-        <label>Axe du jour</label>
-        <select onchange="setBusRoute(${b.id}, this.value)">${routeOptions}</select>
-      </div>
-    `;
-  }).join('');
-
   document.getElementById('opContent').innerHTML = `
-    <div class="miniCard softGold" style="margin-bottom:16px;">
-      <h4>Assigner les groupes aux bus</h4>
-      <p class="muted">Le chef d’exploitation choisit le bus et l’axe du jour. Les détails cash sont gérés ensuite dans l’espace chauffeur.</p>
-    </div>
-    <h4 style="color:var(--navy); margin:0 0 10px;">Groupes</h4>
-    <div class="grid3">${groupCards}</div>
-    <h4 style="color:var(--navy); margin:20px 0 10px;">Bus</h4>
-    <div class="grid2">${busCards}</div>
-  `;
+    <div class="miniCard softGold" style="margin-bottom:16px;"><h4>1. Assignation des bus</h4><p class="muted">Associez chaque groupe à un bus. Les axes et horaires se règlent dans l’onglet suivant.</p></div>
+    <div class="grid3">${groupCards}</div>`;
+}
+function addMinutesToTime(time, minutes) {
+  if (!time) return '';
+  const [h,m] = time.split(':').map(Number);
+  const total = (h*60 + m + Number(minutes||0)) % 1440;
+  return String(Math.floor(total/60)).padStart(2,'0') + ':' + String(total%60).padStart(2,'0');
+}
+function timeToMinutes(time) {
+  if (!time || !/^\d{1,2}:\d{2}$/.test(time)) return null;
+  const [h,m] = time.split(':').map(Number); return h*60+m;
+}
+function signedTimeDiff(actual, planned) {
+  const a=timeToMinutes(actual), p=timeToMinutes(planned); if(a===null||p===null) return null;
+  let d=a-p; if(d>720)d-=1440; if(d<-720)d+=1440; return d;
+}
+function timingLabel(diff, kind='Départ') {
+  if (diff === null) return 'Non disponible';
+  if (diff === 0) return `${kind} à l’heure`;
+  return diff < 0 ? `${kind} en avance de ${Math.abs(diff)} min` : `${kind} retardé de ${diff} min`;
+}
+function timingClass(diff) {
+  if (diff === null || diff === 0) return 'time-blue';
+  if (diff < 0) return 'time-green';
+  return diff <= 15 ? 'time-orange' : 'time-red';
+}
+function saveBusPlanning(busId) {
+  const b=busById(busId); if(!b)return;
+  b.routeId=document.getElementById(`planRoute_${busId}`).value;
+  b.plannedDate=document.getElementById(`planDate_${busId}`).value;
+  b.plannedDeparture=document.getElementById(`planDeparture_${busId}`).value;
+  b.plannedDuration=Math.max(1,Number(document.getElementById(`planDuration_${busId}`).value||0));
+  b.plannedArrival=addMinutesToTime(b.plannedDeparture,b.plannedDuration);
+  b.earlyDepartureAuthorized=false; b.earlyDepartureAuthorizedAt=''; b.earlyDepartureAuthorizedBy='';
+  save('g10_demo_v11_buses',buses); toast(`Planning du Bus ${busId} enregistré.`); renderPlanning();
+}
+function authorizeEarlyDeparture(busId) {
+  const b=busById(busId); if(!b)return;
+  if(!b.plannedDeparture){alert('Définissez d’abord une heure de départ prévue.');return;}
+  if(!confirm(`Autoriser exceptionnellement le Bus ${busId} à partir avant la fenêtre normale ?`))return;
+  b.earlyDepartureAuthorized=true; b.earlyDepartureAuthorizedAt=nowTime(); b.earlyDepartureAuthorizedBy='Chef d’exploitation';
+  save('g10_demo_v11_buses',buses); toast(`Départ anticipé autorisé pour le Bus ${busId}.`); renderPlanning();
+}
+function renderPlanning() {
+  const assigned=buses.filter(b=>groupByBus(b.id));
+  if(!assigned.length){document.getElementById('opContent').innerHTML='<div class="empty">Assignez d’abord les groupes aux bus.</div>';return;}
+  document.getElementById('opContent').innerHTML=`
+    <div class="miniCard softGold" style="margin-bottom:16px;"><h4>2. Affectation des axes et horaires</h4><p class="muted">Le chef d’exploitation fixe la date, l’axe, le départ prévu et la durée totale incluant les arrêts. L’arrivée prévue est calculée automatiquement.</p></div>
+    <div class="grid2">${assigned.map(b=>{const g=groupByBus(b.id);const opts=routes.map(r=>`<option value="${r.id}" ${b.routeId===r.id?'selected':''}>${esc(r.name)}</option>`).join('');const arr=addMinutesToTime(b.plannedDeparture,b.plannedDuration);return `<div class="busCard assigned">
+      <div class="busTop"><div class="busLeft"><div class="busNum">${b.id}</div><div class="busInfo"><h4>Bus ${b.id}</h4><p>Groupe ${g.id} — ${esc(g.chauffeur)}</p></div></div><span class="badge blue">Planification</span></div>
+      <label>Axe</label><select id="planRoute_${b.id}">${opts}</select>
+      <div class="grid2" style="margin-top:10px;"><div><label>Date prévue</label><input id="planDate_${b.id}" type="date" value="${esc(b.plannedDate||'')}"></div><div><label>Départ prévu</label><input id="planDeparture_${b.id}" type="time" value="${esc(b.plannedDeparture||'')}"></div></div>
+      <div class="grid2" style="margin-top:10px;"><div><label>Durée totale prévue (minutes, arrêts inclus)</label><input id="planDuration_${b.id}" type="number" min="1" value="${Number(b.plannedDuration||240)}"></div><div class="timeBox time-blue"><span>Arrivée prévisionnelle</span><strong>${arr||'À calculer'}</strong></div></div>
+      <div class="actionRow" style="margin-top:12px;"><button class="btn green" onclick="saveBusPlanning(${b.id})">Enregistrer le planning</button><button class="btn light" onclick="authorizeEarlyDeparture(${b.id})">Autoriser départ anticipé</button></div>
+      ${b.earlyDepartureAuthorized?`<div class="scheduleNote time-green">✓ Départ anticipé exceptionnel autorisé à ${esc(b.earlyDepartureAuthorizedAt)}</div>`:''}
+    </div>`}).join('')}</div>`;
 }
 function renderFollow() {
   document.getElementById('opContent').innerHTML = `
@@ -1423,31 +1465,22 @@ function renderFollow() {
   `;
 }
 function busCardSummary(b) {
-  const g = groupByBus(b.id);
-  const r = routeById(b.routeId);
-  return `
-    <div class="busCard ${String(b.status).startsWith('En route') ? 'route' : (g ? 'assigned' : '')}">
-      <div class="busTop">
-        <div class="busLeft">
-          <div class="busNum">${b.id}</div>
-          <div class="busInfo">
-            <h4>Bus ${b.id}</h4>
-            <p>${esc(r.name)}</p>
-          </div>
-        </div>
-        <span class="badge ${statusClass(b.status)}">${esc(b.status)}</span>
-      </div>
-      <div class="crewBox">
-        ${g ? `Chauffeur : <b>${esc(g.chauffeur)}</b><br>Aide chauffeur : <b>${esc(g.chargeur)}</b>` : 'Non affecté'}
-      </div>
-      ${b.incidentActive ? `<div class="incidentLive">⚠ ${esc(b.status)}<br><small>${esc(b.incidentNote || 'Aucun commentaire')}</small></div>` : ''}
-      <div class="grid3" style="margin-top:12px;">
-        <div class="stat"><span>Places vendues</span><strong>${b.sold}</strong></div>
-        <div class="stat"><span>Places restantes</span><strong>${remaining(b)}</strong></div>
-        <div class="stat"><span>Recette</span><strong>${money(receipt(b))}</strong></div>
-      </div>
+  const g=groupByBus(b.id), r=routeById(b.routeId);
+  const depDiff=signedTimeDiff(b.departureTime,b.plannedDeparture), arrDiff=signedTimeDiff(b.arrivalTime,b.plannedArrival);
+  return `<div class="busCard ${String(b.status).startsWith('En route')?'route':(g?'assigned':'')}">
+    <div class="busTop"><div class="busLeft"><div class="busNum">${b.id}</div><div class="busInfo"><h4>Bus ${b.id}</h4><p>${esc(r.name)}</p></div></div><span class="badge ${statusClass(b.status)}">${esc(b.status)}</span></div>
+    <div class="crewBox">${g?`Chauffeur : <b>${esc(g.chauffeur)}</b><br>Aide chauffeur : <b>${esc(g.chargeur)}</b>`:'Non affecté'}</div>
+    <div class="timeGrid">
+      <div class="timeBox time-blue"><span>Départ prévu</span><strong>${esc(b.plannedDeparture||'—')}</strong></div>
+      <div class="timeBox ${timingClass(depDiff)}"><span>Départ réel</span><strong>${esc(b.departureTime||'—')}</strong></div>
+      <div class="timeBox time-blue"><span>Arrivée prévue</span><strong>${esc(b.plannedArrival||addMinutesToTime(b.plannedDeparture,b.plannedDuration)||'—')}</strong></div>
+      <div class="timeBox ${timingClass(arrDiff)}"><span>Arrivée réelle</span><strong>${esc(b.arrivalTime||'—')}</strong></div>
     </div>
-  `;
+    ${b.departureTime?`<div class="scheduleNote ${timingClass(depDiff)}">${esc(timingLabel(depDiff,'Départ'))}</div>`:''}
+    ${b.arrivalTime?`<div class="scheduleNote ${timingClass(arrDiff)}">${esc(timingLabel(arrDiff,'Arrivée'))}</div>`:''}
+    ${b.incidentActive?`<div class="incidentLive">⚠ ${esc(b.status)}<br><small>${esc(b.incidentNote||'Aucun commentaire')}</small></div>`:''}
+    <div class="grid3" style="margin-top:12px;"><div class="stat"><span>Places vendues</span><strong>${b.sold}</strong></div><div class="stat"><span>Places restantes</span><strong>${remaining(b)}</strong></div><div class="stat"><span>Recette</span><strong>${money(receipt(b))}</strong></div></div>
+  </div>`;
 }
 function statusClass(status) {
   const s = String(status || '');
@@ -1566,20 +1599,16 @@ function cashMinus() {
   renderDriverBus();
 }
 function departBus() {
-  const b = busById(selectedDriverBusId);
-  const r = routeById(b.routeId);
-  if (b.status !== 'En service') {
-    alert('Le départ ne peut être confirmé que lorsque le bus est En service.');
-    return;
-  }
-  const emptyNote = b.sold === 0 ? '\nAttention : aucune place n’a été enregistrée.' : '';
-  const ok = confirm(`Confirmez-vous ${r.depart.toLowerCase()} vers ${destinationFromRoute(r)} ?${emptyNote}`);
-  if (!ok) return;
-  b.status = enRouteStatus(b);
-  b.departureTime = nowTime();
-  save('g10_demo_v11_buses', buses);
-  renderDriverFleetStatus();
-  renderDriverBus();
+  const b=busById(selectedDriverBusId), r=routeById(b.routeId);
+  if(b.status!=='En service'){alert('Le départ ne peut être confirmé que lorsque le bus est En service.');return;}
+  if(!b.plannedDate||!b.plannedDeparture){alert('Le chef d’exploitation doit d’abord définir la date et l’heure de départ prévues.');return;}
+  const current=nowTime(), diff=signedTimeDiff(current,b.plannedDeparture);
+  if(diff!==null && diff < -10 && !b.earlyDepartureAuthorized){alert(`Départ trop anticipé : le départ est prévu à ${b.plannedDeparture}. Une autorisation du chef d’exploitation est obligatoire.`);return;}
+  const emptyNote=b.sold===0?'\nAttention : aucune place n’a été enregistrée.':'';
+  const timing=diff===null?'':`\n${timingLabel(diff,'Départ')}.`;
+  if(!confirm(`Confirmez-vous ${r.depart.toLowerCase()} vers ${destinationFromRoute(r)} ?${timing}${emptyNote}`))return;
+  b.status=enRouteStatus(b); b.departureTime=current;
+  save('g10_demo_v11_buses',buses); renderDriverFleetStatus(); renderDriverBus();
 }
 function declareIncident() {
   const b = busById(selectedDriverBusId);
@@ -1651,8 +1680,15 @@ function endService() {
     date: today,
     bus: b.id,
     axis: r.name,
+    plannedDate: b.plannedDate || '',
+    plannedDeparture: b.plannedDeparture || '',
     departureTime: b.departureTime || '',
+    departureDiff: signedTimeDiff(b.departureTime,b.plannedDeparture),
+    departureComment: timingLabel(signedTimeDiff(b.departureTime,b.plannedDeparture),'Départ'),
+    plannedArrival: b.plannedArrival || addMinutesToTime(b.plannedDeparture,b.plannedDuration) || '',
     arrivalTime: b.arrivalTime || '',
+    arrivalDiff: signedTimeDiff(b.arrivalTime,b.plannedArrival || addMinutesToTime(b.plannedDeparture,b.plannedDuration)),
+    arrivalComment: timingLabel(signedTimeDiff(b.arrivalTime,b.plannedArrival || addMinutesToTime(b.plannedDeparture,b.plannedDuration)),'Arrivée'),
     serviceStartTime: b.serviceStartTime || '',
     serviceEndTime: b.serviceEndTime || '',
     group: g ? 'Groupe ' + g.id : '',
@@ -1719,6 +1755,15 @@ function renderDriverBus() {
           Chauffeur : <b>${esc(g.chauffeur)}</b><br>
           Aide chauffeur : <b>${esc(g.chargeur)}</b>
         </div>
+        <div class="timeGrid">
+          <div class="timeBox time-blue"><span>Date prévue</span><strong>${esc(b.plannedDate || '—')}</strong></div>
+          <div class="timeBox time-blue"><span>Départ prévu</span><strong>${esc(b.plannedDeparture || '—')}</strong></div>
+          <div class="timeBox ${timingClass(signedTimeDiff(b.departureTime,b.plannedDeparture))}"><span>Départ réel</span><strong>${esc(b.departureTime || '—')}</strong></div>
+          <div class="timeBox time-blue"><span>Arrivée prévue</span><strong>${esc(b.plannedArrival || addMinutesToTime(b.plannedDeparture,b.plannedDuration) || '—')}</strong></div>
+          <div class="timeBox ${timingClass(signedTimeDiff(b.arrivalTime,b.plannedArrival))}"><span>Arrivée réelle</span><strong>${esc(b.arrivalTime || '—')}</strong></div>
+        </div>
+        ${b.departureTime ? `<div class="scheduleNote ${timingClass(signedTimeDiff(b.departureTime,b.plannedDeparture))}">${esc(timingLabel(signedTimeDiff(b.departureTime,b.plannedDeparture),'Départ'))}</div>` : ''}
+        ${b.arrivalTime ? `<div class="scheduleNote ${timingClass(signedTimeDiff(b.arrivalTime,b.plannedArrival))}">${esc(timingLabel(signedTimeDiff(b.arrivalTime,b.plannedArrival),'Arrivée'))}</div>` : ''}
         ${b.incidentActive ? `<div class="incidentLive">⚠ ${esc(b.status)}<br><small>${esc(b.incidentNote || 'Aucun commentaire')}</small></div>` : ''}
         <div class="grid3" style="margin-top:12px;">
           <div class="stat"><span>Places vendues</span><strong>${b.sold}</strong></div>
@@ -1802,7 +1847,7 @@ function renderReportTable() {
       <table class="reportTable">
         <thead>
           <tr>
-            <th>Date</th><th>Bus</th><th>Axe</th><th>Heure départ</th><th>Heure arrivée</th>
+            <th>Date</th><th>Bus</th><th>Axe</th><th>Départ prévu</th><th>Départ réel</th><th>Commentaire départ</th><th>Arrivée prévue</th><th>Arrivée réelle</th><th>Commentaire arrivée</th>
             <th>Groupe</th><th>Chauffeur</th><th>Aide chauffeur</th><th>Capacité</th>
             <th>Vendues</th><th>Restantes</th><th>Prix/place</th><th>Recette</th><th>Statut</th>
           </tr>
@@ -1810,7 +1855,7 @@ function renderReportTable() {
         <tbody>
           ${report.map(r => `
             <tr>
-              <td>${esc(r.date)}</td><td>Bus ${r.bus}</td><td>${esc(r.axis)}</td><td>${esc(r.departureTime)}</td><td>${esc(r.arrivalTime)}</td>
+              <td>${esc(r.plannedDate || r.date)}</td><td>Bus ${r.bus}</td><td>${esc(r.axis)}</td><td>${esc(r.plannedDeparture || "")}</td><td>${esc(r.departureTime)}</td><td>${esc(r.departureComment || "")}</td><td>${esc(r.plannedArrival || "")}</td><td>${esc(r.arrivalTime)}</td><td>${esc(r.arrivalComment || "")}</td>
               <td>${esc(r.group)}</td><td>${esc(r.chauffeur)}</td><td>${esc(r.chargeur)}</td><td>${r.capacity}</td>
               <td>${r.sold}</td><td>${r.remaining}</td><td>${money(r.price)}</td><td><strong>${money(r.total)}</strong></td><td>${esc(r.status)}</td>
             </tr>
@@ -1818,7 +1863,7 @@ function renderReportTable() {
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="12">TOTAL GÉNÉRAL</td>
+            <td colspan="16">TOTAL GÉNÉRAL</td>
             <td colspan="2">${money(totalAmount)}</td>
           </tr>
         </tfoot>
@@ -1854,6 +1899,8 @@ function resetDay() {
     b.incidentEndTime = '';
     b.resumeTime = '';
     b.previousStatus = '';
+    b.plannedDate = ''; b.plannedDeparture = ''; b.plannedArrival = ''; b.plannedDuration = 240;
+    b.earlyDepartureAuthorized = false; b.earlyDepartureAuthorizedAt = ''; b.earlyDepartureAuthorizedBy = '';
     // L'axe du jour est également remis à sa valeur de départ.
     if (initialBus) b.routeId = initialBus.routeId;
   });
@@ -1880,8 +1927,12 @@ function exportReport() {
       <td>${esc(r.date)}</td>
       <td>Bus ${r.bus}</td>
       <td>${esc(r.axis)}</td>
+      <td>${esc(r.plannedDeparture || '')}</td>
       <td>${esc(r.departureTime)}</td>
+      <td>${esc(r.departureComment || '')}</td>
+      <td>${esc(r.plannedArrival || '')}</td>
       <td>${esc(r.arrivalTime)}</td>
+      <td>${esc(r.arrivalComment || '')}</td>
       <td>${esc(r.group)}</td>
       <td>${esc(r.chauffeur)}</td>
       <td>${esc(r.chargeur)}</td>
@@ -1923,7 +1974,7 @@ function exportReport() {
     <table>
       <thead>
         <tr>
-          <th>Date</th><th>Bus</th><th>Axe</th><th>Heure départ</th><th>Heure arrivée</th>
+          <th>Date</th><th>Bus</th><th>Axe</th><th>Départ prévu</th><th>Départ réel</th><th>Commentaire départ</th><th>Arrivée prévue</th><th>Arrivée réelle</th><th>Commentaire arrivée</th>
           <th>Groupe</th><th>Chauffeur</th><th>Aide chauffeur</th><th>Capacité</th>
           <th>Places vendues</th><th>Places restantes</th><th>Prix par place</th><th>Recette totale</th><th>Statut</th>
         </tr>
@@ -1931,7 +1982,7 @@ function exportReport() {
       <tbody>${rowsHtml}</tbody>
       <tfoot>
         <tr>
-          <td colspan="12">TOTAL GÉNÉRAL</td>
+          <td colspan="16">TOTAL GÉNÉRAL</td>
           <td colspan="2" class="num">${totalAmount.toLocaleString('fr-FR')} FCFA</td>
         </tr>
       </tfoot>
