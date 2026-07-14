@@ -1,12 +1,17 @@
-G10 Transport — V12.0 Firebase
+G10 TRANSPORT — VERSION V12.2 FIREBASE
 
-Nouveautés principales :
-- Chef d’exploitation : 3 onglets séparés (Assignation, Axes & horaires, Suivi).
-- Date et départ prévus, durée totale incluant les arrêts, arrivée prévue calculée.
-- Départ et arrivée réels enregistrés automatiquement par le chauffeur.
-- Écart conservé pour l’analyse et commentaire lisible : en avance / à l’heure / retard.
-- Couleurs : vert = avance ; bleu = à l’heure ; orange = retard de 1 à 15 min ; rouge = retard > 15 min.
-- Départ plus de 10 min en avance bloqué sans autorisation du chef d’exploitation.
-- Rapport Direction et export Excel enrichis avec horaires prévus, réels et commentaires.
+MODIFICATIONS PRINCIPALES
+- Bouton Départ-retour après la fin de service.
+- Durées prévisionnelles affichées en heures.
+- Codes couleurs doux par paire d’axes dans Administration > Tarifs par axe.
+- L’aller et le retour d’une même destination utilisent exactement la même couleur.
 
-PIN : Administration 1234 ; Chef d’exploitation 2345 ; Chauffeur 1111 ; Direction 9999.
+COULEURS
+- Lambaréné : jaune crème
+- Mouila : vert clair
+- Oyem : violet clair
+- Bitam : orangé clair
+- Makokou : turquoise clair
+
+DEPLOIEMENT GITHUB
+Décompresser le ZIP, déposer les six fichiers dans G10-TRANSPORT, puis valider le commit.

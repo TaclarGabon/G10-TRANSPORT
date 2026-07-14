@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>G10 Transports - V12.0 Firebase</title>
+  <title>G10 Transports - V12.1 Firebase</title>
   <style>
     :root {
       --navy:#073763;
@@ -805,12 +805,12 @@ const defaultRoutes = [
 ];
 
 const defaultBuses = [
-  {id:1, capacity:23, plate:"G10-001-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:""},
-  {id:2, capacity:23, plate:"G10-002-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:""},
-  {id:3, capacity:23, plate:"G10-003-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:""},
-  {id:4, capacity:23, plate:"G10-004-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:""},
-  {id:5, capacity:23, plate:"G10-005-AA", routeId:"lbv-mou", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:""},
-  {id:6, capacity:23, plate:"G10-006-AA", routeId:"lbv-bit", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:""}
+  {id:1, capacity:23, plate:"G10-001-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:"", awaitingReturn:false},
+  {id:2, capacity:23, plate:"G10-002-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:"", awaitingReturn:false},
+  {id:3, capacity:23, plate:"G10-003-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:"", awaitingReturn:false},
+  {id:4, capacity:23, plate:"G10-004-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:"", awaitingReturn:false},
+  {id:5, capacity:23, plate:"G10-005-AA", routeId:"lbv-mou", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:"", awaitingReturn:false},
+  {id:6, capacity:23, plate:"G10-006-AA", routeId:"lbv-bit", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:"", awaitingReturn:false}
 ];
 
 function cloneData(value) {
@@ -845,6 +845,7 @@ buses.forEach(b => {
   if (typeof b.earlyDepartureAuthorized === 'undefined') b.earlyDepartureAuthorized = false;
   if (typeof b.earlyDepartureAuthorizedAt === 'undefined') b.earlyDepartureAuthorizedAt = '';
   if (typeof b.earlyDepartureAuthorizedBy === 'undefined') b.earlyDepartureAuthorizedBy = '';
+  if (typeof b.awaitingReturn === 'undefined') b.awaitingReturn = false;
 });
 
 function setConnectionStatus(message, online) {
@@ -975,6 +976,29 @@ function departureFromRoute(route) {
   const name = String(route?.name || '');
   const parts = name.split('→').map(x => x.trim());
   return parts[0] || 'départ';
+}
+function formatDurationHours(minutes) {
+  const total = Math.max(0, Number(minutes || 0));
+  const hours = Math.floor(total / 60);
+  const mins = Math.round(total % 60);
+  if (!mins) return `${hours} h`;
+  return `${hours} h ${String(mins).padStart(2,'0')}`;
+}
+function defaultDurationMinutes(routeId) {
+  const defaults = {
+    'lbv-lam':240, 'lam-lbv':240,
+    'lbv-mou':480, 'mou-lbv':480,
+    'lbv-oye':480, 'oye-lbv':480,
+    'lbv-bit':600, 'bit-lbv':600,
+    'lbv-mak':660, 'mak-lbv':660
+  };
+  return defaults[routeId] || 240;
+}
+function updatePlanningDurationForRoute(busId) {
+  const routeEl = document.getElementById(`planRoute_${busId}`);
+  const durationEl = document.getElementById(`planDuration_${busId}`);
+  if (!routeEl || !durationEl) return;
+  durationEl.value = (defaultDurationMinutes(routeEl.value) / 60).toFixed(1).replace('.0','');
 }
 function reverseRouteId(routeId) {
   const pairs = {
@@ -1129,6 +1153,28 @@ function saveGroupAndNext() {
   }
 }
 
+function routePairPalette(route) {
+  const key = String((route && route.id) || '').toLowerCase();
+  const name = String((route && route.name) || '').toLowerCase();
+  const value = key + ' ' + name;
+
+  // Même couleur douce pour l’aller et le retour d’un même axe.
+  if (value.includes('lam')) return {bg:'#fff7df', border:'#e7c65c', label:'Lambaréné'};
+  if (value.includes('mou')) return {bg:'#eaf8ef', border:'#75c997', label:'Mouila'};
+  if (value.includes('oye')) return {bg:'#f2edff', border:'#a993e8', label:'Oyem'};
+  if (value.includes('bit')) return {bg:'#fff0e8', border:'#ee9f76', label:'Bitam'};
+  if (value.includes('mak')) return {bg:'#e9f7fa', border:'#78c8d4', label:'Makokou'};
+  return {bg:'#f3f6fa', border:'#aebdcd', label:'Autre axe'};
+}
+function routePairCardStyle(route) {
+  const palette = routePairPalette(route);
+  return `box-shadow:none; background:${palette.bg}; border-color:${palette.border};`;
+}
+function routePairBadge(route) {
+  const palette = routePairPalette(route);
+  return `<span style="display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid ${palette.border};font-size:12px;font-weight:900;color:#334155;">● ${palette.label}</span>`;
+}
+
 function renderAdminPrices() {
   document.getElementById('adminContent').innerHTML = `
     <div class="miniCard">
@@ -1137,7 +1183,11 @@ function renderAdminPrices() {
 
       <div class="grid2">
         ${routes.map(r => `
-          <div class="miniCard" style="box-shadow:none; background:#fbfdff;">
+          <div class="miniCard" style="${routePairCardStyle(r)}">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;">
+              <strong style="color:#073763;">Axe aller / retour</strong>
+              ${routePairBadge(r)}
+            </div>
             <label>Nom de l’axe</label>
             <input id="route_name_${r.id}" value="${esc(r.name)}">
             <div class="grid2">
@@ -1431,7 +1481,7 @@ function saveBusPlanning(busId) {
   b.routeId=document.getElementById(`planRoute_${busId}`).value;
   b.plannedDate=document.getElementById(`planDate_${busId}`).value;
   b.plannedDeparture=document.getElementById(`planDeparture_${busId}`).value;
-  b.plannedDuration=Math.max(1,Number(document.getElementById(`planDuration_${busId}`).value||0));
+  b.plannedDuration=Math.max(30,Math.round(Number(document.getElementById(`planDuration_${busId}`).value||0) * 60));
   b.plannedArrival=addMinutesToTime(b.plannedDeparture,b.plannedDuration);
   b.earlyDepartureAuthorized=false; b.earlyDepartureAuthorizedAt=''; b.earlyDepartureAuthorizedBy='';
   save('g10_demo_v11_buses',buses); toast(`Planning du Bus ${busId} enregistré.`); renderPlanning();
@@ -1447,12 +1497,12 @@ function renderPlanning() {
   const assigned=buses.filter(b=>groupByBus(b.id));
   if(!assigned.length){document.getElementById('opContent').innerHTML='<div class="empty">Assignez d’abord les groupes aux bus.</div>';return;}
   document.getElementById('opContent').innerHTML=`
-    <div class="miniCard softGold" style="margin-bottom:16px;"><h4>2. Affectation des axes et horaires</h4><p class="muted">Le chef d’exploitation fixe la date, l’axe, le départ prévu et la durée totale incluant les arrêts. L’arrivée prévue est calculée automatiquement.</p></div>
+    <div class="miniCard softGold" style="margin-bottom:16px;"><h4>2. Affectation des axes et horaires</h4><p class="muted">Le chef d’exploitation fixe la date, l’axe, le départ prévu et la durée totale en heures, arrêts inclus. L’arrivée prévue est calculée automatiquement.</p></div>
     <div class="grid2">${assigned.map(b=>{const g=groupByBus(b.id);const opts=routes.map(r=>`<option value="${r.id}" ${b.routeId===r.id?'selected':''}>${esc(r.name)}</option>`).join('');const arr=addMinutesToTime(b.plannedDeparture,b.plannedDuration);return `<div class="busCard assigned">
       <div class="busTop"><div class="busLeft"><div class="busNum">${b.id}</div><div class="busInfo"><h4>Bus ${b.id}</h4><p>Groupe ${g.id} — ${esc(g.chauffeur)}</p></div></div><span class="badge blue">Planification</span></div>
-      <label>Axe</label><select id="planRoute_${b.id}">${opts}</select>
+      <label>Axe</label><select id="planRoute_${b.id}" onchange="updatePlanningDurationForRoute(${b.id})">${opts}</select>
       <div class="grid2" style="margin-top:10px;"><div><label>Date prévue</label><input id="planDate_${b.id}" type="date" value="${esc(b.plannedDate||'')}"></div><div><label>Départ prévu</label><input id="planDeparture_${b.id}" type="time" value="${esc(b.plannedDeparture||'')}"></div></div>
-      <div class="grid2" style="margin-top:10px;"><div><label>Durée totale prévue (minutes, arrêts inclus)</label><input id="planDuration_${b.id}" type="number" min="1" value="${Number(b.plannedDuration||240)}"></div><div class="timeBox time-blue"><span>Arrivée prévisionnelle</span><strong>${arr||'À calculer'}</strong></div></div>
+      <div class="grid2" style="margin-top:10px;"><div><label>Durée totale prévue (heures, arrêts inclus)</label><input id="planDuration_${b.id}" type="number" min="0.5" step="0.5" value="${Number((Number(b.plannedDuration||240)/60).toFixed(1))}"><div class="scheduleNote time-blue">Durée retenue : ${formatDurationHours(b.plannedDuration||240)}</div></div><div class="timeBox time-blue"><span>Arrivée prévisionnelle</span><strong>${arr||'À calculer'}</strong></div></div>
       <div class="actionRow" style="margin-top:12px;"><button class="btn green" onclick="saveBusPlanning(${b.id})">Enregistrer le planning</button><button class="btn light" onclick="authorizeEarlyDeparture(${b.id})">Autoriser départ anticipé</button></div>
       ${b.earlyDepartureAuthorized?`<div class="scheduleNote time-green">✓ Départ anticipé exceptionnel autorisé à ${esc(b.earlyDepartureAuthorizedAt)}</div>`:''}
     </div>`}).join('')}</div>`;
@@ -1487,7 +1537,8 @@ function statusClass(status) {
   if (s.startsWith('Incident')) return 'orange';
   if (s.startsWith('En route')) return 'orange';
   if (s.startsWith('Arrivé')) return 'gray';
-  if (s === 'Fin de service' || s === 'Hors service') return 'gray';
+  if (s === 'Fin de service') return 'orange';
+  if (s === 'Hors service') return 'gray';
   if (s === 'En service') return '';
   return '';
 }
@@ -1708,14 +1759,55 @@ function endService() {
   };
   report.push(row);
 
-  // Préparer automatiquement le sens retour sans écraser le rapport terminé.
-  b.routeId = reverseRouteId(b.routeId);
+  // L’aller est clôturé. Le bus reste verrouillé pour ce chauffeur jusqu’au Départ-retour.
   b.status = 'Fin de service';
   b.closed = true;
-  b.serviceActive = false;
+  b.awaitingReturn = true;
+  b.serviceActive = true;
   save('g10_demo_v11_buses', buses);
   save('g10_demo_v11_report', report);
-  toast('Fin de service enregistrée. Le trajet retour est préparé.');
+  toast('Fin de service enregistrée. Cliquez sur Départ-retour pour repartir dans le sens inverse.');
+  renderDriverFleetStatus();
+  renderDriverBus();
+}
+function startReturnTrip() {
+  const b = busById(selectedDriverBusId);
+  if (!b || b.status !== 'Fin de service' || !b.awaitingReturn) {
+    alert('Le Départ-retour est disponible uniquement après la fin de service du trajet aller.');
+    return;
+  }
+  const oldRoute = routeById(b.routeId);
+  const newRouteId = reverseRouteId(b.routeId);
+  const newRoute = routeById(newRouteId);
+  if (!confirm(`Confirmez-vous le Départ-retour : ${newRoute.name} ?`)) return;
+
+  b.routeId = newRouteId;
+  b.status = enRouteStatus(b);
+  b.closed = false;
+  b.awaitingReturn = false;
+  b.serviceActive = true;
+  b.sold = 0;
+  b.departureTime = nowTime();
+  b.arrivalTime = '';
+  b.serviceStartTime = b.departureTime;
+  b.serviceEndTime = '';
+  b.incidentActive = false;
+  b.incidentType = '';
+  b.incidentNote = '';
+  b.incidentStartTime = '';
+  b.incidentEndTime = '';
+  b.resumeTime = '';
+  b.previousStatus = '';
+  b.plannedDate = today;
+  b.plannedDeparture = b.departureTime;
+  b.plannedDuration = Number(b.plannedDuration || defaultDurationMinutes(newRouteId));
+  b.plannedArrival = addMinutesToTime(b.plannedDeparture, b.plannedDuration);
+  b.earlyDepartureAuthorized = false;
+  b.earlyDepartureAuthorizedAt = '';
+  b.earlyDepartureAuthorizedBy = '';
+
+  save('g10_demo_v11_buses', buses);
+  toast(`Départ-retour confirmé : ${newRoute.name}. Arrivée prévue à ${b.plannedArrival}.`);
   renderDriverFleetStatus();
   renderDriverBus();
 }
@@ -1736,6 +1828,7 @@ function renderDriverBus() {
   const canCloseIncident = b.incidentActive;
   const canArrive = String(b.status).startsWith('En route') && !b.incidentActive;
   const canEnd = String(b.status).startsWith('Arrivé') && !b.incidentActive;
+  const canReturn = serviceEnded && Boolean(b.awaitingReturn);
 
   document.getElementById('driverContent').innerHTML = `
     <div class="grid2">
@@ -1761,6 +1854,7 @@ function renderDriverBus() {
           <div class="timeBox ${timingClass(signedTimeDiff(b.departureTime,b.plannedDeparture))}"><span>Départ réel</span><strong>${esc(b.departureTime || '—')}</strong></div>
           <div class="timeBox time-blue"><span>Arrivée prévue</span><strong>${esc(b.plannedArrival || addMinutesToTime(b.plannedDeparture,b.plannedDuration) || '—')}</strong></div>
           <div class="timeBox ${timingClass(signedTimeDiff(b.arrivalTime,b.plannedArrival))}"><span>Arrivée réelle</span><strong>${esc(b.arrivalTime || '—')}</strong></div>
+          <div class="timeBox time-blue"><span>Durée prévue</span><strong>${formatDurationHours(b.plannedDuration || 240)}</strong></div>
         </div>
         ${b.departureTime ? `<div class="scheduleNote ${timingClass(signedTimeDiff(b.departureTime,b.plannedDeparture))}">${esc(timingLabel(signedTimeDiff(b.departureTime,b.plannedDeparture),'Départ'))}</div>` : ''}
         ${b.arrivalTime ? `<div class="scheduleNote ${timingClass(signedTimeDiff(b.arrivalTime,b.plannedArrival))}">${esc(timingLabel(signedTimeDiff(b.arrivalTime,b.plannedArrival),'Arrivée'))}</div>` : ''}
@@ -1799,6 +1893,9 @@ function renderDriverBus() {
         <div class="actionRow">
           <button class="btn green" onclick="arriveBus()" ${canArrive ? '' : 'disabled'}>${esc(r.arrive)}</button>
           <button class="btn gold" onclick="endService()" ${canEnd ? '' : 'disabled'}>Fin de service</button>
+        </div>
+        <div style="margin-top:10px;">
+          <button class="btn orange big" style="width:100%;" onclick="startReturnTrip()" ${canReturn ? '' : 'disabled'}>Départ-retour</button>
         </div>
         <div style="margin-top:10px;">
           <button class="btn light" style="width:100%;" onclick="driverLogout()">Se déconnecter</button>
@@ -1890,6 +1987,7 @@ function resetDay() {
     b.arrivalTime = '';
     b.closed = false;
     b.serviceActive = false;
+    b.awaitingReturn = false;
     b.serviceStartTime = '';
     b.serviceEndTime = '';
     b.incidentActive = false;
