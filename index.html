@@ -1307,6 +1307,49 @@ function setBusRoute(busId, routeId) {
   save('g10_demo_v11_buses', buses);
   renderAssign();
 }
+function clearBusRuntimeForCorrection(b) {
+  b.serviceActive = false;
+  b.status = 'Hors service';
+  b.sold = 0;
+  b.departureTime = '';
+  b.arrivalTime = '';
+  b.serviceStartTime = '';
+  b.serviceEndTime = '';
+  b.closed = false;
+  b.incidentActive = false;
+  b.incidentType = '';
+  b.incidentNote = '';
+  b.incidentStartTime = '';
+  b.incidentEndTime = '';
+  b.resumeTime = '';
+  b.previousStatus = '';
+}
+function correctAssignment(groupId) {
+  const g = groups.find(x => x.id === groupId);
+  if (!g || !g.busId) return;
+  const b = busById(g.busId);
+  if (!b) return;
+
+  if (b.serviceActive) {
+    const pin = prompt(`Le Bus ${b.id} est déjà actif (${b.status}). Pour une libération exceptionnelle, saisissez le PIN Direction.`);
+    if (pin === null) return;
+    if (pin !== ACCESS_PINS.dashboard) {
+      alert('Autorisation refusée. Contactez la Direction.');
+      return;
+    }
+    if (!confirm(`Attention : la session active du Bus ${b.id} sera arrêtée et ses données de trajet en cours remises à zéro. Continuer ?`)) return;
+    clearBusRuntimeForCorrection(b);
+  } else {
+    if (!confirm(`Désaffecter le Bus ${b.id} du Groupe ${g.id} afin de corriger l’affectation ?`)) return;
+  }
+
+  g.busId = '';
+  save('g10_demo_v11_groups', groups);
+  save('g10_demo_v11_buses', buses);
+  toast(`Bus ${b.id} libéré. Vous pouvez maintenant refaire l’affectation.`);
+  renderAssign();
+  renderDriverFleetStatus();
+}
 function renderAssign() {
   const groupCards = groups.map(g => {
     const currentBus = g.busId ? busById(g.busId) : null;
@@ -1332,6 +1375,7 @@ function renderAssign() {
           ${options}
         </select>
         ${currentLocked ? `<div class="muted" style="margin-top:8px; font-weight:800; color:#9a3412;">🔒 Affectation verrouillée : Bus ${currentBus.id} ${esc(currentBus.status)}.</div>` : ''}
+        ${currentBus ? `<button class="btn light" style="margin-top:10px; width:100%;" onclick="correctAssignment(${g.id})">${currentLocked ? 'Déblocage exceptionnel' : 'Corriger / désaffecter'}</button>` : ''}
       </div>
     `;
   }).join('');
@@ -1425,33 +1469,38 @@ function renderDriverLogin() {
     `;
     return;
   }
-  const availableCount = assigned.filter(b => !b.serviceActive).length;
+  const available = assigned.filter(b => !b.serviceActive).sort((a,b) => a.id - b.id);
+  const occupied = assigned.filter(b => b.serviceActive).sort((a,b) => a.id - b.id);
   document.getElementById('driverContent').innerHTML = `
     <div class="miniCard">
       <h4>Connexion chauffeur</h4>
-      <p class="muted">Pour la démo, le PIN chauffeur est <b>1111</b>. Les bus déjà pris restent visibles, mais ils sont verrouillés.</p>
+      <p class="muted">Pour la démo, le PIN chauffeur est <b>1111</b>. Seuls les bus affectés et encore libres peuvent être sélectionnés.</p>
       <div class="grid2">
         <div>
-          <label>Bus affecté</label>
-          <select id="driverBusSelect" ${availableCount ? '' : 'disabled'}>
-            ${assigned.map(b => {
+          <label>Bus affecté disponible</label>
+          <select id="driverBusSelect" ${available.length ? '' : 'disabled'}>
+            ${available.length ? available.map(b => {
               const g = groupByBus(b.id);
-              const locked = Boolean(b.serviceActive);
-              const suffix = locked ? ` — Déjà occupé (${esc(b.status || 'En service')})` : '';
-              return `<option value="${b.id}" ${locked ? 'disabled' : ''}>Bus ${b.id} - ${esc(g.chauffeur)} - ${esc(routeById(b.routeId).name)}${suffix}</option>`;
-            }).join('')}
+              return `<option value="${b.id}">Bus ${b.id} - ${esc(g.chauffeur)} - ${esc(routeById(b.routeId).name)}</option>`;
+            }).join('') : '<option>Aucun bus disponible</option>'}
           </select>
         </div>
         <div>
           <label>PIN chauffeur</label>
-          <input id="driverPin" type="password" inputmode="numeric" placeholder="1111" ${availableCount ? '' : 'disabled'}>
+          <input id="driverPin" type="password" inputmode="numeric" placeholder="1111" ${available.length ? '' : 'disabled'}>
         </div>
       </div>
+      ${occupied.length ? `
+        <div class="empty" style="margin-top:14px; text-align:left; background:#fff7ed; border-color:#fdba74; color:#9a3412;">
+          <b>Bus déjà pris — accès bloqué</b><br>
+          ${occupied.map(b => `Bus ${b.id} : ${esc(b.status || 'En service')}`).join('<br>')}
+          <div style="margin-top:7px;">Ces bus ne peuvent pas être rouverts. En cas d’erreur d’affectation, contactez le chef d’exploitation.</div>
+        </div>` : ''}
       <div class="actionRow" style="margin-top:16px;">
-        <button class="btn green" onclick="openDriverBus()" ${availableCount ? '' : 'disabled'}>Connexion</button>
+        <button class="btn green" onclick="openDriverBus()" ${available.length ? '' : 'disabled'}>Connexion</button>
         <button class="btn light" onclick="openScreen('home')">Fermer</button>
       </div>
-      ${availableCount ? '' : '<div class="empty" style="margin-top:12px;">Tous les bus affectés sont déjà occupés.</div>'}
+      ${available.length ? '' : '<div class="empty" style="margin-top:12px;">Tous les bus affectés sont déjà pris. Contactez le chef d’exploitation si une correction est nécessaire.</div>'}
       <div id="driverError" class="empty" style="display:none; color:#991b1b; background:#fef2f2; border-color:#fecaca; margin-top:12px;"></div>
     </div>
   `;
@@ -1471,7 +1520,7 @@ function openDriverBus() {
   // Double contrôle obligatoire : même si deux chauffeurs tentent la connexion
   // presque au même moment, un bus déjà pris ne peut jamais être rouvert ni écrasé.
   if (b.serviceActive) {
-    errorBox.textContent = `Impossible : le Bus ${b.id} est déjà occupé (${b.status || 'En service'}). Choisissez uniquement le bus qui vous a été affecté et qui est encore disponible.`;
+    errorBox.textContent = `Bus déjà pris : le Bus ${b.id} est déjà occupé (${b.status || 'En service'}). Cette session ne peut pas être écrasée. En cas d’erreur, contactez le chef d’exploitation.`;
     errorBox.style.display = 'block';
     renderDriverLogin();
     return;
