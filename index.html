@@ -1006,20 +1006,54 @@ function formatDurationHours(minutes) {
   return `${hours} h ${String(mins).padStart(2,'0')}`;
 }
 function defaultDurationMinutes(routeId) {
+  // Durées opérationnelles arrondies pour la démonstration (arrêts inclus).
   const defaults = {
-    'lbv-lam':240, 'lam-lbv':240,
-    'lbv-mou':480, 'mou-lbv':480,
-    'lbv-oye':480, 'oye-lbv':480,
-    'lbv-bit':600, 'bit-lbv':600,
-    'lbv-mak':660, 'mak-lbv':660
+    'lbv-lam':240, 'lam-lbv':240,       // 4 h
+    'lbv-mou':360, 'mou-lbv':360,       // 6 h
+    'lbv-oye':420, 'oye-lbv':420,       // 7 h
+    'lbv-bit':480, 'bit-lbv':480,       // 8 h
+    'lbv-mak':540, 'mak-lbv':540,       // 9 h
+    'lbv-fra':720, 'fra-lbv':720        // 12 h
   };
   return defaults[routeId] || 240;
 }
+function gabonTodayISO() {
+  const parts = new Intl.DateTimeFormat('en-CA', {timeZone:'Africa/Libreville', year:'numeric', month:'2-digit', day:'2-digit'}).formatToParts(new Date());
+  const o={}; parts.forEach(x=>{ if(x.type!=='literal') o[x.type]=x.value; });
+  return `${o.year}-${o.month}-${o.day}`;
+}
+function addDaysISO(dateStr, days) {
+  if (!dateStr) return '';
+  const d = new Date(`${dateStr}T12:00:00Z`); d.setUTCDate(d.getUTCDate()+days);
+  return d.toISOString().slice(0,10);
+}
+function setSelectValue(id, value) {
+  const el=document.getElementById(id); if(el) el.value=value;
+}
+function applyDemoScheduleToForm(busId, forceRound=false) {
+  const routeEl=document.getElementById(`planRoute_${busId}`);
+  const routeId=routeEl?.value || '';
+  if(!routeId) return;
+  const duration=defaultDurationMinutes(routeId);
+  const today=gabonTodayISO();
+  const isLambarene=routeId.includes('lam');
+  const outDate=document.getElementById(`planOutboundDate_${busId}`);
+  const outDur=document.getElementById(`planOutboundDuration_${busId}`);
+  const retDate=document.getElementById(`planReturnDate_${busId}`);
+  const retDur=document.getElementById(`planReturnDuration_${busId}`);
+  if(outDate && !outDate.value) outDate.value=today;
+  if(outDur) outDur.value=(duration/60).toFixed(1).replace('.0','');
+  setSelectValue(`planOutboundDeparture_${busId}`,'07:00');
+  if(retDate && (!retDate.value || forceRound)) retDate.value=isLambarene ? today : addDaysISO(today,1);
+  if(retDur) retDur.value=(duration/60).toFixed(1).replace('.0','');
+  setSelectValue(`planReturnDeparture_${busId}`,isLambarene ? '14:00' : '07:00');
+}
 function updatePlanningDurationForRoute(busId) {
-  const routeEl = document.getElementById(`planRoute_${busId}`);
-  const durationEl = document.getElementById(`planDuration_${busId}`);
-  if (!routeEl || !durationEl) return;
-  durationEl.value = (defaultDurationMinutes(routeEl.value) / 60).toFixed(1).replace('.0','');
+  applyDemoScheduleToForm(busId, false);
+  renderPlanningPreview(busId);
+}
+function renderPlanningPreview(busId) {
+  // Le rendu complet recalculera les arrivées à l'enregistrement; cette fonction garde les champs prêts pour la démo.
 }
 function reverseRouteId(routeId) {
   const pairs = {
@@ -1510,6 +1544,23 @@ function toggleReturnPlanning(busId, mode) {
   const saveBtn = document.getElementById(`savePlanning_${busId}`);
   if (block) block.style.display = mode === 'round' ? 'block' : 'none';
   if (saveBtn) saveBtn.textContent = mode === 'round' ? 'Enregistrer aller et retour' : 'Enregistrer l’aller';
+  if (mode === 'round') applyDemoScheduleToForm(busId, true);
+}
+function loadDemoPlanning() {
+  const assigned=buses.filter(b=>groupByBus(b.id));
+  if(!assigned.length){alert('Assignez d’abord au moins un groupe à un bus.');return;}
+  const today=gabonTodayISO();
+  assigned.forEach(b=>{
+    const routeId=b.outboundRouteId || b.routeId || '';
+    if(!routeId) return;
+    const duration=defaultDurationMinutes(routeId);
+    const isLambarene=routeId.includes('lam');
+    b.tripMode='round'; b.planningConfigured=true; b.outboundRouteId=routeId; b.routeId=routeId;
+    b.plannedOutboundDate=today; b.plannedOutboundDeparture='07:00'; b.plannedOutboundDuration=duration; b.plannedOutboundArrival=addMinutesToTime('07:00',duration);
+    b.plannedReturnDate=isLambarene?today:addDaysISO(today,1); b.plannedReturnDeparture=isLambarene?'14:00':'07:00'; b.plannedReturnDuration=duration; b.plannedReturnArrival=addMinutesToTime(b.plannedReturnDeparture,duration);
+    b.plannedDate=b.plannedOutboundDate; b.plannedDeparture=b.plannedOutboundDeparture; b.plannedDuration=duration; b.plannedArrival=b.plannedOutboundArrival;
+  });
+  save('g10_demo_v11_buses',buses); toast('Planning de démonstration chargé.'); renderPlanning();
 }
 function timeToMinutes(time) {
   if (!time || !/^\d{1,2}:\d{2}$/.test(time)) return null;
@@ -1578,7 +1629,7 @@ function renderPlanning() {
   const assigned=buses.filter(b=>groupByBus(b.id));
   if(!assigned.length){document.getElementById('opContent').innerHTML='<div class="empty">Assignez d’abord les groupes aux bus.</div>';return;}
   document.getElementById('opContent').innerHTML=`
-    <div class="miniCard softGold" style="margin-bottom:16px;"><h4>2. Affectation des axes et horaires</h4><p class="muted">Planifiez d’abord l’aller. Activez l’option Aller-retour seulement lorsqu’un retour doit être programmé. Tous les horaires sont affichés au format 24 heures, par tranches de 15 minutes.</p></div>
+    <div class="miniCard softGold" style="margin-bottom:16px;"><h4>2. Affectation des axes et horaires</h4><p class="muted">Planifiez d’abord l’aller. Activez l’option Aller-retour seulement lorsqu’un retour doit être programmé. Tous les horaires sont affichés au format 24 heures, par tranches de 15 minutes.</p><div class="actionRow" style="margin-top:10px;"><button class="btn green" onclick="loadDemoPlanning()">Charger les horaires de démonstration</button><button class="btn light" onclick="resetDay()">Réinitialiser le test</button></div></div>
     <div class="grid2">${assigned.map(b=>{
       const g=groupByBus(b.id);
       const selected=b.planningConfigured ? (b.outboundRouteId||b.routeId||'') : '';
