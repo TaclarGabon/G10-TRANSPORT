@@ -1588,6 +1588,23 @@ function timingClass(diff) {
   if (diff < 0) return 'time-green';
   return diff <= 15 ? 'time-orange' : 'time-red';
 }
+function ensureReturnPlanningFields(b) {
+  if (!b) return;
+  if (typeof b.returnPlanningEnabled !== 'boolean') b.returnPlanningEnabled = false;
+  if (typeof b.returnPlannedDate !== 'string') b.returnPlannedDate = '';
+  if (typeof b.returnPlannedDeparture !== 'string') b.returnPlannedDeparture = '';
+  if (!Number.isFinite(Number(b.returnPlannedDuration))) b.returnPlannedDuration = 0;
+  if (typeof b.returnPlannedArrival !== 'string') b.returnPlannedArrival = '';
+}
+buses.forEach(ensureReturnPlanningFields);
+save('g10_demo_v11_buses', buses);
+
+function toggleReturnPlanning(busId) {
+  const box = document.getElementById(`returnPlanningBox_${busId}`);
+  const checkbox = document.getElementById(`returnPlanningEnabled_${busId}`);
+  if (box && checkbox) box.style.display = checkbox.checked ? 'block' : 'none';
+}
+
 function saveBusPlanning(busId) {
   const b=busById(busId); if(!b)return;
   const selectedRoute = document.getElementById(`planRoute_${busId}`).value;
@@ -1604,7 +1621,28 @@ function saveBusPlanning(busId) {
   b.plannedDuration=Math.max(30,Math.round(selectedDuration * 60));
   b.plannedArrival=addMinutesToTime(b.plannedDeparture,b.plannedDuration);
   b.earlyDepartureAuthorized=false; b.earlyDepartureAuthorizedAt=''; b.earlyDepartureAuthorizedBy='';
-  save('g10_demo_v11_buses',buses); toast(`Planning du Bus ${busId} enregistré.`); renderPlanning();
+  ensureReturnPlanningFields(b);
+  const returnEnabled = Boolean(document.getElementById(`returnPlanningEnabled_${busId}`)?.checked);
+  b.returnPlanningEnabled = returnEnabled;
+  if (returnEnabled) {
+    const returnDate = document.getElementById(`returnDate_${busId}`).value;
+    const returnDeparture = document.getElementById(`returnDeparture_${busId}`).value;
+    const returnDurationHours = Number(document.getElementById(`returnDuration_${busId}`).value || 0);
+    if (!returnDate || !returnDeparture || !returnDurationHours) {
+      alert('Complétez la date, l’heure et la durée du trajet retour, ou décochez « Programmer le retour maintenant ».');
+      return;
+    }
+    b.returnPlannedDate = returnDate;
+    b.returnPlannedDeparture = returnDeparture;
+    b.returnPlannedDuration = Math.max(30, Math.round(returnDurationHours * 60));
+    b.returnPlannedArrival = addMinutesToTime(returnDeparture, b.returnPlannedDuration);
+  } else {
+    b.returnPlannedDate = '';
+    b.returnPlannedDeparture = '';
+    b.returnPlannedDuration = 0;
+    b.returnPlannedArrival = '';
+  }
+  save('g10_demo_v11_buses',buses); toast(`Planning du Bus ${busId} enregistré${returnEnabled ? ' avec le retour' : ''}.`); renderPlanning();
 }
 function authorizeEarlyDeparture(busId) {
   const b=busById(busId); if(!b)return;
@@ -1618,11 +1656,22 @@ function renderPlanning() {
   if(!assigned.length){document.getElementById('opContent').innerHTML='<div class="empty">Assignez d’abord les groupes aux bus.</div>';return;}
   document.getElementById('opContent').innerHTML=`
     <div class="miniCard softGold" style="margin-bottom:16px;"><h4>2. Affectation des axes et horaires</h4><p class="muted">Le chef d’exploitation fixe la date, l’axe, le départ prévu et la durée totale en heures, arrêts inclus. L’arrivée prévue est calculée automatiquement.</p></div>
-    <div class="grid2">${assigned.map(b=>{const g=groupByBus(b.id);const opts=`<option value="" ${b.routeId?'':'selected'}>— Choisir un axe —</option>`+routes.map(r=>`<option value="${r.id}" ${b.routeId===r.id?'selected':''}>${esc(r.name)}</option>`).join('');const arr=b.routeId?addMinutesToTime(b.plannedDeparture,b.plannedDuration):'';return `<div class="busCard assigned">
+    <div class="grid2">${assigned.map(b=>{ensureReturnPlanningFields(b);const g=groupByBus(b.id);const opts=`<option value="" ${b.routeId?'':'selected'}>— Choisir un axe —</option>`+routes.map(r=>`<option value="${r.id}" ${b.routeId===r.id?'selected':''}>${esc(r.name)}</option>`).join('');const arr=b.routeId?addMinutesToTime(b.plannedDeparture,b.plannedDuration):'';return `<div class="busCard assigned">
       <div class="busTop"><div class="busLeft"><div class="busNum">${b.id}</div><div class="busInfo"><h4>Bus ${b.id}</h4><p>Groupe ${g.id} — ${esc(g.chauffeur)}</p></div></div><span class="badge blue">Planification</span></div>
       <label>Axe</label><select id="planRoute_${b.id}" onchange="updatePlanningDurationForRoute(${b.id})">${opts}</select>
       <div class="grid2" style="margin-top:10px;"><div><label>Date prévue</label><input id="planDate_${b.id}" type="date" value="${esc(b.plannedDate||'')}"></div><div><label>Départ prévu (format 24 h)</label><select id="planDeparture_${b.id}">${planningTimeOptions(b.plannedDeparture||'')}</select></div></div>
       <div class="grid2" style="margin-top:10px;"><div><label>Durée totale prévue (heures, arrêts inclus)</label><input id="planDuration_${b.id}" type="number" min="0.5" step="0.5" value="${b.routeId?Number((Number(b.plannedDuration||defaultDurationMinutes(b.routeId))/60).toFixed(1)):''}"><div class="scheduleNote time-blue">Durée retenue : ${b.routeId?formatDurationHours(b.plannedDuration||defaultDurationMinutes(b.routeId)):'À définir après le choix de l’axe'}</div></div><div class="timeBox time-blue"><span>Arrivée prévisionnelle</span><strong>${arr||'À calculer'}</strong></div></div>
+      <div class="miniCard softGold" style="margin-top:14px;">
+        <label style="display:flex;align-items:center;gap:9px;cursor:pointer;"><input id="returnPlanningEnabled_${b.id}" type="checkbox" style="width:auto;" ${b.returnPlanningEnabled?'checked':''} onchange="toggleReturnPlanning(${b.id})"> Programmer le trajet retour maintenant (optionnel)</label>
+        <div id="returnPlanningBox_${b.id}" style="display:${b.returnPlanningEnabled?'block':'none'};margin-top:12px;">
+          <div class="grid3">
+            <div><label>Date retour</label><input id="returnDate_${b.id}" type="date" value="${esc(b.returnPlannedDate||'')}"></div>
+            <div><label>Départ retour (24 h)</label><select id="returnDeparture_${b.id}">${planningTimeOptions(b.returnPlannedDeparture||'')}</select></div>
+            <div><label>Durée retour (heures)</label><input id="returnDuration_${b.id}" type="number" min="0.5" step="0.5" value="${Number(((b.returnPlannedDuration||b.plannedDuration||defaultDurationMinutes(b.routeId))/60).toFixed(1))}"></div>
+          </div>
+          <div class="scheduleNote time-green">Le retour sera chargé automatiquement lorsque le chauffeur cliquera sur « Départ-retour ».</div>
+        </div>
+      </div>
       <div class="actionRow" style="margin-top:12px;"><button class="btn green" onclick="saveBusPlanning(${b.id})">Enregistrer le planning</button><button class="btn light" onclick="authorizeEarlyDeparture(${b.id})">Autoriser départ anticipé</button></div>
       ${b.earlyDepartureAuthorized?`<div class="scheduleNote time-green">✓ Départ anticipé exceptionnel autorisé à ${esc(b.earlyDepartureAuthorizedAt)}</div>`:''}
     </div>`}).join('')}</div>`;
@@ -1851,14 +1900,15 @@ function startReturnTrip() {
   if (!confirm(`Confirmez-vous le Départ-retour : ${newRoute.name} ?`)) return;
 
   b.routeId = newRouteId;
-  b.status = enRouteStatus(b);
+  // Le retour devient une nouvelle tournée. Le planning préparé par le chef est chargé ; sinon le chauffeur renseigne la date et l’heure.
+  b.status = 'En service';
   b.closed = false;
   b.awaitingReturn = false;
   b.serviceActive = true;
   b.sold = 0;
-  b.departureTime = nowTime();
+  b.departureTime = '';
   b.arrivalTime = '';
-  b.serviceStartTime = b.departureTime;
+  b.serviceStartTime = '';
   b.serviceEndTime = '';
   b.incidentActive = false;
   b.incidentType = '';
@@ -1867,16 +1917,37 @@ function startReturnTrip() {
   b.incidentEndTime = '';
   b.resumeTime = '';
   b.previousStatus = '';
-  b.plannedDate = today;
-  b.plannedDeparture = b.departureTime;
-  b.plannedDuration = Number(b.plannedDuration || defaultDurationMinutes(newRouteId));
-  b.plannedArrival = addMinutesToTime(b.plannedDeparture, b.plannedDuration);
+  ensureReturnPlanningFields(b);
+  if (b.returnPlanningEnabled && b.returnPlannedDate && b.returnPlannedDeparture) {
+    b.plannedDate = b.returnPlannedDate;
+    b.plannedDeparture = b.returnPlannedDeparture;
+    b.plannedDuration = Number(b.returnPlannedDuration || defaultDurationMinutes(newRouteId));
+    b.plannedArrival = b.returnPlannedArrival || addMinutesToTime(b.plannedDeparture, b.plannedDuration);
+  } else {
+    const today = new Date().toISOString().slice(0,10);
+    const driverDate = prompt('Aucun retour n’a été programmé par le chef d’exploitation.\n\nSaisissez la date du retour (AAAA-MM-JJ) :', today);
+    if (driverDate === null) return;
+    const driverTime = prompt('Saisissez l’heure de départ retour au format 24 h (ex. 05:30) :', '');
+    if (driverTime === null) return;
+    if (!/^\d{2}:\d{2}$/.test(driverTime)) { alert('Heure invalide. Utilisez le format 24 h, par exemple 05:30.'); return; }
+    b.plannedDate = driverDate || today;
+    b.plannedDeparture = driverTime;
+    b.plannedDuration = Number(defaultDurationMinutes(newRouteId));
+    b.plannedArrival = addMinutesToTime(b.plannedDeparture, b.plannedDuration);
+    b.returnPreparedByDriver = true;
+    b.returnPreparedAt = nowTime();
+  }
+  b.returnPlanningEnabled = false;
+  b.returnPlannedDate = '';
+  b.returnPlannedDeparture = '';
+  b.returnPlannedDuration = 0;
+  b.returnPlannedArrival = '';
   b.earlyDepartureAuthorized = false;
   b.earlyDepartureAuthorizedAt = '';
   b.earlyDepartureAuthorizedBy = '';
 
   save('g10_demo_v11_buses', buses);
-  toast(`Départ-retour confirmé : ${newRoute.name}. Arrivée prévue à ${b.plannedArrival}.`);
+  toast(`Trajet retour préparé : ${newRoute.name}. Planning retour chargé.`);
   renderDriverFleetStatus();
   renderDriverBus();
 }
