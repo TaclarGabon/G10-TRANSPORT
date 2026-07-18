@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>G10 Transports - V12.1 Firebase</title>
+  <title>G10 Transports - V12.5 Firebase</title>
   <style>
     :root {
       --navy:#073763;
@@ -796,16 +796,20 @@ const defaultGroups = [
 ];
 
 const defaultRoutes = [
-  {id:"lbv-lam", code:"LBV-LAM", pairCode:"LAM↔LBV", name:"Libreville / PK8 → Lambaréné", price:5000, depart:"Départ PK8", arrive:"Arrivée Lambaréné"},
-  {id:"lam-lbv", code:"LAM-LBV", pairCode:"LAM↔LBV", name:"Lambaréné → Libreville / PK8", price:5000, depart:"Départ Lambaréné", arrive:"Arrivée PK8"},
-  {id:"lbv-mou", code:"LBV-MOU", pairCode:"LBV↔MOU", name:"Libreville / PK8 → Mouila", price:10000, depart:"Départ PK8", arrive:"Arrivée Mouila"},
-  {id:"mou-lbv", code:"MOU-LBV", pairCode:"LBV↔MOU", name:"Mouila → Libreville / PK8", price:10000, depart:"Départ Mouila", arrive:"Arrivée PK8"},
-  {id:"lbv-oye", code:"LBV-OYE", pairCode:"LBV↔OYE", name:"Libreville / PK8 → Oyem", price:15000, depart:"Départ PK8", arrive:"Arrivée Oyem"},
-  {id:"oye-lbv", code:"OYE-LBV", pairCode:"LBV↔OYE", name:"Oyem → Libreville / PK8", price:15000, depart:"Départ Oyem", arrive:"Arrivée PK8"},
-  {id:"lbv-bit", code:"LBV-BIT", pairCode:"BIT↔LBV", name:"Libreville / PK8 → Bitam", price:17000, depart:"Départ PK8", arrive:"Arrivée Bitam"},
-  {id:"bit-lbv", code:"BIT-LBV", pairCode:"BIT↔LBV", name:"Bitam → Libreville / PK8", price:17000, depart:"Départ Bitam", arrive:"Arrivée PK8"},
-  {id:"lbv-mak", code:"LBV-MAK", pairCode:"LBV↔MAK", name:"Libreville / PK8 → Makokou", price:17000, depart:"Départ PK8", arrive:"Arrivée Makokou"},
-  {id:"mak-lbv", code:"MAK-LBV", pairCode:"LBV↔MAK", name:"Makokou → Libreville / PK8", price:17000, depart:"Départ Makokou", arrive:"Arrivée PK8"}
+  {id:"lbv-lam", code:"LBV-LAM", pairCode:"LBV↔LAM", name:"Libreville / PK8 → Lambaréné", price:5000, depart:"Départ PK8", arrive:"Arrivée Lambaréné", plannedDuration:240, type:"Aller-retour"},
+  {id:"lam-lbv", code:"LAM-LBV", pairCode:"LBV↔LAM", name:"Lambaréné → Libreville / PK8", price:5000, depart:"Départ Lambaréné", arrive:"Arrivée PK8", plannedDuration:240, type:"Aller-retour"},
+  {id:"lbv-mou", code:"LBV-MOU", pairCode:"LBV↔MOU", name:"Libreville / PK8 → Mouila", price:8000, depart:"Départ PK8", arrive:"Arrivée Mouila", plannedDuration:480, type:"Aller-retour"},
+  {id:"mou-lbv", code:"MOU-LBV", pairCode:"LBV↔MOU", name:"Mouila → Libreville / PK8", price:8000, depart:"Départ Mouila", arrive:"Arrivée PK8", plannedDuration:480, type:"Aller-retour"},
+  {id:"lbv-leb", code:"LBV-LEB", pairCode:"LBV↔LEB", name:"Libreville / PK8 → Lebamba", price:10000, depart:"Départ PK8", arrive:"Arrivée Lebamba", plannedDuration:540, type:"Aller-retour"},
+  {id:"leb-lbv", code:"LEB-LBV", pairCode:"LBV↔LEB", name:"Lebamba → Libreville / PK8", price:10000, depart:"Départ Lebamba", arrive:"Arrivée PK8", plannedDuration:540, type:"Aller-retour"},
+  {id:"lbv-mak", code:"LBV-MAK", pairCode:"LBV↔MAK", name:"Libreville / PK8 → Makokou", price:12000, depart:"Départ PK8", arrive:"Arrivée Makokou", plannedDuration:660, type:"Aller-retour"},
+  {id:"mak-lbv", code:"MAK-LBV", pairCode:"LBV↔MAK", name:"Makokou → Libreville / PK8", price:12000, depart:"Départ Makokou", arrive:"Arrivée PK8", plannedDuration:660, type:"Aller-retour"},
+  {id:"lbv-oye", code:"LBV-OYE", pairCode:"LBV↔OYE", name:"Libreville / PK8 → Oyem", price:12000, depart:"Départ PK8", arrive:"Arrivée Oyem", plannedDuration:480, type:"Aller-retour"},
+  {id:"oye-lbv", code:"OYE-LBV", pairCode:"LBV↔OYE", name:"Oyem → Libreville / PK8", price:12000, depart:"Départ Oyem", arrive:"Arrivée PK8", plannedDuration:480, type:"Aller-retour"},
+  {id:"lbv-tch", code:"LBV-TCH", pairCode:"LBV↔TCH", name:"Libreville / PK8 → Tchibanga", price:12000, depart:"Départ PK8", arrive:"Arrivée Tchibanga", plannedDuration:600, type:"Aller-retour"},
+  {id:"tch-lbv", code:"TCH-LBV", pairCode:"LBV↔TCH", name:"Tchibanga → Libreville / PK8", price:12000, depart:"Départ Tchibanga", arrive:"Arrivée PK8", plannedDuration:600, type:"Aller-retour"},
+  {id:"lbv-bit", code:"LBV-BIT", pairCode:"LBV↔BIT", name:"Libreville / PK8 → Bitam", price:13000, depart:"Départ PK8", arrive:"Arrivée Bitam", plannedDuration:600, type:"Aller-retour"},
+  {id:"bit-lbv", code:"BIT-LBV", pairCode:"LBV↔BIT", name:"Bitam → Libreville / PK8", price:13000, depart:"Départ Bitam", arrive:"Arrivée PK8", plannedDuration:600, type:"Aller-retour"}
 ];
 
 const defaultBuses = [
@@ -1001,7 +1005,9 @@ function defaultDurationMinutes(routeId) {
     'lbv-mou':480, 'mou-lbv':480,
     'lbv-oye':480, 'oye-lbv':480,
     'lbv-bit':600, 'bit-lbv':600,
-    'lbv-mak':660, 'mak-lbv':660
+    'lbv-mak':660, 'mak-lbv':660,
+    'lbv-leb':540, 'leb-lbv':540,
+    'lbv-tch':600, 'tch-lbv':600
   };
   return defaults[routeId] || 240;
 }
@@ -1012,14 +1018,17 @@ function updatePlanningDurationForRoute(busId) {
   durationEl.value = (defaultDurationMinutes(routeEl.value) / 60).toFixed(1).replace('.0','');
 }
 function reverseRouteId(routeId) {
-  const pairs = {
-    'lbv-lam':'lam-lbv','lam-lbv':'lbv-lam',
-    'lbv-mou':'mou-lbv','mou-lbv':'lbv-mou',
-    'lbv-oye':'oye-lbv','oye-lbv':'lbv-oye',
-    'lbv-bit':'bit-lbv','bit-lbv':'lbv-bit',
-    'lbv-mak':'mak-lbv','mak-lbv':'lbv-mak'
-  };
-  return pairs[routeId] || routeId;
+  const route = routes.find(r => r.id === routeId);
+  if (route && route.pairCode) {
+    const reverse = routes.find(r => r.id !== routeId && r.pairCode === route.pairCode);
+    if (reverse) return reverse.id;
+  }
+  const parts = String(routeId || '').split('-');
+  if (parts.length === 2) {
+    const candidate = parts[1] + '-' + parts[0];
+    if (routes.some(r => r.id === candidate)) return candidate;
+  }
+  return routeId;
 }
 function enRouteStatus(bus) {
   return 'En route vers ' + destinationFromRoute(routeById(bus.routeId));
@@ -1198,9 +1207,12 @@ function renderAdminPrices() {
       <div class="grid2">
         ${routes.map(r => `
           <div class="miniCard" style="${routePairCardStyle(r)}">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;">
-              <strong style="color:#073763;">Axe aller / retour</strong>
-              ${routePairBadge(r)}
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+              <strong style="color:#073763;">${r.type === 'Aller simple' ? 'Axe aller simple' : 'Axe aller / retour'}</strong>
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                ${routePairBadge(r)}
+                <button class="btn" style="background:#dc2626;color:#fff;padding:7px 11px;font-size:12px;" onclick="deleteRoute('${r.id}')">🗑️ Supprimer</button>
+              </div>
             </div>
             <label>Nom de l’axe</label>
             <input id="route_name_${r.id}" value="${esc(r.name)}">
@@ -1299,6 +1311,53 @@ function addRoute() {
   }
   save('g10_demo_v11_routes', routes);
   toast(type === 'round' ? 'Axe aller-retour créé automatiquement.' : 'Axe aller simple créé.');
+  renderAdminPrices();
+}
+
+function deleteRoute(routeId) {
+  const route = routes.find(r => r.id === routeId);
+  if (!route) return;
+
+  const linkedIds = new Set([route.id]);
+  if (route.pairCode && route.type !== 'Aller simple') {
+    routes.filter(r => r.pairCode === route.pairCode).forEach(r => linkedIds.add(r.id));
+  }
+
+  const activeBus = buses.find(b => linkedIds.has(b.routeId) && (b.serviceActive || b.status === 'En route' || String(b.status || '').startsWith('En route vers') || String(b.status || '').startsWith('Arrivé à')));
+  if (activeBus) {
+    alert(`Impossible de supprimer cet axe : le Bus ${activeBus.id} a une tournée active sur cet itinéraire.`);
+    return;
+  }
+
+  const linkedRoutes = routes.filter(r => linkedIds.has(r.id));
+  const names = linkedRoutes.map(r => '• ' + r.name).join('\n');
+  const question = linkedRoutes.length > 1
+    ? `Supprimer cet axe aller-retour et ses deux trajets ?\n\n${names}\n\nCette action est irréversible.`
+    : `Supprimer ce trajet ?\n\n${names}\n\nCette action est irréversible.`;
+  if (!confirm(question)) return;
+
+  routes = routes.filter(r => !linkedIds.has(r.id));
+  if (!routes.length) {
+    alert('Il faut conserver au moins un trajet dans la base.');
+    routes = linkedRoutes;
+    return;
+  }
+
+  const fallbackRouteId = routes[0].id;
+  buses.forEach(b => {
+    if (linkedIds.has(b.routeId)) {
+      b.routeId = fallbackRouteId;
+      b.plannedDate = '';
+      b.plannedDeparture = '';
+      b.plannedArrival = '';
+    }
+  });
+
+  save('g10_demo_v11_routes', routes);
+  save('g10_demo_v11_buses', buses);
+  report.unshift({time:nowTime(), action:'Suppression axe', details:linkedRoutes.map(r => `${r.name} (${money(r.price)})`).join(' | ')});
+  save('g10_demo_v11_report', report);
+  toast(linkedRoutes.length > 1 ? 'Axe aller-retour supprimé.' : 'Trajet supprimé.');
   renderAdminPrices();
 }
 
