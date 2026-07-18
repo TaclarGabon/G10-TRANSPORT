@@ -1595,6 +1595,7 @@ function ensureReturnPlanningFields(b) {
   if (typeof b.returnPlannedDeparture !== 'string') b.returnPlannedDeparture = '';
   if (!Number.isFinite(Number(b.returnPlannedDuration))) b.returnPlannedDuration = 0;
   if (typeof b.returnPlannedArrival !== 'string') b.returnPlannedArrival = '';
+  if (typeof b.isReturnTrip !== 'boolean') b.isReturnTrip = false;
 }
 buses.forEach(ensureReturnPlanningFields);
 save('g10_demo_v11_buses', buses);
@@ -1721,7 +1722,7 @@ function renderDriverLogin() {
     <div class="miniCard"><h4>Connexion / reprise chauffeur</h4>
       <p class="muted">Chaque bus possède son propre PIN. Un chauffeur peut reprendre sa session active sans remettre les données à zéro.</p>
       <div class="grid2"><div><label>Bus affecté</label><select id="driverBusSelect">
-        ${assigned.map(b=>{const g=groupByBus(b.id); const active=b.serviceActive?' — Session active à reprendre':''; return `<option value="${b.id}">Bus ${b.id} - ${esc(g.chauffeur)} - ${esc(routeById(b.routeId).name)}${active}</option>`;}).join('')}
+        ${assigned.map(b=>{const g=groupByBus(b.id); const active=b.serviceActive?' — Session active à reprendre':''; const routeLabel=b.routeId?routeById(b.routeId).name:'Axe à programmer par le chef d’exploitation'; return `<option value="${b.id}">Bus ${b.id} - ${esc(g.chauffeur)} - ${esc(routeLabel)}${active}</option>`;}).join('')}
       </select></div><div><label>PIN du bus</label><input id="driverPin" type="password" inputmode="numeric" placeholder="Ex : 001"></div></div>
       <div class="empty" style="margin-top:14px;text-align:left;background:#eff6ff;border-color:#93c5fd;color:#1e3a8a;"><b>PIN de démonstration :</b> Bus 1 = 001, Bus 2 = 002, Bus 3 = 003, Bus 4 = 004, Bus 5 = 005, Bus 6 = 006.</div>
       <div class="actionRow" style="margin-top:16px;"><button class="btn green" onclick="openDriverBus()">Connexion / Reprendre</button><button class="btn light" onclick="openScreen('home')">Fermer</button></div>
@@ -1735,6 +1736,11 @@ function openDriverBus() {
   const expected=DRIVER_BUS_PINS[busId];
   if (pin !== expected) { errorBox.textContent=`PIN incorrect pour le Bus ${busId}.`; errorBox.style.display='block'; return; }
   const b=busById(busId); if(!b || !groupByBus(busId)) return;
+  if (!b.serviceActive && (!b.routeId || !b.plannedDate || !b.plannedDeparture)) {
+    errorBox.textContent='Le chef d’exploitation doit programmer un nouvel axe, une date et une heure avant la prochaine connexion chauffeur.';
+    errorBox.style.display='block';
+    return;
+  }
   selectedDriverBusId=busId;
   if (b.serviceActive) {
     // Reprise sécurisée : aucune place, recette, heure ou étape n’est effacée.
@@ -1838,7 +1844,7 @@ function endService() {
     alert('La fin de service est possible uniquement après confirmation de l’arrivée.');
     return;
   }
-  if (!confirm('Confirmez-vous la fin de service pour ce trajet ?')) return;
+  if (!confirm(b.isReturnTrip ? 'Confirmez-vous la clôture définitive de la tournée aller-retour ? La fiche active sera remise à zéro et le rapport restera archivé.' : 'Confirmez-vous la fin de service pour ce trajet ?')) return;
   const g = groupByBus(b.id);
   const r = routeById(b.routeId);
   const tripId = `G10-${new Date().toISOString().slice(0,10).replaceAll('-','')}-BUS${b.id}-${Date.now().toString().slice(-5)}`;
@@ -1877,6 +1883,49 @@ function endService() {
   };
   report.push(row);
 
+  // Après le trajet retour, la tournée complète est clôturée et la fiche active est remise à zéro.
+  if (b.isReturnTrip) {
+    b.status = 'Disponible';
+    b.serviceActive = false;
+    b.closed = false;
+    b.awaitingReturn = false;
+    b.isReturnTrip = false;
+    b.routeId = '';
+    b.plannedDate = '';
+    b.plannedDeparture = '';
+    b.plannedArrival = '';
+    b.plannedDuration = 0;
+    b.returnPlanningEnabled = false;
+    b.returnPlannedDate = '';
+    b.returnPlannedDeparture = '';
+    b.returnPlannedDuration = 0;
+    b.returnPlannedArrival = '';
+    b.returnPreparedByDriver = false;
+    b.returnPreparedAt = '';
+    b.earlyDepartureAuthorized = false;
+    b.earlyDepartureAuthorizedAt = '';
+    b.earlyDepartureAuthorizedBy = '';
+    b.sold = 0;
+    b.departureTime = '';
+    b.arrivalTime = '';
+    b.serviceStartTime = '';
+    b.serviceEndTime = '';
+    b.incidentActive = false;
+    b.incidentType = '';
+    b.incidentNote = '';
+    b.incidentStartTime = '';
+    b.incidentEndTime = '';
+    b.resumeTime = '';
+    b.previousStatus = '';
+    save('g10_demo_v11_buses', buses);
+    save('g10_demo_v11_report', report);
+    selectedDriverBusId = null;
+    toast('Tournée aller-retour clôturée. Le bus est disponible et attend un nouveau planning du chef d’exploitation.');
+    renderDriverFleetStatus();
+    renderDriverLogin();
+    return;
+  }
+
   // L’aller est clôturé. Le bus reste verrouillé pour ce chauffeur jusqu’au Départ-retour.
   b.status = 'Fin de service';
   b.closed = true;
@@ -1904,6 +1953,7 @@ function startReturnTrip() {
   b.status = 'En service';
   b.closed = false;
   b.awaitingReturn = false;
+  b.isReturnTrip = true;
   b.serviceActive = true;
   b.sold = 0;
   b.departureTime = '';
@@ -2032,7 +2082,7 @@ function renderDriverBus() {
 
         <div class="actionRow">
           <button class="btn green" onclick="arriveBus()" ${canArrive ? '' : 'disabled'}>${esc(r.arrive)}</button>
-          <button class="btn gold" onclick="endService()" ${canEnd ? '' : 'disabled'}>Fin de service</button>
+          <button class="btn gold" onclick="endService()" ${canEnd ? '' : 'disabled'}>${b.isReturnTrip ? 'Clôturer la tournée' : 'Fin de service'}</button>
         </div>
         <div style="margin-top:10px;">
           <button class="btn orange big" style="width:100%;" onclick="startReturnTrip()" ${canReturn ? '' : 'disabled'}>Départ-retour</button>
