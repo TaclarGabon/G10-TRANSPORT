@@ -858,7 +858,8 @@ buses.forEach(b => {
   if (typeof b.plannedReturnDeparture === 'undefined') b.plannedReturnDeparture = '';
   if (typeof b.plannedReturnDuration === 'undefined') b.plannedReturnDuration = b.plannedDuration || 240;
   if (typeof b.plannedReturnArrival === 'undefined') b.plannedReturnArrival = '';
-  if (typeof b.outboundRouteId === 'undefined') b.outboundRouteId = b.routeId || 'lbv-lam';
+  if (typeof b.outboundRouteId === 'undefined') b.outboundRouteId = '';
+  if (typeof b.planningConfigured === 'undefined') b.planningConfigured = Boolean(b.plannedOutboundDate || b.plannedOutboundDeparture);
 });
 // Migration V12.3 : codes courts en majuscules et regroupement aller/retour.
 routes.forEach(r => {
@@ -1540,9 +1541,11 @@ function timingClass(diff) {
 function saveBusPlanning(busId) {
   const b=busById(busId); if(!b)return;
   const outboundRouteId=document.getElementById(`planRoute_${busId}`).value;
+  if (!outboundRouteId) { alert('Choisissez d’abord un axe aller.'); return; }
   const modeEl=document.querySelector(`input[name="tripMode_${busId}"]:checked`);
   const tripMode=modeEl ? modeEl.value : 'oneway';
   b.tripMode=tripMode;
+  b.planningConfigured=true;
   b.outboundRouteId=outboundRouteId;
   b.routeId=outboundRouteId;
   b.plannedOutboundDate=document.getElementById(`planOutboundDate_${busId}`).value;
@@ -1578,12 +1581,12 @@ function renderPlanning() {
     <div class="miniCard softGold" style="margin-bottom:16px;"><h4>2. Affectation des axes et horaires</h4><p class="muted">Planifiez d’abord l’aller. Activez l’option Aller-retour seulement lorsqu’un retour doit être programmé. Tous les horaires sont affichés au format 24 heures, par tranches de 15 minutes.</p></div>
     <div class="grid2">${assigned.map(b=>{
       const g=groupByBus(b.id);
-      const selected=b.outboundRouteId||b.routeId;
-      const opts=routes.map(r=>`<option value="${r.id}" ${selected===r.id?'selected':''}>${esc(r.name)}</option>`).join('');
+      const selected=b.planningConfigured ? (b.outboundRouteId||b.routeId||'') : '';
+      const opts='<option value="">-- Choisir un axe --</option>'+routes.map(r=>`<option value="${r.id}" ${selected===r.id?'selected':''}>${esc(r.name)}</option>`).join('');
       const outArr=addMinutesToTime(b.plannedOutboundDeparture,b.plannedOutboundDuration);
       const retArr=addMinutesToTime(b.plannedReturnDeparture,b.plannedReturnDuration);
       const tripMode=b.tripMode || ((b.plannedReturnDate||b.plannedReturnDeparture)?'round':'oneway');
-      const reverse=routeById(reverseRouteId(selected));
+      const reverse=selected ? routeById(reverseRouteId(selected)) : null;
       return `<div class="busCard assigned">
         <div class="busTop"><div class="busLeft"><div class="busNum">${b.id}</div><div class="busInfo"><h4>Bus ${b.id}</h4><p>Groupe ${g.id} — ${esc(g.chauffeur)}</p></div></div><span class="badge blue">Planification</span></div>
         <label>Axe aller</label><select id="planRoute_${b.id}" onchange="updatePlanningDurationForRoute(${b.id})">${opts}</select>
@@ -1595,7 +1598,7 @@ function renderPlanning() {
           <label class="btn ${tripMode==='oneway'?'green':'light'}"><input type="radio" name="tripMode_${b.id}" value="oneway" ${tripMode==='oneway'?'checked':''} onchange="toggleReturnPlanning(${b.id},'oneway')" style="width:auto;margin-right:8px;"> Aller simple</label>
           <label class="btn ${tripMode==='round'?'green':'light'}"><input type="radio" name="tripMode_${b.id}" value="round" ${tripMode==='round'?'checked':''} onchange="toggleReturnPlanning(${b.id},'round')" style="width:auto;margin-right:8px;"> Aller-retour</label>
         </div></div>
-        <div id="returnPlanning_${b.id}" class="miniCard" style="margin-top:12px;background:#f0fdf4;display:${tripMode==='round'?'block':'none'};"><h4>Trajet retour — ${esc(reverse.name)}</h4>
+        <div id="returnPlanning_${b.id}" class="miniCard" style="margin-top:12px;background:#f0fdf4;display:${tripMode==='round'?'block':'none'};"><h4>Trajet retour — ${reverse ? esc(reverse.name) : 'Choisissez d’abord l’axe aller'}</h4>
           <div class="grid2"><div><label>Date retour prévue</label><input id="planReturnDate_${b.id}" type="date" value="${esc(b.plannedReturnDate||'')}"></div><div><label>Départ retour prévu (24 h)</label><select id="planReturnDeparture_${b.id}">${militaryTimeOptions(b.plannedReturnDeparture||'')}</select></div></div>
           <div class="grid2" style="margin-top:10px;"><div><label>Durée retour prévue (heures)</label><input id="planReturnDuration_${b.id}" type="number" min="0.5" step="0.5" value="${Number((Number(b.plannedReturnDuration||240)/60).toFixed(1))}"><div class="scheduleNote time-green">Durée retenue : ${formatDurationHours(b.plannedReturnDuration||240)}</div></div><div class="timeBox time-green"><span>Arrivée retour prévisionnelle</span><strong>${retArr||'À calculer'}</strong></div></div>
         </div>
@@ -2032,7 +2035,8 @@ function resetDay() {
     // Aucun axe n'est affiché tant que le bus n'est pas affecté.
     b.routeId = '';
     b.outboundRouteId = '';
-    b.returnRouteId = ''; 
+    b.returnRouteId = '';
+    b.planningConfigured = false; 
   });
 
   report = [];
