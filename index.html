@@ -1173,21 +1173,35 @@ function saveGroupAndNext() {
   }
 }
 
+function routeCityLabel(route) {
+  const name = String(route && route.name || '');
+  const cities = name.split(/\s*(?:→|->)\s*/).map(v => v.trim()).filter(Boolean);
+  const city = cities.find(v => !/libreville|pk8/i.test(v));
+  if (city) return city;
+
+  const code = String(route && (route.code || route.id) || '').toUpperCase();
+  const known = {LAM:'Lambaréné',MOU:'Mouila',OYE:'Oyem',BIT:'Bitam',MAK:'Makokou',TCH:'Tchibanga',LEB:'Lebamba',FRA:'Franceville'};
+  const part = code.split(/[-↔]/).find(v => v && v !== 'LBV');
+  return known[part] || part || 'Autre axe';
+}
+
 function routePairPalette(route) {
   const key = String((route && route.id) || '').toLowerCase();
   const name = String((route && route.name) || '').toLowerCase();
   const value = key + ' ' + name;
 
-  // Même couleur douce pour l’aller et le retour d’un même axe.
+  // Même couleur douce et même ville de destination pour l’aller et le retour.
   if (value.includes('lam')) return {bg:'#fff7df', border:'#e7c65c', label:'Lambaréné'};
   if (value.includes('mou')) return {bg:'#eaf8ef', border:'#75c997', label:'Mouila'};
   if (value.includes('oye')) return {bg:'#f2edff', border:'#a993e8', label:'Oyem'};
   if (value.includes('bit')) return {bg:'#fff0e8', border:'#ee9f76', label:'Bitam'};
   if (value.includes('mak')) return {bg:'#e9f7fa', border:'#78c8d4', label:'Makokou'};
+  if (value.includes('tch')) return {bg:'#eef8ea', border:'#8bc47a', label:'Tchibanga'};
+  if (value.includes('leb')) return {bg:'#eaf4ff', border:'#7fb4df', label:'Lebamba'};
   const palettes=[{bg:'#eaf4ff',border:'#7fb4df'},{bg:'#fff4e5',border:'#e8b56a'},{bg:'#eef8ea',border:'#8bc47a'},{bg:'#f8edff',border:'#bd91dc'},{bg:'#fff0f4',border:'#e89ab0'}];
   const paletteKey=String(route && (route.pairCode || route.id || route.name) || 'axe');
   const idx=[...paletteKey].reduce((a,c)=>a+c.charCodeAt(0),0)%palettes.length;
-  return {...palettes[idx], label:(route && route.pairCode) ? route.pairCode : 'Autre axe'};
+  return {...palettes[idx], label:routeCityLabel(route)};
 }
 function routePairCardStyle(route) {
   const palette = routePairPalette(route);
