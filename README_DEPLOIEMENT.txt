@@ -1,4 +1,4 @@
-G10 TRANSPORT — VERSION V12.5 FIREBASE
+G10 TRANSPORT — VERSION V12.6 FIREBASE
 
 Fichiers à déposer ensemble dans GitHub :
 - index.html
@@ -8,9 +8,12 @@ Fichiers à déposer ensemble dans GitHub :
 - dashboard.html
 - README_DEPLOIEMENT.txt
 
-Corrections V12.5 :
+Corrections V12.6 :
 - avances et retards affichés en heures et minutes au-delà de 59 minutes ;
 - statut « Retour vers … » pendant un trajet retour ;
 - incidents et arrivée restent utilisables pendant le retour ;
 - aucun axe affiché dans Suivi des bus lorsqu’un bus n’est pas affecté ;
-- conservation de toutes les corrections V12.4.
+- conservation de toutes les corrections V12.6.
+
+
+V12.6 : planification retour optionnelle et horaires 24 h par tranches de 15 minutes.

@@ -1495,6 +1495,21 @@ function roundTimeToQuarter(time) {
   total = ((total % 1440) + 1440) % 1440;
   return String(Math.floor(total/60)).padStart(2,'0') + ':' + String(total%60).padStart(2,'0');
 }
+function militaryTimeOptions(selected='') {
+  const chosen = roundTimeToQuarter(selected || '');
+  let html = '<option value="">--:--</option>';
+  for (let total = 0; total < 1440; total += 15) {
+    const value = String(Math.floor(total/60)).padStart(2,'0') + ':' + String(total%60).padStart(2,'0');
+    html += `<option value="${value}" ${chosen === value ? 'selected' : ''}>${value}</option>`;
+  }
+  return html;
+}
+function toggleReturnPlanning(busId, mode) {
+  const block = document.getElementById(`returnPlanning_${busId}`);
+  const saveBtn = document.getElementById(`savePlanning_${busId}`);
+  if (block) block.style.display = mode === 'round' ? 'block' : 'none';
+  if (saveBtn) saveBtn.textContent = mode === 'round' ? 'Enregistrer aller et retour' : 'Enregistrer l’aller';
+}
 function timeToMinutes(time) {
   if (!time || !/^\d{1,2}:\d{2}$/.test(time)) return null;
   const [h,m] = time.split(':').map(Number); return h*60+m;
@@ -1525,20 +1540,29 @@ function timingClass(diff) {
 function saveBusPlanning(busId) {
   const b=busById(busId); if(!b)return;
   const outboundRouteId=document.getElementById(`planRoute_${busId}`).value;
+  const modeEl=document.querySelector(`input[name="tripMode_${busId}"]:checked`);
+  const tripMode=modeEl ? modeEl.value : 'oneway';
+  b.tripMode=tripMode;
   b.outboundRouteId=outboundRouteId;
   b.routeId=outboundRouteId;
   b.plannedOutboundDate=document.getElementById(`planOutboundDate_${busId}`).value;
   b.plannedOutboundDeparture=roundTimeToQuarter(document.getElementById(`planOutboundDeparture_${busId}`).value);
   b.plannedOutboundDuration=Math.max(30,Math.round(Number(document.getElementById(`planOutboundDuration_${busId}`).value||0) * 60));
   b.plannedOutboundArrival=addMinutesToTime(b.plannedOutboundDeparture,b.plannedOutboundDuration);
-  b.plannedReturnDate=document.getElementById(`planReturnDate_${busId}`).value;
-  b.plannedReturnDeparture=roundTimeToQuarter(document.getElementById(`planReturnDeparture_${busId}`).value);
-  b.plannedReturnDuration=Math.max(30,Math.round(Number(document.getElementById(`planReturnDuration_${busId}`).value||0) * 60));
-  b.plannedReturnArrival=addMinutesToTime(b.plannedReturnDeparture,b.plannedReturnDuration);
+  if (tripMode === 'round') {
+    b.plannedReturnDate=document.getElementById(`planReturnDate_${busId}`).value;
+    b.plannedReturnDeparture=roundTimeToQuarter(document.getElementById(`planReturnDeparture_${busId}`).value);
+    b.plannedReturnDuration=Math.max(30,Math.round(Number(document.getElementById(`planReturnDuration_${busId}`).value||0) * 60));
+    b.plannedReturnArrival=addMinutesToTime(b.plannedReturnDeparture,b.plannedReturnDuration);
+  } else {
+    b.plannedReturnDate=''; b.plannedReturnDeparture=''; b.plannedReturnArrival='';
+  }
   b.plannedDate=b.plannedOutboundDate; b.plannedDeparture=b.plannedOutboundDeparture;
   b.plannedDuration=b.plannedOutboundDuration; b.plannedArrival=b.plannedOutboundArrival;
   b.earlyDepartureAuthorized=false; b.earlyDepartureAuthorizedAt=''; b.earlyDepartureAuthorizedBy='';
-  save('g10_demo_v11_buses',buses); toast(`Planning aller et retour du Bus ${busId} enregistré.`); renderPlanning();
+  save('g10_demo_v11_buses',buses);
+  toast(tripMode === 'round' ? `Planning aller et retour du Bus ${busId} enregistré.` : `Planning aller du Bus ${busId} enregistré.`);
+  renderPlanning();
 }
 function authorizeEarlyDeparture(busId) {
   const b=busById(busId); if(!b)return;
@@ -1551,21 +1575,34 @@ function renderPlanning() {
   const assigned=buses.filter(b=>groupByBus(b.id));
   if(!assigned.length){document.getElementById('opContent').innerHTML='<div class="empty">Assignez d’abord les groupes aux bus.</div>';return;}
   document.getElementById('opContent').innerHTML=`
-    <div class="miniCard softGold" style="margin-bottom:16px;"><h4>2. Affectation des axes et horaires</h4><p class="muted">Le chef d’exploitation prépare séparément l’aller et le retour. Les heures prévues sont arrondies par tranches de 15 minutes.</p></div>
-    <div class="grid2">${assigned.map(b=>{const g=groupByBus(b.id);const selected=b.outboundRouteId||b.routeId;const opts=routes.map(r=>`<option value="${r.id}" ${selected===r.id?'selected':''}>${esc(r.name)}</option>`).join('');const outArr=addMinutesToTime(b.plannedOutboundDeparture,b.plannedOutboundDuration);const retArr=addMinutesToTime(b.plannedReturnDeparture,b.plannedReturnDuration);return `<div class="busCard assigned">
-      <div class="busTop"><div class="busLeft"><div class="busNum">${b.id}</div><div class="busInfo"><h4>Bus ${b.id}</h4><p>Groupe ${g.id} — ${esc(g.chauffeur)}</p></div></div><span class="badge blue">Planification</span></div>
-      <label>Axe aller</label><select id="planRoute_${b.id}" onchange="updatePlanningDurationForRoute(${b.id})">${opts}</select>
-      <div class="miniCard" style="margin-top:12px;background:#eff6ff;"><h4>Trajet aller</h4>
-        <div class="grid2"><div><label>Date aller prévue</label><input id="planOutboundDate_${b.id}" type="date" value="${esc(b.plannedOutboundDate||'')}"></div><div><label>Départ aller prévu</label><input id="planOutboundDeparture_${b.id}" type="time" step="900" value="${esc(b.plannedOutboundDeparture||'')}"></div></div>
-        <div class="grid2" style="margin-top:10px;"><div><label>Durée aller prévue (heures)</label><input id="planOutboundDuration_${b.id}" type="number" min="0.5" step="0.5" value="${Number((Number(b.plannedOutboundDuration||240)/60).toFixed(1))}"><div class="scheduleNote time-blue">Durée retenue : ${formatDurationHours(b.plannedOutboundDuration||240)}</div></div><div class="timeBox time-blue"><span>Arrivée aller prévisionnelle</span><strong>${outArr||'À calculer'}</strong></div></div>
-      </div>
-      <div class="miniCard" style="margin-top:12px;background:#f0fdf4;"><h4>Trajet retour — ${esc(routeById(reverseRouteId(selected)).name)}</h4>
-        <div class="grid2"><div><label>Date retour prévue</label><input id="planReturnDate_${b.id}" type="date" value="${esc(b.plannedReturnDate||'')}"></div><div><label>Départ retour prévu</label><input id="planReturnDeparture_${b.id}" type="time" step="900" value="${esc(b.plannedReturnDeparture||'')}"></div></div>
-        <div class="grid2" style="margin-top:10px;"><div><label>Durée retour prévue (heures)</label><input id="planReturnDuration_${b.id}" type="number" min="0.5" step="0.5" value="${Number((Number(b.plannedReturnDuration||240)/60).toFixed(1))}"><div class="scheduleNote time-green">Durée retenue : ${formatDurationHours(b.plannedReturnDuration||240)}</div></div><div class="timeBox time-green"><span>Arrivée retour prévisionnelle</span><strong>${retArr||'À calculer'}</strong></div></div>
-      </div>
-      <div class="actionRow" style="margin-top:12px;"><button class="btn green" onclick="saveBusPlanning(${b.id})">Enregistrer aller et retour</button><button class="btn light" onclick="authorizeEarlyDeparture(${b.id})">Autoriser départ anticipé</button></div>
-      ${b.earlyDepartureAuthorized?`<div class="scheduleNote time-green">✓ Départ anticipé exceptionnel autorisé à ${esc(b.earlyDepartureAuthorizedAt)}</div>`:''}
-    </div>`}).join('')}</div>`;
+    <div class="miniCard softGold" style="margin-bottom:16px;"><h4>2. Affectation des axes et horaires</h4><p class="muted">Planifiez d’abord l’aller. Activez l’option Aller-retour seulement lorsqu’un retour doit être programmé. Tous les horaires sont affichés au format 24 heures, par tranches de 15 minutes.</p></div>
+    <div class="grid2">${assigned.map(b=>{
+      const g=groupByBus(b.id);
+      const selected=b.outboundRouteId||b.routeId;
+      const opts=routes.map(r=>`<option value="${r.id}" ${selected===r.id?'selected':''}>${esc(r.name)}</option>`).join('');
+      const outArr=addMinutesToTime(b.plannedOutboundDeparture,b.plannedOutboundDuration);
+      const retArr=addMinutesToTime(b.plannedReturnDeparture,b.plannedReturnDuration);
+      const tripMode=b.tripMode || ((b.plannedReturnDate||b.plannedReturnDeparture)?'round':'oneway');
+      const reverse=routeById(reverseRouteId(selected));
+      return `<div class="busCard assigned">
+        <div class="busTop"><div class="busLeft"><div class="busNum">${b.id}</div><div class="busInfo"><h4>Bus ${b.id}</h4><p>Groupe ${g.id} — ${esc(g.chauffeur)}</p></div></div><span class="badge blue">Planification</span></div>
+        <label>Axe aller</label><select id="planRoute_${b.id}" onchange="updatePlanningDurationForRoute(${b.id})">${opts}</select>
+        <div class="miniCard" style="margin-top:12px;background:#eff6ff;"><h4>Trajet aller</h4>
+          <div class="grid2"><div><label>Date aller prévue</label><input id="planOutboundDate_${b.id}" type="date" value="${esc(b.plannedOutboundDate||'')}"></div><div><label>Départ aller prévu (24 h)</label><select id="planOutboundDeparture_${b.id}">${militaryTimeOptions(b.plannedOutboundDeparture||'')}</select></div></div>
+          <div class="grid2" style="margin-top:10px;"><div><label>Durée aller prévue (heures)</label><input id="planOutboundDuration_${b.id}" type="number" min="0.5" step="0.5" value="${Number((Number(b.plannedOutboundDuration||240)/60).toFixed(1))}"><div class="scheduleNote time-blue">Durée retenue : ${formatDurationHours(b.plannedOutboundDuration||240)}</div></div><div class="timeBox time-blue"><span>Arrivée aller prévisionnelle</span><strong>${outArr||'À calculer'}</strong></div></div>
+        </div>
+        <div style="margin-top:12px;"><label>Type de trajet</label><div class="actionRow">
+          <label class="btn ${tripMode==='oneway'?'green':'light'}"><input type="radio" name="tripMode_${b.id}" value="oneway" ${tripMode==='oneway'?'checked':''} onchange="toggleReturnPlanning(${b.id},'oneway')" style="width:auto;margin-right:8px;"> Aller simple</label>
+          <label class="btn ${tripMode==='round'?'green':'light'}"><input type="radio" name="tripMode_${b.id}" value="round" ${tripMode==='round'?'checked':''} onchange="toggleReturnPlanning(${b.id},'round')" style="width:auto;margin-right:8px;"> Aller-retour</label>
+        </div></div>
+        <div id="returnPlanning_${b.id}" class="miniCard" style="margin-top:12px;background:#f0fdf4;display:${tripMode==='round'?'block':'none'};"><h4>Trajet retour — ${esc(reverse.name)}</h4>
+          <div class="grid2"><div><label>Date retour prévue</label><input id="planReturnDate_${b.id}" type="date" value="${esc(b.plannedReturnDate||'')}"></div><div><label>Départ retour prévu (24 h)</label><select id="planReturnDeparture_${b.id}">${militaryTimeOptions(b.plannedReturnDeparture||'')}</select></div></div>
+          <div class="grid2" style="margin-top:10px;"><div><label>Durée retour prévue (heures)</label><input id="planReturnDuration_${b.id}" type="number" min="0.5" step="0.5" value="${Number((Number(b.plannedReturnDuration||240)/60).toFixed(1))}"><div class="scheduleNote time-green">Durée retenue : ${formatDurationHours(b.plannedReturnDuration||240)}</div></div><div class="timeBox time-green"><span>Arrivée retour prévisionnelle</span><strong>${retArr||'À calculer'}</strong></div></div>
+        </div>
+        <div class="actionRow" style="margin-top:12px;"><button id="savePlanning_${b.id}" class="btn green" onclick="saveBusPlanning(${b.id})">${tripMode==='round'?'Enregistrer aller et retour':'Enregistrer l’aller'}</button><button class="btn light" onclick="authorizeEarlyDeparture(${b.id})">Autoriser départ anticipé</button></div>
+        ${b.earlyDepartureAuthorized?`<div class="scheduleNote time-green">✓ Départ anticipé exceptionnel autorisé à ${esc(b.earlyDepartureAuthorizedAt)}</div>`:''}
+      </div>`
+    }).join('')}</div>`;
 }
 function renderFollow() {
   document.getElementById('opContent').innerHTML = `
