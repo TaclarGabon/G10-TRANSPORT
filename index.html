@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>G10 Transports - V12.5 Firebase</title>
+  <title>G10 Transports - V12.1 Firebase</title>
   <style>
     :root {
       --navy:#073763;
@@ -796,20 +796,16 @@ const defaultGroups = [
 ];
 
 const defaultRoutes = [
-  {id:"lbv-lam", code:"LBV-LAM", pairCode:"LBV↔LAM", name:"Libreville / PK8 → Lambaréné", price:5000, depart:"Départ PK8", arrive:"Arrivée Lambaréné", plannedDuration:240, type:"Aller-retour"},
-  {id:"lam-lbv", code:"LAM-LBV", pairCode:"LBV↔LAM", name:"Lambaréné → Libreville / PK8", price:5000, depart:"Départ Lambaréné", arrive:"Arrivée PK8", plannedDuration:240, type:"Aller-retour"},
-  {id:"lbv-mou", code:"LBV-MOU", pairCode:"LBV↔MOU", name:"Libreville / PK8 → Mouila", price:8000, depart:"Départ PK8", arrive:"Arrivée Mouila", plannedDuration:480, type:"Aller-retour"},
-  {id:"mou-lbv", code:"MOU-LBV", pairCode:"LBV↔MOU", name:"Mouila → Libreville / PK8", price:8000, depart:"Départ Mouila", arrive:"Arrivée PK8", plannedDuration:480, type:"Aller-retour"},
-  {id:"lbv-leb", code:"LBV-LEB", pairCode:"LBV↔LEB", name:"Libreville / PK8 → Lebamba", price:10000, depart:"Départ PK8", arrive:"Arrivée Lebamba", plannedDuration:540, type:"Aller-retour"},
-  {id:"leb-lbv", code:"LEB-LBV", pairCode:"LBV↔LEB", name:"Lebamba → Libreville / PK8", price:10000, depart:"Départ Lebamba", arrive:"Arrivée PK8", plannedDuration:540, type:"Aller-retour"},
-  {id:"lbv-mak", code:"LBV-MAK", pairCode:"LBV↔MAK", name:"Libreville / PK8 → Makokou", price:12000, depart:"Départ PK8", arrive:"Arrivée Makokou", plannedDuration:660, type:"Aller-retour"},
-  {id:"mak-lbv", code:"MAK-LBV", pairCode:"LBV↔MAK", name:"Makokou → Libreville / PK8", price:12000, depart:"Départ Makokou", arrive:"Arrivée PK8", plannedDuration:660, type:"Aller-retour"},
-  {id:"lbv-oye", code:"LBV-OYE", pairCode:"LBV↔OYE", name:"Libreville / PK8 → Oyem", price:12000, depart:"Départ PK8", arrive:"Arrivée Oyem", plannedDuration:480, type:"Aller-retour"},
-  {id:"oye-lbv", code:"OYE-LBV", pairCode:"LBV↔OYE", name:"Oyem → Libreville / PK8", price:12000, depart:"Départ Oyem", arrive:"Arrivée PK8", plannedDuration:480, type:"Aller-retour"},
-  {id:"lbv-tch", code:"LBV-TCH", pairCode:"LBV↔TCH", name:"Libreville / PK8 → Tchibanga", price:12000, depart:"Départ PK8", arrive:"Arrivée Tchibanga", plannedDuration:600, type:"Aller-retour"},
-  {id:"tch-lbv", code:"TCH-LBV", pairCode:"LBV↔TCH", name:"Tchibanga → Libreville / PK8", price:12000, depart:"Départ Tchibanga", arrive:"Arrivée PK8", plannedDuration:600, type:"Aller-retour"},
-  {id:"lbv-bit", code:"LBV-BIT", pairCode:"LBV↔BIT", name:"Libreville / PK8 → Bitam", price:13000, depart:"Départ PK8", arrive:"Arrivée Bitam", plannedDuration:600, type:"Aller-retour"},
-  {id:"bit-lbv", code:"BIT-LBV", pairCode:"LBV↔BIT", name:"Bitam → Libreville / PK8", price:13000, depart:"Départ Bitam", arrive:"Arrivée PK8", plannedDuration:600, type:"Aller-retour"}
+  {id:"lbv-lam", code:"LBV-LAM", pairCode:"LAM↔LBV", name:"Libreville / PK8 → Lambaréné", price:5000, depart:"Départ PK8", arrive:"Arrivée Lambaréné"},
+  {id:"lam-lbv", code:"LAM-LBV", pairCode:"LAM↔LBV", name:"Lambaréné → Libreville / PK8", price:5000, depart:"Départ Lambaréné", arrive:"Arrivée PK8"},
+  {id:"lbv-mou", code:"LBV-MOU", pairCode:"LBV↔MOU", name:"Libreville / PK8 → Mouila", price:10000, depart:"Départ PK8", arrive:"Arrivée Mouila"},
+  {id:"mou-lbv", code:"MOU-LBV", pairCode:"LBV↔MOU", name:"Mouila → Libreville / PK8", price:10000, depart:"Départ Mouila", arrive:"Arrivée PK8"},
+  {id:"lbv-oye", code:"LBV-OYE", pairCode:"LBV↔OYE", name:"Libreville / PK8 → Oyem", price:15000, depart:"Départ PK8", arrive:"Arrivée Oyem"},
+  {id:"oye-lbv", code:"OYE-LBV", pairCode:"LBV↔OYE", name:"Oyem → Libreville / PK8", price:15000, depart:"Départ Oyem", arrive:"Arrivée PK8"},
+  {id:"lbv-bit", code:"LBV-BIT", pairCode:"BIT↔LBV", name:"Libreville / PK8 → Bitam", price:17000, depart:"Départ PK8", arrive:"Arrivée Bitam"},
+  {id:"bit-lbv", code:"BIT-LBV", pairCode:"BIT↔LBV", name:"Bitam → Libreville / PK8", price:17000, depart:"Départ Bitam", arrive:"Arrivée PK8"},
+  {id:"lbv-mak", code:"LBV-MAK", pairCode:"LBV↔MAK", name:"Libreville / PK8 → Makokou", price:17000, depart:"Départ PK8", arrive:"Arrivée Makokou"},
+  {id:"mak-lbv", code:"MAK-LBV", pairCode:"LBV↔MAK", name:"Makokou → Libreville / PK8", price:17000, depart:"Départ Makokou", arrive:"Arrivée PK8"}
 ];
 
 const defaultBuses = [
@@ -854,6 +850,15 @@ buses.forEach(b => {
   if (typeof b.earlyDepartureAuthorizedAt === 'undefined') b.earlyDepartureAuthorizedAt = '';
   if (typeof b.earlyDepartureAuthorizedBy === 'undefined') b.earlyDepartureAuthorizedBy = '';
   if (typeof b.awaitingReturn === 'undefined') b.awaitingReturn = false;
+  if (typeof b.plannedOutboundDate === 'undefined') b.plannedOutboundDate = b.plannedDate || '';
+  if (typeof b.plannedOutboundDeparture === 'undefined') b.plannedOutboundDeparture = b.plannedDeparture || '';
+  if (typeof b.plannedOutboundDuration === 'undefined') b.plannedOutboundDuration = b.plannedDuration || 240;
+  if (typeof b.plannedOutboundArrival === 'undefined') b.plannedOutboundArrival = b.plannedArrival || '';
+  if (typeof b.plannedReturnDate === 'undefined') b.plannedReturnDate = '';
+  if (typeof b.plannedReturnDeparture === 'undefined') b.plannedReturnDeparture = '';
+  if (typeof b.plannedReturnDuration === 'undefined') b.plannedReturnDuration = b.plannedDuration || 240;
+  if (typeof b.plannedReturnArrival === 'undefined') b.plannedReturnArrival = '';
+  if (typeof b.outboundRouteId === 'undefined') b.outboundRouteId = b.routeId || 'lbv-lam';
 });
 // Migration V12.3 : codes courts en majuscules et regroupement aller/retour.
 routes.forEach(r => {
@@ -876,7 +881,7 @@ function statePayload() {
     routes: cloneData(routes),
     buses: cloneData(buses),
     report: cloneData(report),
-    version: 'V12.3',
+    version: 'V12.5',
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 }
@@ -969,7 +974,7 @@ function nowTime() { return new Date().toLocaleTimeString('fr-FR', {hour:'2-digi
 function groupReady(g) { return Boolean(g.chauffeur && g.chargeur); }
 function groupByBus(busId) { return groups.find(g => String(g.busId) === String(busId)); }
 function busById(id) { return buses.find(b => b.id === Number(id)); }
-function routeById(id) { return routes.find(r => r.id === id) || routes[0]; }
+function routeById(id) { return routes.find(r => r.id === id) || {id:'',code:'',pairCode:'',name:'Aucun axe assigné',price:0,depart:'Départ',arrive:'Arrivée'}; }
 function remaining(bus) { return Math.max(0, Number(bus.capacity || 0) - Number(bus.sold || 0)); }
 function receipt(bus) { const r = routeById(bus.routeId); return Number(bus.sold || 0) * Number(r.price || 0); }
 function normalizeBusState(bus) {
@@ -999,25 +1004,13 @@ function formatDurationHours(minutes) {
   if (!mins) return `${hours} h`;
   return `${hours} h ${String(mins).padStart(2,'0')}`;
 }
-function planningTimeOptions(selected='') {
-  let html = `<option value="" ${selected ? '' : 'selected'}>--:--</option>`;
-  for (let h = 0; h < 24; h++) {
-    for (let m = 0; m < 60; m += 15) {
-      const value = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-      html += `<option value="${value}" ${selected === value ? 'selected' : ''}>${value}</option>`;
-    }
-  }
-  return html;
-}
 function defaultDurationMinutes(routeId) {
   const defaults = {
     'lbv-lam':240, 'lam-lbv':240,
     'lbv-mou':480, 'mou-lbv':480,
     'lbv-oye':480, 'oye-lbv':480,
     'lbv-bit':600, 'bit-lbv':600,
-    'lbv-mak':660, 'mak-lbv':660,
-    'lbv-leb':540, 'leb-lbv':540,
-    'lbv-tch':600, 'tch-lbv':600
+    'lbv-mak':660, 'mak-lbv':660
   };
   return defaults[routeId] || 240;
 }
@@ -1025,27 +1018,30 @@ function updatePlanningDurationForRoute(busId) {
   const routeEl = document.getElementById(`planRoute_${busId}`);
   const durationEl = document.getElementById(`planDuration_${busId}`);
   if (!routeEl || !durationEl) return;
-  if (!routeEl.value) {
-    durationEl.value = '';
-    return;
-  }
   durationEl.value = (defaultDurationMinutes(routeEl.value) / 60).toFixed(1).replace('.0','');
 }
 function reverseRouteId(routeId) {
-  const route = routes.find(r => r.id === routeId);
-  if (route && route.pairCode) {
-    const reverse = routes.find(r => r.id !== routeId && r.pairCode === route.pairCode);
-    if (reverse) return reverse.id;
-  }
-  const parts = String(routeId || '').split('-');
-  if (parts.length === 2) {
-    const candidate = parts[1] + '-' + parts[0];
-    if (routes.some(r => r.id === candidate)) return candidate;
-  }
-  return routeId;
+  const pairs = {
+    'lbv-lam':'lam-lbv','lam-lbv':'lbv-lam',
+    'lbv-mou':'mou-lbv','mou-lbv':'lbv-mou',
+    'lbv-oye':'oye-lbv','oye-lbv':'lbv-oye',
+    'lbv-bit':'bit-lbv','bit-lbv':'lbv-bit',
+    'lbv-mak':'mak-lbv','mak-lbv':'lbv-mak'
+  };
+  return pairs[routeId] || routeId;
+}
+function isReturnRoute(bus) {
+  const route = routeById(bus.routeId);
+  const origin = departureFromRoute(route).toLowerCase();
+  return !origin.includes('libreville') && !origin.includes('pk8');
+}
+function isTravelingStatus(status) {
+  const s = String(status || '');
+  return s.startsWith('En route') || s.startsWith('Retour vers');
 }
 function enRouteStatus(bus) {
-  return 'En route vers ' + destinationFromRoute(routeById(bus.routeId));
+  const destination = destinationFromRoute(routeById(bus.routeId));
+  return (isReturnRoute(bus) ? 'Retour vers ' : 'En route vers ') + destination;
 }
 function arrivedStatus(bus) {
   return 'Arrivé à ' + destinationFromRoute(routeById(bus.routeId));
@@ -1086,7 +1082,7 @@ function renderDriverFleetStatus() {
     const activeText = esc(b.status || 'En service');
     let cls = 'activeService';
     if (b.incidentActive) cls = 'incidentService';
-    else if (String(b.status).startsWith('En route')) cls = 'routeService';
+    else if (isTravelingStatus(b.status)) cls = 'routeService';
     else if (String(b.status).startsWith('Arrivé')) cls = 'arrivedService';
     return `<div class="driverFleetItem ${cls}">
       <div class="driverFleetNum">${b.id}</div>
@@ -1187,35 +1183,21 @@ function saveGroupAndNext() {
   }
 }
 
-function routeCityLabel(route) {
-  const name = String(route && route.name || '');
-  const cities = name.split(/\s*(?:→|->)\s*/).map(v => v.trim()).filter(Boolean);
-  const city = cities.find(v => !/libreville|pk8/i.test(v));
-  if (city) return city;
-
-  const code = String(route && (route.code || route.id) || '').toUpperCase();
-  const known = {LAM:'Lambaréné',MOU:'Mouila',OYE:'Oyem',BIT:'Bitam',MAK:'Makokou',TCH:'Tchibanga',LEB:'Lebamba',FRA:'Franceville'};
-  const part = code.split(/[-↔]/).find(v => v && v !== 'LBV');
-  return known[part] || part || 'Autre axe';
-}
-
 function routePairPalette(route) {
   const key = String((route && route.id) || '').toLowerCase();
   const name = String((route && route.name) || '').toLowerCase();
   const value = key + ' ' + name;
 
-  // Même couleur douce et même ville de destination pour l’aller et le retour.
+  // Même couleur douce pour l’aller et le retour d’un même axe.
   if (value.includes('lam')) return {bg:'#fff7df', border:'#e7c65c', label:'Lambaréné'};
   if (value.includes('mou')) return {bg:'#eaf8ef', border:'#75c997', label:'Mouila'};
   if (value.includes('oye')) return {bg:'#f2edff', border:'#a993e8', label:'Oyem'};
   if (value.includes('bit')) return {bg:'#fff0e8', border:'#ee9f76', label:'Bitam'};
   if (value.includes('mak')) return {bg:'#e9f7fa', border:'#78c8d4', label:'Makokou'};
-  if (value.includes('tch')) return {bg:'#eef8ea', border:'#8bc47a', label:'Tchibanga'};
-  if (value.includes('leb')) return {bg:'#eaf4ff', border:'#7fb4df', label:'Lebamba'};
   const palettes=[{bg:'#eaf4ff',border:'#7fb4df'},{bg:'#fff4e5',border:'#e8b56a'},{bg:'#eef8ea',border:'#8bc47a'},{bg:'#f8edff',border:'#bd91dc'},{bg:'#fff0f4',border:'#e89ab0'}];
   const paletteKey=String(route && (route.pairCode || route.id || route.name) || 'axe');
   const idx=[...paletteKey].reduce((a,c)=>a+c.charCodeAt(0),0)%palettes.length;
-  return {...palettes[idx], label:routeCityLabel(route)};
+  return {...palettes[idx], label:(route && route.pairCode) ? route.pairCode : 'Autre axe'};
 }
 function routePairCardStyle(route) {
   const palette = routePairPalette(route);
@@ -1235,12 +1217,9 @@ function renderAdminPrices() {
       <div class="grid2">
         ${routes.map(r => `
           <div class="miniCard" style="${routePairCardStyle(r)}">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
-              <strong style="color:#073763;">${r.type === 'Aller simple' ? 'Axe aller simple' : 'Axe aller / retour'}</strong>
-              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                ${routePairBadge(r)}
-                <button class="btn" style="background:#dc2626;color:#fff;padding:7px 11px;font-size:12px;" onclick="deleteRoute('${r.id}')">🗑️ Supprimer</button>
-              </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;">
+              <strong style="color:#073763;">Axe aller / retour</strong>
+              ${routePairBadge(r)}
             </div>
             <label>Nom de l’axe</label>
             <input id="route_name_${r.id}" value="${esc(r.name)}">
@@ -1342,53 +1321,6 @@ function addRoute() {
   renderAdminPrices();
 }
 
-function deleteRoute(routeId) {
-  const route = routes.find(r => r.id === routeId);
-  if (!route) return;
-
-  const linkedIds = new Set([route.id]);
-  if (route.pairCode && route.type !== 'Aller simple') {
-    routes.filter(r => r.pairCode === route.pairCode).forEach(r => linkedIds.add(r.id));
-  }
-
-  const activeBus = buses.find(b => linkedIds.has(b.routeId) && (b.serviceActive || b.status === 'En route' || String(b.status || '').startsWith('En route vers') || String(b.status || '').startsWith('Arrivé à')));
-  if (activeBus) {
-    alert(`Impossible de supprimer cet axe : le Bus ${activeBus.id} a une tournée active sur cet itinéraire.`);
-    return;
-  }
-
-  const linkedRoutes = routes.filter(r => linkedIds.has(r.id));
-  const names = linkedRoutes.map(r => '• ' + r.name).join('\n');
-  const question = linkedRoutes.length > 1
-    ? `Supprimer cet axe aller-retour et ses deux trajets ?\n\n${names}\n\nCette action est irréversible.`
-    : `Supprimer ce trajet ?\n\n${names}\n\nCette action est irréversible.`;
-  if (!confirm(question)) return;
-
-  routes = routes.filter(r => !linkedIds.has(r.id));
-  if (!routes.length) {
-    alert('Il faut conserver au moins un trajet dans la base.');
-    routes = linkedRoutes;
-    return;
-  }
-
-  const fallbackRouteId = routes[0].id;
-  buses.forEach(b => {
-    if (linkedIds.has(b.routeId)) {
-      b.routeId = fallbackRouteId;
-      b.plannedDate = '';
-      b.plannedDeparture = '';
-      b.plannedArrival = '';
-    }
-  });
-
-  save('g10_demo_v11_routes', routes);
-  save('g10_demo_v11_buses', buses);
-  report.unshift({time:nowTime(), action:'Suppression axe', details:linkedRoutes.map(r => `${r.name} (${money(r.price)})`).join(' | ')});
-  save('g10_demo_v11_report', report);
-  toast(linkedRoutes.length > 1 ? 'Axe aller-retour supprimé.' : 'Trajet supprimé.');
-  renderAdminPrices();
-}
-
 
 function renderAdminBuses() {
   document.getElementById('adminContent').innerHTML = `
@@ -1469,22 +1401,7 @@ function assignGroup(gid, bid) {
     }
   }
 
-  const previousBusId = g.busId;
   g.busId = bid;
-  if (bid && String(previousBusId || '') !== String(bid)) {
-    const newlyAssignedBus = busById(bid);
-    if (newlyAssignedBus && !busAssignmentLocked(newlyAssignedBus)) {
-      newlyAssignedBus.routeId = '';
-      newlyAssignedBus.plannedDate = '';
-      newlyAssignedBus.plannedDeparture = '';
-      newlyAssignedBus.plannedArrival = '';
-      newlyAssignedBus.plannedDuration = 0;
-      newlyAssignedBus.earlyDepartureAuthorized = false;
-      newlyAssignedBus.earlyDepartureAuthorizedAt = '';
-      newlyAssignedBus.earlyDepartureAuthorizedBy = '';
-      save('g10_demo_v11_buses', buses);
-    }
-  }
   save('g10_demo_v11_groups', groups);
   renderAssign();
 }
@@ -1570,6 +1487,14 @@ function addMinutesToTime(time, minutes) {
   const total = (h*60 + m + Number(minutes||0)) % 1440;
   return String(Math.floor(total/60)).padStart(2,'0') + ':' + String(total%60).padStart(2,'0');
 }
+function roundTimeToQuarter(time) {
+  if (!time) return '';
+  const [h,m] = time.split(':').map(Number);
+  let total = h*60 + m;
+  total = Math.round(total/15)*15;
+  total = ((total % 1440) + 1440) % 1440;
+  return String(Math.floor(total/60)).padStart(2,'0') + ':' + String(total%60).padStart(2,'0');
+}
 function timeToMinutes(time) {
   if (!time || !/^\d{1,2}:\d{2}$/.test(time)) return null;
   const [h,m] = time.split(':').map(Number); return h*60+m;
@@ -1578,72 +1503,42 @@ function signedTimeDiff(actual, planned) {
   const a=timeToMinutes(actual), p=timeToMinutes(planned); if(a===null||p===null) return null;
   let d=a-p; if(d>720)d-=1440; if(d<-720)d+=1440; return d;
 }
+function formatTimingDifference(minutes) {
+  const total = Math.max(0, Math.round(Number(minutes || 0)));
+  const hours = Math.floor(total / 60);
+  const mins = total % 60;
+  if (!hours) return `${mins} min`;
+  if (!mins) return `${hours} h`;
+  return `${hours} h ${String(mins).padStart(2,'0')} min`;
+}
 function timingLabel(diff, kind='Départ') {
   if (diff === null) return 'Non disponible';
   if (diff === 0) return `${kind} à l’heure`;
-  return diff < 0 ? `${kind} en avance de ${Math.abs(diff)} min` : `${kind} retardé de ${diff} min`;
+  const duration = formatTimingDifference(Math.abs(diff));
+  return diff < 0 ? `${kind} en avance de ${duration}` : `${kind} retardé de ${duration}`;
 }
 function timingClass(diff) {
   if (diff === null || diff === 0) return 'time-blue';
   if (diff < 0) return 'time-green';
   return diff <= 15 ? 'time-orange' : 'time-red';
 }
-function ensureReturnPlanningFields(b) {
-  if (!b) return;
-  if (typeof b.returnPlanningEnabled !== 'boolean') b.returnPlanningEnabled = false;
-  if (typeof b.returnPlannedDate !== 'string') b.returnPlannedDate = '';
-  if (typeof b.returnPlannedDeparture !== 'string') b.returnPlannedDeparture = '';
-  if (!Number.isFinite(Number(b.returnPlannedDuration))) b.returnPlannedDuration = 0;
-  if (typeof b.returnPlannedArrival !== 'string') b.returnPlannedArrival = '';
-  if (typeof b.isReturnTrip !== 'boolean') b.isReturnTrip = false;
-}
-buses.forEach(ensureReturnPlanningFields);
-save('g10_demo_v11_buses', buses);
-
-function toggleReturnPlanning(busId) {
-  const box = document.getElementById(`returnPlanningBox_${busId}`);
-  const checkbox = document.getElementById(`returnPlanningEnabled_${busId}`);
-  if (box && checkbox) box.style.display = checkbox.checked ? 'block' : 'none';
-}
-
 function saveBusPlanning(busId) {
   const b=busById(busId); if(!b)return;
-  const selectedRoute = document.getElementById(`planRoute_${busId}`).value;
-  const selectedDate = document.getElementById(`planDate_${busId}`).value;
-  const selectedDeparture = document.getElementById(`planDeparture_${busId}`).value;
-  const selectedDuration = Number(document.getElementById(`planDuration_${busId}`).value||0);
-  if (!selectedRoute) { alert('Choisissez d’abord un axe.'); return; }
-  if (!selectedDate) { alert('Choisissez la date prévue.'); return; }
-  if (!selectedDeparture) { alert('Choisissez l’heure de départ prévue au format 24 h.'); return; }
-  if (!selectedDuration || selectedDuration < 0.5) { alert('Indiquez une durée totale valide.'); return; }
-  b.routeId=selectedRoute;
-  b.plannedDate=selectedDate;
-  b.plannedDeparture=selectedDeparture;
-  b.plannedDuration=Math.max(30,Math.round(selectedDuration * 60));
-  b.plannedArrival=addMinutesToTime(b.plannedDeparture,b.plannedDuration);
+  const outboundRouteId=document.getElementById(`planRoute_${busId}`).value;
+  b.outboundRouteId=outboundRouteId;
+  b.routeId=outboundRouteId;
+  b.plannedOutboundDate=document.getElementById(`planOutboundDate_${busId}`).value;
+  b.plannedOutboundDeparture=roundTimeToQuarter(document.getElementById(`planOutboundDeparture_${busId}`).value);
+  b.plannedOutboundDuration=Math.max(30,Math.round(Number(document.getElementById(`planOutboundDuration_${busId}`).value||0) * 60));
+  b.plannedOutboundArrival=addMinutesToTime(b.plannedOutboundDeparture,b.plannedOutboundDuration);
+  b.plannedReturnDate=document.getElementById(`planReturnDate_${busId}`).value;
+  b.plannedReturnDeparture=roundTimeToQuarter(document.getElementById(`planReturnDeparture_${busId}`).value);
+  b.plannedReturnDuration=Math.max(30,Math.round(Number(document.getElementById(`planReturnDuration_${busId}`).value||0) * 60));
+  b.plannedReturnArrival=addMinutesToTime(b.plannedReturnDeparture,b.plannedReturnDuration);
+  b.plannedDate=b.plannedOutboundDate; b.plannedDeparture=b.plannedOutboundDeparture;
+  b.plannedDuration=b.plannedOutboundDuration; b.plannedArrival=b.plannedOutboundArrival;
   b.earlyDepartureAuthorized=false; b.earlyDepartureAuthorizedAt=''; b.earlyDepartureAuthorizedBy='';
-  ensureReturnPlanningFields(b);
-  const returnEnabled = Boolean(document.getElementById(`returnPlanningEnabled_${busId}`)?.checked);
-  b.returnPlanningEnabled = returnEnabled;
-  if (returnEnabled) {
-    const returnDate = document.getElementById(`returnDate_${busId}`).value;
-    const returnDeparture = document.getElementById(`returnDeparture_${busId}`).value;
-    const returnDurationHours = Number(document.getElementById(`returnDuration_${busId}`).value || 0);
-    if (!returnDate || !returnDeparture || !returnDurationHours) {
-      alert('Complétez la date, l’heure et la durée du trajet retour, ou décochez « Programmer le retour maintenant ».');
-      return;
-    }
-    b.returnPlannedDate = returnDate;
-    b.returnPlannedDeparture = returnDeparture;
-    b.returnPlannedDuration = Math.max(30, Math.round(returnDurationHours * 60));
-    b.returnPlannedArrival = addMinutesToTime(returnDeparture, b.returnPlannedDuration);
-  } else {
-    b.returnPlannedDate = '';
-    b.returnPlannedDeparture = '';
-    b.returnPlannedDuration = 0;
-    b.returnPlannedArrival = '';
-  }
-  save('g10_demo_v11_buses',buses); toast(`Planning du Bus ${busId} enregistré${returnEnabled ? ' avec le retour' : ''}.`); renderPlanning();
+  save('g10_demo_v11_buses',buses); toast(`Planning aller et retour du Bus ${busId} enregistré.`); renderPlanning();
 }
 function authorizeEarlyDeparture(busId) {
   const b=busById(busId); if(!b)return;
@@ -1656,24 +1551,19 @@ function renderPlanning() {
   const assigned=buses.filter(b=>groupByBus(b.id));
   if(!assigned.length){document.getElementById('opContent').innerHTML='<div class="empty">Assignez d’abord les groupes aux bus.</div>';return;}
   document.getElementById('opContent').innerHTML=`
-    <div class="miniCard softGold" style="margin-bottom:16px;"><h4>2. Affectation des axes et horaires</h4><p class="muted">Le chef d’exploitation fixe la date, l’axe, le départ prévu et la durée totale en heures, arrêts inclus. L’arrivée prévue est calculée automatiquement.</p></div>
-    <div class="grid2">${assigned.map(b=>{ensureReturnPlanningFields(b);const g=groupByBus(b.id);const opts=`<option value="" ${b.routeId?'':'selected'}>— Choisir un axe —</option>`+routes.map(r=>`<option value="${r.id}" ${b.routeId===r.id?'selected':''}>${esc(r.name)}</option>`).join('');const arr=b.routeId?addMinutesToTime(b.plannedDeparture,b.plannedDuration):'';return `<div class="busCard assigned">
+    <div class="miniCard softGold" style="margin-bottom:16px;"><h4>2. Affectation des axes et horaires</h4><p class="muted">Le chef d’exploitation prépare séparément l’aller et le retour. Les heures prévues sont arrondies par tranches de 15 minutes.</p></div>
+    <div class="grid2">${assigned.map(b=>{const g=groupByBus(b.id);const selected=b.outboundRouteId||b.routeId;const opts=routes.map(r=>`<option value="${r.id}" ${selected===r.id?'selected':''}>${esc(r.name)}</option>`).join('');const outArr=addMinutesToTime(b.plannedOutboundDeparture,b.plannedOutboundDuration);const retArr=addMinutesToTime(b.plannedReturnDeparture,b.plannedReturnDuration);return `<div class="busCard assigned">
       <div class="busTop"><div class="busLeft"><div class="busNum">${b.id}</div><div class="busInfo"><h4>Bus ${b.id}</h4><p>Groupe ${g.id} — ${esc(g.chauffeur)}</p></div></div><span class="badge blue">Planification</span></div>
-      <label>Axe</label><select id="planRoute_${b.id}" onchange="updatePlanningDurationForRoute(${b.id})">${opts}</select>
-      <div class="grid2" style="margin-top:10px;"><div><label>Date prévue</label><input id="planDate_${b.id}" type="date" value="${esc(b.plannedDate||'')}"></div><div><label>Départ prévu (format 24 h)</label><select id="planDeparture_${b.id}">${planningTimeOptions(b.plannedDeparture||'')}</select></div></div>
-      <div class="grid2" style="margin-top:10px;"><div><label>Durée totale prévue (heures, arrêts inclus)</label><input id="planDuration_${b.id}" type="number" min="0.5" step="0.5" value="${b.routeId?Number((Number(b.plannedDuration||defaultDurationMinutes(b.routeId))/60).toFixed(1)):''}"><div class="scheduleNote time-blue">Durée retenue : ${b.routeId?formatDurationHours(b.plannedDuration||defaultDurationMinutes(b.routeId)):'À définir après le choix de l’axe'}</div></div><div class="timeBox time-blue"><span>Arrivée prévisionnelle</span><strong>${arr||'À calculer'}</strong></div></div>
-      <div class="miniCard softGold" style="margin-top:14px;">
-        <label style="display:flex;align-items:center;gap:9px;cursor:pointer;"><input id="returnPlanningEnabled_${b.id}" type="checkbox" style="width:auto;" ${b.returnPlanningEnabled?'checked':''} onchange="toggleReturnPlanning(${b.id})"> Programmer le trajet retour maintenant (optionnel)</label>
-        <div id="returnPlanningBox_${b.id}" style="display:${b.returnPlanningEnabled?'block':'none'};margin-top:12px;">
-          <div class="grid3">
-            <div><label>Date retour</label><input id="returnDate_${b.id}" type="date" value="${esc(b.returnPlannedDate||'')}"></div>
-            <div><label>Départ retour (24 h)</label><select id="returnDeparture_${b.id}">${planningTimeOptions(b.returnPlannedDeparture||'')}</select></div>
-            <div><label>Durée retour (heures)</label><input id="returnDuration_${b.id}" type="number" min="0.5" step="0.5" value="${Number(((b.returnPlannedDuration||b.plannedDuration||defaultDurationMinutes(b.routeId))/60).toFixed(1))}"></div>
-          </div>
-          <div class="scheduleNote time-green">Le retour sera chargé automatiquement lorsque le chauffeur cliquera sur « Départ-retour ».</div>
-        </div>
+      <label>Axe aller</label><select id="planRoute_${b.id}" onchange="updatePlanningDurationForRoute(${b.id})">${opts}</select>
+      <div class="miniCard" style="margin-top:12px;background:#eff6ff;"><h4>Trajet aller</h4>
+        <div class="grid2"><div><label>Date aller prévue</label><input id="planOutboundDate_${b.id}" type="date" value="${esc(b.plannedOutboundDate||'')}"></div><div><label>Départ aller prévu</label><input id="planOutboundDeparture_${b.id}" type="time" step="900" value="${esc(b.plannedOutboundDeparture||'')}"></div></div>
+        <div class="grid2" style="margin-top:10px;"><div><label>Durée aller prévue (heures)</label><input id="planOutboundDuration_${b.id}" type="number" min="0.5" step="0.5" value="${Number((Number(b.plannedOutboundDuration||240)/60).toFixed(1))}"><div class="scheduleNote time-blue">Durée retenue : ${formatDurationHours(b.plannedOutboundDuration||240)}</div></div><div class="timeBox time-blue"><span>Arrivée aller prévisionnelle</span><strong>${outArr||'À calculer'}</strong></div></div>
       </div>
-      <div class="actionRow" style="margin-top:12px;"><button class="btn green" onclick="saveBusPlanning(${b.id})">Enregistrer le planning</button><button class="btn light" onclick="authorizeEarlyDeparture(${b.id})">Autoriser départ anticipé</button></div>
+      <div class="miniCard" style="margin-top:12px;background:#f0fdf4;"><h4>Trajet retour — ${esc(routeById(reverseRouteId(selected)).name)}</h4>
+        <div class="grid2"><div><label>Date retour prévue</label><input id="planReturnDate_${b.id}" type="date" value="${esc(b.plannedReturnDate||'')}"></div><div><label>Départ retour prévu</label><input id="planReturnDeparture_${b.id}" type="time" step="900" value="${esc(b.plannedReturnDeparture||'')}"></div></div>
+        <div class="grid2" style="margin-top:10px;"><div><label>Durée retour prévue (heures)</label><input id="planReturnDuration_${b.id}" type="number" min="0.5" step="0.5" value="${Number((Number(b.plannedReturnDuration||240)/60).toFixed(1))}"><div class="scheduleNote time-green">Durée retenue : ${formatDurationHours(b.plannedReturnDuration||240)}</div></div><div class="timeBox time-green"><span>Arrivée retour prévisionnelle</span><strong>${retArr||'À calculer'}</strong></div></div>
+      </div>
+      <div class="actionRow" style="margin-top:12px;"><button class="btn green" onclick="saveBusPlanning(${b.id})">Enregistrer aller et retour</button><button class="btn light" onclick="authorizeEarlyDeparture(${b.id})">Autoriser départ anticipé</button></div>
       ${b.earlyDepartureAuthorized?`<div class="scheduleNote time-green">✓ Départ anticipé exceptionnel autorisé à ${esc(b.earlyDepartureAuthorizedAt)}</div>`:''}
     </div>`}).join('')}</div>`;
 }
@@ -1687,8 +1577,8 @@ function renderFollow() {
 function busCardSummary(b) {
   const g=groupByBus(b.id), r=routeById(b.routeId);
   const depDiff=signedTimeDiff(b.departureTime,b.plannedDeparture), arrDiff=signedTimeDiff(b.arrivalTime,b.plannedArrival);
-  return `<div class="busCard ${String(b.status).startsWith('En route')?'route':(g?'assigned':'')}">
-    <div class="busTop"><div class="busLeft"><div class="busNum">${b.id}</div><div class="busInfo"><h4>Bus ${b.id}</h4><p>${esc(r.name)}</p></div></div><span class="badge ${statusClass(b.status)}">${esc(b.status)}</span></div>
+  return `<div class="busCard ${isTravelingStatus(b.status)?'route':(g?'assigned':'')}">
+    <div class="busTop"><div class="busLeft"><div class="busNum">${b.id}</div><div class="busInfo"><h4>Bus ${b.id}</h4><p>${g ? esc(r.name) : 'Aucun axe assigné'}</p></div></div><span class="badge ${statusClass(b.status)}">${esc(b.status)}</span></div>
     <div class="crewBox">${g?`Chauffeur : <b>${esc(g.chauffeur)}</b><br>Aide chauffeur : <b>${esc(g.chargeur)}</b>`:'Non affecté'}</div>
     <div class="timeGrid">
       <div class="timeBox time-blue"><span>Départ prévu</span><strong>${esc(b.plannedDeparture||'—')}</strong></div>
@@ -1705,7 +1595,7 @@ function busCardSummary(b) {
 function statusClass(status) {
   const s = String(status || '');
   if (s.startsWith('Incident')) return 'orange';
-  if (s.startsWith('En route')) return 'orange';
+  if (isTravelingStatus(s)) return 'orange';
   if (s.startsWith('Arrivé')) return 'gray';
   if (s === 'Fin de service') return 'orange';
   if (s === 'Hors service') return 'gray';
@@ -1722,7 +1612,7 @@ function renderDriverLogin() {
     <div class="miniCard"><h4>Connexion / reprise chauffeur</h4>
       <p class="muted">Chaque bus possède son propre PIN. Un chauffeur peut reprendre sa session active sans remettre les données à zéro.</p>
       <div class="grid2"><div><label>Bus affecté</label><select id="driverBusSelect">
-        ${assigned.map(b=>{const g=groupByBus(b.id); const active=b.serviceActive?' — Session active à reprendre':''; const routeLabel=b.routeId?routeById(b.routeId).name:'Axe à programmer par le chef d’exploitation'; return `<option value="${b.id}">Bus ${b.id} - ${esc(g.chauffeur)} - ${esc(routeLabel)}${active}</option>`;}).join('')}
+        ${assigned.map(b=>{const g=groupByBus(b.id); const active=b.serviceActive?' — Session active à reprendre':''; return `<option value="${b.id}">Bus ${b.id} - ${esc(g.chauffeur)} - ${esc(routeById(b.routeId).name)}${active}</option>`;}).join('')}
       </select></div><div><label>PIN du bus</label><input id="driverPin" type="password" inputmode="numeric" placeholder="Ex : 001"></div></div>
       <div class="empty" style="margin-top:14px;text-align:left;background:#eff6ff;border-color:#93c5fd;color:#1e3a8a;"><b>PIN de démonstration :</b> Bus 1 = 001, Bus 2 = 002, Bus 3 = 003, Bus 4 = 004, Bus 5 = 005, Bus 6 = 006.</div>
       <div class="actionRow" style="margin-top:16px;"><button class="btn green" onclick="openDriverBus()">Connexion / Reprendre</button><button class="btn light" onclick="openScreen('home')">Fermer</button></div>
@@ -1736,15 +1626,10 @@ function openDriverBus() {
   const expected=DRIVER_BUS_PINS[busId];
   if (pin !== expected) { errorBox.textContent=`PIN incorrect pour le Bus ${busId}.`; errorBox.style.display='block'; return; }
   const b=busById(busId); if(!b || !groupByBus(busId)) return;
-  if (!b.serviceActive && (!b.routeId || !b.plannedDate || !b.plannedDeparture)) {
-    errorBox.textContent='Le chef d’exploitation doit programmer un nouvel axe, une date et une heure avant la prochaine connexion chauffeur.';
-    errorBox.style.display='block';
-    return;
-  }
   selectedDriverBusId=busId;
   if (b.serviceActive) {
-    // Reprise sécurisée : aucune place, recette, heure ou étape n’est effacée.
-    toast(`Session du Bus ${b.id} reprise.`);
+    if (!confirm(`Le Bus ${b.id} possède déjà une session active. Voulez-vous la reprendre ?`)) { selectedDriverBusId=null; return; }
+    toast(`Session du Bus ${b.id} reprise après vérification du PIN.`);
     renderDriverFleetStatus(); renderDriverBus(); return;
   }
   if (b.status === 'Fin de service' && b.awaitingReturn) {
@@ -1760,7 +1645,7 @@ function openDriverBus() {
 }
 function cashPlus() {
   const b = busById(selectedDriverBusId);
-  if (!b.serviceActive || b.closed) return;
+  if (!b.serviceActive || b.closed || b.departureTime) return;
   if (remaining(b) <= 0) { alert('Bus complet.'); return; }
   b.sold++;
   save('g10_demo_v11_buses', buses);
@@ -1768,7 +1653,7 @@ function cashPlus() {
 }
 function cashMinus() {
   const b = busById(selectedDriverBusId);
-  if (!b.serviceActive || b.closed) return;
+  if (!b.serviceActive || b.closed || b.departureTime) return;
   b.sold = Math.max(0, b.sold - 1);
   save('g10_demo_v11_buses', buses);
   renderDriverBus();
@@ -1787,7 +1672,7 @@ function departBus() {
 }
 function declareIncident() {
   const b = busById(selectedDriverBusId);
-  if (!String(b.status).startsWith('En route') || b.incidentActive) {
+  if (!isTravelingStatus(b.status) || b.incidentActive) {
     alert('Un incident peut être déclaré uniquement pendant le trajet.');
     return;
   }
@@ -1827,7 +1712,7 @@ function arriveBus() {
     alert('Clôturez d’abord l’incident avant de confirmer l’arrivée.');
     return;
   }
-  if (!String(b.status).startsWith('En route')) {
+  if (!isTravelingStatus(b.status)) {
     alert('Impossible de confirmer l’arrivée : le départ n’a pas encore été validé.');
     return;
   }
@@ -1844,7 +1729,7 @@ function endService() {
     alert('La fin de service est possible uniquement après confirmation de l’arrivée.');
     return;
   }
-  if (!confirm(b.isReturnTrip ? 'Confirmez-vous la clôture définitive de la tournée aller-retour ? La fiche active sera remise à zéro et le rapport restera archivé.' : 'Confirmez-vous la fin de service pour ce trajet ?')) return;
+  if (!confirm('Confirmez-vous la fin de service pour ce trajet ?')) return;
   const g = groupByBus(b.id);
   const r = routeById(b.routeId);
   const tripId = `G10-${new Date().toISOString().slice(0,10).replaceAll('-','')}-BUS${b.id}-${Date.now().toString().slice(-5)}`;
@@ -1883,49 +1768,6 @@ function endService() {
   };
   report.push(row);
 
-  // Après le trajet retour, la tournée complète est clôturée et la fiche active est remise à zéro.
-  if (b.isReturnTrip) {
-    b.status = 'Disponible';
-    b.serviceActive = false;
-    b.closed = false;
-    b.awaitingReturn = false;
-    b.isReturnTrip = false;
-    b.routeId = '';
-    b.plannedDate = '';
-    b.plannedDeparture = '';
-    b.plannedArrival = '';
-    b.plannedDuration = 0;
-    b.returnPlanningEnabled = false;
-    b.returnPlannedDate = '';
-    b.returnPlannedDeparture = '';
-    b.returnPlannedDuration = 0;
-    b.returnPlannedArrival = '';
-    b.returnPreparedByDriver = false;
-    b.returnPreparedAt = '';
-    b.earlyDepartureAuthorized = false;
-    b.earlyDepartureAuthorizedAt = '';
-    b.earlyDepartureAuthorizedBy = '';
-    b.sold = 0;
-    b.departureTime = '';
-    b.arrivalTime = '';
-    b.serviceStartTime = '';
-    b.serviceEndTime = '';
-    b.incidentActive = false;
-    b.incidentType = '';
-    b.incidentNote = '';
-    b.incidentStartTime = '';
-    b.incidentEndTime = '';
-    b.resumeTime = '';
-    b.previousStatus = '';
-    save('g10_demo_v11_buses', buses);
-    save('g10_demo_v11_report', report);
-    selectedDriverBusId = null;
-    toast('Tournée aller-retour clôturée. Le bus est disponible et attend un nouveau planning du chef d’exploitation.');
-    renderDriverFleetStatus();
-    renderDriverLogin();
-    return;
-  }
-
   // L’aller est clôturé. Le bus reste verrouillé pour ce chauffeur jusqu’au Départ-retour.
   b.status = 'Fin de service';
   b.closed = true;
@@ -1943,63 +1785,24 @@ function startReturnTrip() {
     alert('Le Départ-retour est disponible uniquement après la fin de service du trajet aller.');
     return;
   }
-  const oldRoute = routeById(b.routeId);
-  const newRouteId = reverseRouteId(b.routeId);
-  const newRoute = routeById(newRouteId);
-  if (!confirm(`Confirmez-vous le Départ-retour : ${newRoute.name} ?`)) return;
-
-  b.routeId = newRouteId;
-  // Le retour devient une nouvelle tournée. Le planning préparé par le chef est chargé ; sinon le chauffeur renseigne la date et l’heure.
-  b.status = 'En service';
-  b.closed = false;
-  b.awaitingReturn = false;
-  b.isReturnTrip = true;
-  b.serviceActive = true;
-  b.sold = 0;
-  b.departureTime = '';
-  b.arrivalTime = '';
-  b.serviceStartTime = '';
-  b.serviceEndTime = '';
-  b.incidentActive = false;
-  b.incidentType = '';
-  b.incidentNote = '';
-  b.incidentStartTime = '';
-  b.incidentEndTime = '';
-  b.resumeTime = '';
-  b.previousStatus = '';
-  ensureReturnPlanningFields(b);
-  if (b.returnPlanningEnabled && b.returnPlannedDate && b.returnPlannedDeparture) {
-    b.plannedDate = b.returnPlannedDate;
-    b.plannedDeparture = b.returnPlannedDeparture;
-    b.plannedDuration = Number(b.returnPlannedDuration || defaultDurationMinutes(newRouteId));
-    b.plannedArrival = b.returnPlannedArrival || addMinutesToTime(b.plannedDeparture, b.plannedDuration);
-  } else {
-    const today = new Date().toISOString().slice(0,10);
-    const driverDate = prompt('Aucun retour n’a été programmé par le chef d’exploitation.\n\nSaisissez la date du retour (AAAA-MM-JJ) :', today);
-    if (driverDate === null) return;
-    const driverTime = prompt('Saisissez l’heure de départ retour au format 24 h (ex. 05:30) :', '');
-    if (driverTime === null) return;
-    if (!/^\d{2}:\d{2}$/.test(driverTime)) { alert('Heure invalide. Utilisez le format 24 h, par exemple 05:30.'); return; }
-    b.plannedDate = driverDate || today;
-    b.plannedDeparture = driverTime;
-    b.plannedDuration = Number(defaultDurationMinutes(newRouteId));
-    b.plannedArrival = addMinutesToTime(b.plannedDeparture, b.plannedDuration);
-    b.returnPreparedByDriver = true;
-    b.returnPreparedAt = nowTime();
+  if (!b.plannedReturnDate || !b.plannedReturnDeparture) {
+    alert('Le chef d’exploitation doit d’abord définir la date et l’heure prévues du retour.');
+    return;
   }
-  b.returnPlanningEnabled = false;
-  b.returnPlannedDate = '';
-  b.returnPlannedDeparture = '';
-  b.returnPlannedDuration = 0;
-  b.returnPlannedArrival = '';
-  b.earlyDepartureAuthorized = false;
-  b.earlyDepartureAuthorizedAt = '';
-  b.earlyDepartureAuthorizedBy = '';
-
+  const newRouteId = reverseRouteId(b.outboundRouteId || b.routeId);
+  const newRoute = routeById(newRouteId);
+  if (!confirm(`Préparer le trajet retour : ${newRoute.name} ?`)) return;
+  b.routeId = newRouteId;
+  b.status = 'En service'; b.closed = false; b.awaitingReturn = false; b.serviceActive = true;
+  b.sold = 0; b.departureTime = ''; b.arrivalTime = ''; b.serviceStartTime = nowTime(); b.serviceEndTime = '';
+  b.incidentActive = false; b.incidentType = ''; b.incidentNote = ''; b.incidentStartTime = ''; b.incidentEndTime = ''; b.resumeTime = ''; b.previousStatus = '';
+  b.plannedDate = b.plannedReturnDate; b.plannedDeparture = b.plannedReturnDeparture;
+  b.plannedDuration = Number(b.plannedReturnDuration || defaultDurationMinutes(newRouteId));
+  b.plannedArrival = b.plannedReturnArrival || addMinutesToTime(b.plannedDeparture,b.plannedDuration);
+  b.earlyDepartureAuthorized = false; b.earlyDepartureAuthorizedAt = ''; b.earlyDepartureAuthorizedBy = '';
   save('g10_demo_v11_buses', buses);
-  toast(`Trajet retour préparé : ${newRoute.name}. Planning retour chargé.`);
-  renderDriverFleetStatus();
-  renderDriverBus();
+  toast(`Retour préparé : ${newRoute.name}. Encaissez les clients puis confirmez le départ.`);
+  renderDriverFleetStatus(); renderDriverBus();
 }
 function driverLogout() {
   selectedDriverBusId = null;
@@ -2014,9 +1817,9 @@ function renderDriverBus() {
   const arrived = Boolean(b.arrivalTime) && String(b.status).startsWith('Arrivé');
   const serviceEnded = b.status === 'Fin de service';
   const canDepart = b.status === 'En service' && !b.incidentActive;
-  const canIncident = String(b.status).startsWith('En route') && !b.incidentActive;
+  const canIncident = isTravelingStatus(b.status) && !b.incidentActive;
   const canCloseIncident = b.incidentActive;
-  const canArrive = String(b.status).startsWith('En route') && !b.incidentActive;
+  const canArrive = isTravelingStatus(b.status) && !b.incidentActive;
   const canEnd = String(b.status).startsWith('Arrivé') && !b.incidentActive;
   const canReturn = serviceEnded && Boolean(b.awaitingReturn);
 
@@ -2082,10 +1885,10 @@ function renderDriverBus() {
 
         <div class="actionRow">
           <button class="btn green" onclick="arriveBus()" ${canArrive ? '' : 'disabled'}>${esc(r.arrive)}</button>
-          <button class="btn gold" onclick="endService()" ${canEnd ? '' : 'disabled'}>${b.isReturnTrip ? 'Clôturer la tournée' : 'Fin de service'}</button>
+          <button class="btn gold" onclick="endService()" ${canEnd ? '' : 'disabled'}>Fin de service</button>
         </div>
         <div style="margin-top:10px;">
-          <button class="btn orange big" style="width:100%;" onclick="startReturnTrip()" ${canReturn ? '' : 'disabled'}>Départ-retour</button>
+          <button class="btn orange big" style="width:100%;" onclick="startReturnTrip()" ${canReturn ? '' : 'disabled'}>Départ-retour</button>${canReturn ? '<div class="scheduleNote time-orange">Prépare le retour et remet à zéro les heures réelles, les places et le cash. Encaissement avant départ.</div>' : ''}
         </div>
         <div style="margin-top:10px;">
           <button class="btn light" style="width:100%;" onclick="driverLogout()">Se déconnecter</button>
@@ -2098,7 +1901,7 @@ function renderDriverBus() {
 function renderDashboard() {
   const totalSold = buses.reduce((s,b) => s + Number(b.sold || 0), 0);
   const totalReceipt = buses.reduce((s,b) => s + receipt(b), 0);
-  const enRoute = buses.filter(b => String(b.status).startsWith('En route')).length;
+  const enRoute = buses.filter(b => isTravelingStatus(b.status)).length;
   const arrived = buses.filter(b => String(b.status).startsWith('Arrivé') || b.status === 'Fin de service').length;
   const rows = buses.map(busCardSummary).join('');
 
@@ -2189,8 +1992,10 @@ function resetDay() {
     b.previousStatus = '';
     b.plannedDate = ''; b.plannedDeparture = ''; b.plannedArrival = ''; b.plannedDuration = 240;
     b.earlyDepartureAuthorized = false; b.earlyDepartureAuthorizedAt = ''; b.earlyDepartureAuthorizedBy = '';
-    // L'axe du jour est également remis à sa valeur de départ.
-    if (initialBus) b.routeId = initialBus.routeId;
+    // Aucun axe n'est affiché tant que le bus n'est pas affecté.
+    b.routeId = '';
+    b.outboundRouteId = '';
+    b.returnRouteId = ''; 
   });
 
   report = [];
