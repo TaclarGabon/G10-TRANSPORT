@@ -999,6 +999,16 @@ function formatDurationHours(minutes) {
   if (!mins) return `${hours} h`;
   return `${hours} h ${String(mins).padStart(2,'0')}`;
 }
+function planningTimeOptions(selected='') {
+  let html = `<option value="" ${selected ? '' : 'selected'}>--:--</option>`;
+  for (let h = 0; h < 24; h++) {
+    for (let m = 0; m < 60; m += 15) {
+      const value = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+      html += `<option value="${value}" ${selected === value ? 'selected' : ''}>${value}</option>`;
+    }
+  }
+  return html;
+}
 function defaultDurationMinutes(routeId) {
   const defaults = {
     'lbv-lam':240, 'lam-lbv':240,
@@ -1015,6 +1025,10 @@ function updatePlanningDurationForRoute(busId) {
   const routeEl = document.getElementById(`planRoute_${busId}`);
   const durationEl = document.getElementById(`planDuration_${busId}`);
   if (!routeEl || !durationEl) return;
+  if (!routeEl.value) {
+    durationEl.value = '';
+    return;
+  }
   durationEl.value = (defaultDurationMinutes(routeEl.value) / 60).toFixed(1).replace('.0','');
 }
 function reverseRouteId(routeId) {
@@ -1455,7 +1469,22 @@ function assignGroup(gid, bid) {
     }
   }
 
+  const previousBusId = g.busId;
   g.busId = bid;
+  if (bid && String(previousBusId || '') !== String(bid)) {
+    const newlyAssignedBus = busById(bid);
+    if (newlyAssignedBus && !busAssignmentLocked(newlyAssignedBus)) {
+      newlyAssignedBus.routeId = '';
+      newlyAssignedBus.plannedDate = '';
+      newlyAssignedBus.plannedDeparture = '';
+      newlyAssignedBus.plannedArrival = '';
+      newlyAssignedBus.plannedDuration = 0;
+      newlyAssignedBus.earlyDepartureAuthorized = false;
+      newlyAssignedBus.earlyDepartureAuthorizedAt = '';
+      newlyAssignedBus.earlyDepartureAuthorizedBy = '';
+      save('g10_demo_v11_buses', buses);
+    }
+  }
   save('g10_demo_v11_groups', groups);
   renderAssign();
 }
@@ -1561,10 +1590,18 @@ function timingClass(diff) {
 }
 function saveBusPlanning(busId) {
   const b=busById(busId); if(!b)return;
-  b.routeId=document.getElementById(`planRoute_${busId}`).value;
-  b.plannedDate=document.getElementById(`planDate_${busId}`).value;
-  b.plannedDeparture=document.getElementById(`planDeparture_${busId}`).value;
-  b.plannedDuration=Math.max(30,Math.round(Number(document.getElementById(`planDuration_${busId}`).value||0) * 60));
+  const selectedRoute = document.getElementById(`planRoute_${busId}`).value;
+  const selectedDate = document.getElementById(`planDate_${busId}`).value;
+  const selectedDeparture = document.getElementById(`planDeparture_${busId}`).value;
+  const selectedDuration = Number(document.getElementById(`planDuration_${busId}`).value||0);
+  if (!selectedRoute) { alert('Choisissez d’abord un axe.'); return; }
+  if (!selectedDate) { alert('Choisissez la date prévue.'); return; }
+  if (!selectedDeparture) { alert('Choisissez l’heure de départ prévue au format 24 h.'); return; }
+  if (!selectedDuration || selectedDuration < 0.5) { alert('Indiquez une durée totale valide.'); return; }
+  b.routeId=selectedRoute;
+  b.plannedDate=selectedDate;
+  b.plannedDeparture=selectedDeparture;
+  b.plannedDuration=Math.max(30,Math.round(selectedDuration * 60));
   b.plannedArrival=addMinutesToTime(b.plannedDeparture,b.plannedDuration);
   b.earlyDepartureAuthorized=false; b.earlyDepartureAuthorizedAt=''; b.earlyDepartureAuthorizedBy='';
   save('g10_demo_v11_buses',buses); toast(`Planning du Bus ${busId} enregistré.`); renderPlanning();
@@ -1581,11 +1618,11 @@ function renderPlanning() {
   if(!assigned.length){document.getElementById('opContent').innerHTML='<div class="empty">Assignez d’abord les groupes aux bus.</div>';return;}
   document.getElementById('opContent').innerHTML=`
     <div class="miniCard softGold" style="margin-bottom:16px;"><h4>2. Affectation des axes et horaires</h4><p class="muted">Le chef d’exploitation fixe la date, l’axe, le départ prévu et la durée totale en heures, arrêts inclus. L’arrivée prévue est calculée automatiquement.</p></div>
-    <div class="grid2">${assigned.map(b=>{const g=groupByBus(b.id);const opts=routes.map(r=>`<option value="${r.id}" ${b.routeId===r.id?'selected':''}>${esc(r.name)}</option>`).join('');const arr=addMinutesToTime(b.plannedDeparture,b.plannedDuration);return `<div class="busCard assigned">
+    <div class="grid2">${assigned.map(b=>{const g=groupByBus(b.id);const opts=`<option value="" ${b.routeId?'':'selected'}>— Choisir un axe —</option>`+routes.map(r=>`<option value="${r.id}" ${b.routeId===r.id?'selected':''}>${esc(r.name)}</option>`).join('');const arr=b.routeId?addMinutesToTime(b.plannedDeparture,b.plannedDuration):'';return `<div class="busCard assigned">
       <div class="busTop"><div class="busLeft"><div class="busNum">${b.id}</div><div class="busInfo"><h4>Bus ${b.id}</h4><p>Groupe ${g.id} — ${esc(g.chauffeur)}</p></div></div><span class="badge blue">Planification</span></div>
       <label>Axe</label><select id="planRoute_${b.id}" onchange="updatePlanningDurationForRoute(${b.id})">${opts}</select>
-      <div class="grid2" style="margin-top:10px;"><div><label>Date prévue</label><input id="planDate_${b.id}" type="date" value="${esc(b.plannedDate||'')}"></div><div><label>Départ prévu</label><input id="planDeparture_${b.id}" type="time" value="${esc(b.plannedDeparture||'')}"></div></div>
-      <div class="grid2" style="margin-top:10px;"><div><label>Durée totale prévue (heures, arrêts inclus)</label><input id="planDuration_${b.id}" type="number" min="0.5" step="0.5" value="${Number((Number(b.plannedDuration||240)/60).toFixed(1))}"><div class="scheduleNote time-blue">Durée retenue : ${formatDurationHours(b.plannedDuration||240)}</div></div><div class="timeBox time-blue"><span>Arrivée prévisionnelle</span><strong>${arr||'À calculer'}</strong></div></div>
+      <div class="grid2" style="margin-top:10px;"><div><label>Date prévue</label><input id="planDate_${b.id}" type="date" value="${esc(b.plannedDate||'')}"></div><div><label>Départ prévu (format 24 h)</label><select id="planDeparture_${b.id}">${planningTimeOptions(b.plannedDeparture||'')}</select></div></div>
+      <div class="grid2" style="margin-top:10px;"><div><label>Durée totale prévue (heures, arrêts inclus)</label><input id="planDuration_${b.id}" type="number" min="0.5" step="0.5" value="${b.routeId?Number((Number(b.plannedDuration||defaultDurationMinutes(b.routeId))/60).toFixed(1)):''}"><div class="scheduleNote time-blue">Durée retenue : ${b.routeId?formatDurationHours(b.plannedDuration||defaultDurationMinutes(b.routeId)):'À définir après le choix de l’axe'}</div></div><div class="timeBox time-blue"><span>Arrivée prévisionnelle</span><strong>${arr||'À calculer'}</strong></div></div>
       <div class="actionRow" style="margin-top:12px;"><button class="btn green" onclick="saveBusPlanning(${b.id})">Enregistrer le planning</button><button class="btn light" onclick="authorizeEarlyDeparture(${b.id})">Autoriser départ anticipé</button></div>
       ${b.earlyDepartureAuthorized?`<div class="scheduleNote time-green">✓ Départ anticipé exceptionnel autorisé à ${esc(b.earlyDepartureAuthorizedAt)}</div>`:''}
     </div>`}).join('')}</div>`;
