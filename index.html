@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>G10 Transports - V12.10 Démo équilibrée</title>
+  <title>G10 Transports - V12.11 Démo claire</title>
   <style>
     :root {
       --navy:#073763;
@@ -607,7 +607,52 @@
       color:#fff; box-shadow:0 12px 26px rgba(0,0,0,.20);
     }
 
-  </style>
+  
+
+    /* V12.11 — Thème bleu clair lisible */
+    body {
+      color:#10243a !important;
+      background:linear-gradient(180deg,#dce9f2 0%,#edf5f9 52%,#d7e5ee 100%) !important;
+    }
+    .main { background:transparent !important; }
+    .pageHeader h2, .screenTitle, h2, h3, h4 { color:#073763 !important; }
+    .panel, .miniCard, .busCard, .stat, .crewBox, .timeBox, .empty, .dangerZone,
+    .modalCard, .kpiStrip > div, .card, .contentCard {
+      background:#eef5f9 !important;
+      border-color:#a9c3d5 !important;
+      color:#10243a !important;
+      box-shadow:0 9px 22px rgba(7,55,99,.09) !important;
+    }
+    .panel { background:#f6f9fb !important; }
+    .busCard.assigned { background:#e8f7ef !important; border-color:#70cba3 !important; }
+    .busCard.route { background:#fff4dc !important; border-color:#e3bd61 !important; }
+    .softGold { background:#fff7e7 !important; border-color:#e8c977 !important; }
+    .muted, .busInfo p, .scheduleNote small { color:#5d7285 !important; }
+    label, .stat span, .timeBox span { color:#38536b !important; }
+    .stat strong, .timeBox strong, .busInfo h4, .crewBox b { color:#073763 !important; }
+    input, select, textarea {
+      background:#fbfdff !important;
+      color:#10243a !important;
+      border-color:#a8bfd1 !important;
+    }
+    input::placeholder, textarea::placeholder { color:#7c91a3 !important; }
+    option { background:#fff !important; color:#10243a !important; }
+    .tabBtn, .btn.light { background:#e6eff5 !important; color:#073763 !important; border-color:#adc4d6 !important; }
+    .tabBtn.active { background:#0b4f8a !important; color:#fff !important; }
+    .time-blue { background:#e6f1ff !important; border-color:#8dbcf2 !important; color:#174f9b !important; }
+    .time-green { background:#e7f8ef !important; border-color:#7fd3aa !important; color:#087653 !important; }
+    .time-orange { background:#fff2de !important; border-color:#efbd76 !important; color:#9a570f !important; }
+    .time-red { background:#ffe9ec !important; border-color:#eea4ad !important; color:#9f2433 !important; }
+    .incidentPanel { background:#fff3e3 !important; border-color:#e8ad58 !important; }
+    .demoBanner {
+      background:linear-gradient(90deg,#4b8fba,#51aa97) !important;
+      border-color:#83c5ba !important;
+      color:#fff !important;
+    }
+    .dashboardAccordionItem { background:#edf5f9 !important; border-color:#a9c2d4 !important; }
+    .dashboardAccordionHead { background:linear-gradient(90deg,#dcebf4,#f1f7fa) !important; color:#073763 !important; }
+    .dashboardAccordionBody { background:#f7fafc !important; }
+</style>
 </head>
 <body>
   <div class="app">
@@ -1636,7 +1681,7 @@ function loadDemoScenarios() {
       plannedReturnDate:d, plannedReturnDeparture:'14:00', plannedReturnDuration:sc.duration,
       plannedReturnArrival:addMinutesToTime('14:00',sc.duration),
       departureTime:sc.dep, arrivalTime:sc.arr, sold:sc.sold, status:sc.status,
-      serviceActive:true, closed:false, awaitingReturn:false, serviceStartTime:sc.dep,
+      serviceActive:true, closed:false, awaitingReturn:false, tripLeg:(sc.route==='lam-lbv'?'return':'outbound'), tripCompleted:false, serviceStartTime:sc.dep,
       serviceEndTime:'', incidentActive:false, incidentType:'', incidentNote:'', demoNote:sc.note
     });
     if (sc.arr) {
@@ -1694,6 +1739,8 @@ function saveBusPlanning(busId) {
   const modeEl=document.querySelector(`input[name="tripMode_${busId}"]:checked`);
   const tripMode=modeEl ? modeEl.value : 'oneway';
   b.tripMode=tripMode;
+  b.tripLeg='outbound';
+  b.tripCompleted=false;
   b.planningConfigured=true;
   b.outboundRouteId=outboundRouteId;
   b.routeId=outboundRouteId;
@@ -1954,24 +2001,49 @@ function endService() {
     incidentStartTime: b.incidentStartTime || '',
     incidentEndTime: b.incidentEndTime || '',
     resumeTime: b.resumeTime || '',
-    status: 'Fin de service'
+    status: 'Fin de service',
+    direction: (b.tripLeg === 'return' || (b.outboundRouteId && b.routeId !== b.outboundRouteId)) ? 'Retour' : 'Aller'
   };
   report.push(row);
 
-  // L’aller est clôturé. Le bus reste verrouillé pour ce chauffeur jusqu’au Départ-retour.
+  const isReturnLeg = b.tripLeg === 'return' || (b.outboundRouteId && b.routeId !== b.outboundRouteId);
+  const hasPlannedReturn = b.tripMode === 'round' && Boolean(b.plannedReturnDate && b.plannedReturnDeparture);
   b.status = 'Fin de service';
   b.closed = true;
-  b.awaitingReturn = true;
-  b.serviceActive = true;
+  if (isReturnLeg) {
+    // Le retour est terminé : la rotation aller-retour est définitivement clôturée.
+    b.awaitingReturn = false;
+    b.serviceActive = false;
+    b.tripLeg = 'completed';
+    b.tripCompleted = true;
+    row.direction = 'Retour';
+    row.status = 'Retour clôturé';
+    toast('Retour clôturé. La rotation aller-retour est terminée.');
+  } else if (hasPlannedReturn) {
+    // L’aller est clôturé et un seul retour peut maintenant être préparé.
+    b.awaitingReturn = true;
+    b.serviceActive = true;
+    b.tripLeg = 'outbound';
+    b.tripCompleted = false;
+    row.direction = 'Aller';
+    toast('Aller clôturé. Cliquez une seule fois sur Départ-retour pour préparer le retour.');
+  } else {
+    // Aller simple : aucun bouton de retour.
+    b.awaitingReturn = false;
+    b.serviceActive = false;
+    b.tripLeg = 'completed';
+    b.tripCompleted = true;
+    row.direction = 'Aller';
+    toast('Fin de service enregistrée. Le trajet est clôturé.');
+  }
   save('g10_demo_v11_buses', buses);
   save('g10_demo_v11_report', report);
-  toast('Fin de service enregistrée. Cliquez sur Départ-retour pour repartir dans le sens inverse.');
   renderDriverFleetStatus();
   renderDriverBus();
 }
 function startReturnTrip() {
   const b = busById(selectedDriverBusId);
-  if (!b || b.status !== 'Fin de service' || !b.awaitingReturn) {
+  if (!b || b.status !== 'Fin de service' || !b.awaitingReturn || b.tripLeg === 'return' || b.tripLeg === 'completed' || b.tripCompleted) {
     alert('Le Départ-retour est disponible uniquement après la fin de service du trajet aller.');
     return;
   }
@@ -1983,7 +2055,7 @@ function startReturnTrip() {
   const newRoute = routeById(newRouteId);
   if (!confirm(`Préparer le trajet retour : ${newRoute.name} ?`)) return;
   b.routeId = newRouteId;
-  b.status = 'En service'; b.closed = false; b.awaitingReturn = false; b.serviceActive = true;
+  b.status = 'En service'; b.closed = false; b.awaitingReturn = false; b.serviceActive = true; b.tripLeg = 'return'; b.tripCompleted = false;
   b.sold = 0; b.departureTime = ''; b.arrivalTime = ''; b.serviceStartTime = nowTime(); b.serviceEndTime = '';
   b.incidentActive = false; b.incidentType = ''; b.incidentNote = ''; b.incidentStartTime = ''; b.incidentEndTime = ''; b.resumeTime = ''; b.previousStatus = '';
   b.plannedDate = b.plannedReturnDate; b.plannedDeparture = b.plannedReturnDeparture;
@@ -2011,7 +2083,7 @@ function renderDriverBus() {
   const canCloseIncident = b.incidentActive;
   const canArrive = isTravelingStatus(b.status) && !b.incidentActive;
   const canEnd = String(b.status).startsWith('Arrivé') && !b.incidentActive;
-  const canReturn = serviceEnded && Boolean(b.awaitingReturn);
+  const canReturn = serviceEnded && Boolean(b.awaitingReturn) && b.tripLeg !== 'return' && b.tripLeg !== 'completed' && !b.tripCompleted;
 
   document.getElementById('driverContent').innerHTML = `
     <div class="grid2">
@@ -2156,7 +2228,7 @@ function renderReportTable() {
       <table class="reportTable">
         <thead>
           <tr>
-            <th>Date</th><th>Bus</th><th>Axe</th><th>Départ prévu</th><th>Départ réel</th><th>Commentaire départ</th><th>Arrivée prévue</th><th>Arrivée réelle</th><th>Commentaire arrivée</th>
+            <th>Date</th><th>Bus</th><th>Axe</th><th>Sens</th><th>Départ prévu</th><th>Départ réel</th><th>Commentaire départ</th><th>Arrivée prévue</th><th>Arrivée réelle</th><th>Commentaire arrivée</th>
             <th>Groupe</th><th>Chauffeur</th><th>Aide chauffeur</th><th>Capacité</th>
             <th>Vendues</th><th>Restantes</th><th>Prix/place</th><th>Recette</th><th>Statut</th>
           </tr>
@@ -2172,7 +2244,7 @@ function renderReportTable() {
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="16">TOTAL GÉNÉRAL</td>
+            <td colspan="17">TOTAL GÉNÉRAL</td>
             <td colspan="2">${money(totalAmount)}</td>
           </tr>
         </tfoot>
@@ -2200,6 +2272,8 @@ function resetDay() {
     b.closed = false;
     b.serviceActive = false;
     b.awaitingReturn = false;
+    b.tripLeg = 'outbound';
+    b.tripCompleted = false;
     b.serviceStartTime = '';
     b.serviceEndTime = '';
     b.incidentActive = false;
@@ -2240,6 +2314,7 @@ function exportReport() {
       <td>${esc(r.date)}</td>
       <td>Bus ${r.bus}</td>
       <td>${esc(r.axis)}</td>
+      <td>${esc(r.direction || '')}</td>
       <td>${esc(r.plannedDeparture || '')}</td>
       <td>${esc(r.departureTime)}</td>
       <td>${esc(r.departureComment || '')}</td>
