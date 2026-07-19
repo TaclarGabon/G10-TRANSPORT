@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>G10 Transports - V12.9 Démo Premium</title>
+  <title>G10 Transports - V12.10 Démo équilibrée</title>
   <style>
     :root {
       --navy:#073763;
@@ -2088,12 +2088,41 @@ function renderDriverBus() {
   `;
 }
 
+const dashboardExpandedBuses = new Set();
+
+function toggleDashboardBus(busId) {
+  const id = Number(busId);
+  if (dashboardExpandedBuses.has(id)) dashboardExpandedBuses.delete(id);
+  else dashboardExpandedBuses.add(id);
+  renderDashboard();
+}
+
+function dashboardBusAccordion(b) {
+  const g = groupByBus(b.id);
+  const r = routeById(b.routeId);
+  const open = dashboardExpandedBuses.has(Number(b.id));
+  const axis = g && r ? r.name : 'Aucun axe assigné';
+  return `<div class="dashboardAccordionItem ${open ? 'open' : ''}">
+    <button class="dashboardAccordionHead" type="button" onclick="toggleDashboardBus(${b.id})" aria-expanded="${open}">
+      <span class="dashboardAccordionTitle">
+        <span class="busNum">${b.id}</span>
+        <span class="dashboardAccordionTitleText"><strong>Bus ${b.id}</strong><span>${esc(axis)}</span></span>
+      </span>
+      <span class="dashboardAccordionActions">
+        <span class="badge ${statusClass(b.status)}">${esc(b.status)}</span>
+        <span class="accordionToggle">${open ? 'Fermer' : 'Ouvrir'}</span>
+      </span>
+    </button>
+    <div class="dashboardAccordionBody">${busCardSummary(b)}</div>
+  </div>`;
+}
+
 function renderDashboard() {
   const totalSold = buses.reduce((s,b) => s + Number(b.sold || 0), 0);
   const totalReceipt = buses.reduce((s,b) => s + receipt(b), 0);
   const enRoute = buses.filter(b => isTravelingStatus(b.status)).length;
   const arrived = buses.filter(b => String(b.status).startsWith('Arrivé') || b.status === 'Fin de service').length;
-  const rows = buses.map(busCardSummary).join('');
+  const rows = buses.map(dashboardBusAccordion).join('');
 
   document.getElementById('dashboardContent').innerHTML = `
     <div class="kpiStrip">
@@ -2104,7 +2133,7 @@ function renderDashboard() {
     </div>
 
     <h4 style="color:var(--navy); margin:22px 0 12px;">Suivi des bus</h4>
-    <div class="grid2">${rows}</div>
+    <div class="dashboardAccordion">${rows}</div>
 
     <h4 style="color:var(--navy); margin:22px 0 12px;">Rapport du jour clôturé</h4>
     ${renderReportTable()}
@@ -2249,7 +2278,79 @@ function exportReport() {
       tfoot td{background:#eefbf5;font-weight:800;color:#0f5132;}
       .num{text-align:right;}
       .center{text-align:center;}
-    </style>
+    
+
+    /* V12.10 — Thème bleu équilibré, plus clair et moins blanc */
+    body {
+      color:#10243a;
+      background:
+        radial-gradient(circle at 88% 12%, rgba(21,150,107,.10), transparent 30%),
+        radial-gradient(circle at 18% 80%, rgba(215,167,47,.08), transparent 34%),
+        linear-gradient(180deg,#dce8f1,#edf4f8 52%,#d8e5ee) !important;
+    }
+    .main { background:transparent !important; }
+    .pageHeader h2, .screenTitle, h2, h3, h4 { color:#073763 !important; }
+    .panel, .miniCard, .busCard, .stat, .crewBox, .timeBox, .empty, .dangerZone,
+    .modalCard, .kpiStrip > div, .card, .contentCard {
+      background:#e8f1f7 !important;
+      border-color:#adc4d6 !important;
+      color:#10243a !important;
+      box-shadow:0 10px 24px rgba(7,55,99,.10) !important;
+    }
+    .panel { background:#f3f7fa !important; }
+    .busCard.assigned { background:#e7f5ef !important; border-color:#6bc99f !important; }
+    .busCard.route { background:#fff3d9 !important; border-color:#e0ad3d !important; }
+    .softGold { background:#fff5df !important; border-color:#e8c46d !important; }
+    .muted, .busInfo p, .brand p, .scheduleNote small { color:#5d7285 !important; }
+    label, .stat span, .timeBox span { color:#38536b !important; }
+    .stat strong, .timeBox strong, .busInfo h4, .crewBox b { color:#073763 !important; }
+    input, select, textarea {
+      background:#f9fcfe !important;
+      color:#10243a !important;
+      border-color:#a8bfd1 !important;
+    }
+    input::placeholder, textarea::placeholder { color:#7c91a3 !important; }
+    option { background:#fff; color:#10243a; }
+    .tabBtn, .btn.light { background:#e5eef5 !important; color:#073763 !important; border-color:#adc4d6 !important; }
+    .tabBtn.active { background:#0b4f8a !important; color:#fff !important; }
+    .reportTable th { background:#164f7d !important; color:#fff !important; }
+    .reportTable td { background:#f2f7fa !important; color:#10243a !important; border-color:#c5d5e1 !important; }
+    .reportTable tfoot td { background:#d8e9f3 !important; color:#073763 !important; }
+    .time-blue { background:#e4f0ff !important; border-color:#8dbcf2 !important; color:#174f9b !important; }
+    .time-green { background:#e5f8ef !important; border-color:#7fd3aa !important; color:#087653 !important; }
+    .time-orange { background:#fff0d9 !important; border-color:#f0b768 !important; color:#a9540b !important; }
+    .time-red { background:#fde8e9 !important; border-color:#ed9ba2 !important; color:#a61b2b !important; }
+    .incidentPanel { background:#fff2df !important; border-color:#e5a445 !important; }
+    .badge.gray { background:#dbe5ed !important; color:#425b70 !important; }
+    .demoBanner {
+      background:linear-gradient(90deg,#1c6895,#27917f) !important;
+      border-color:#71bdb4 !important;
+      color:#fff !important;
+    }
+    .dashboardAccordion { display:grid; gap:12px; }
+    .dashboardAccordionItem {
+      border:1px solid #a9c2d4; border-radius:18px; overflow:hidden;
+      background:#e8f1f7; box-shadow:0 9px 20px rgba(7,55,99,.09);
+    }
+    .dashboardAccordionHead {
+      width:100%; border:0; padding:15px 17px; cursor:pointer;
+      display:flex; align-items:center; justify-content:space-between; gap:14px;
+      background:linear-gradient(90deg,#dcebf4,#edf5f9); color:#073763; text-align:left;
+    }
+    .dashboardAccordionHead:hover { background:linear-gradient(90deg,#d1e5f1,#e6f1f6); }
+    .dashboardAccordionTitle { display:flex; align-items:center; gap:12px; min-width:0; }
+    .dashboardAccordionTitleText { min-width:0; }
+    .dashboardAccordionTitleText strong { display:block; font-size:18px; }
+    .dashboardAccordionTitleText span { display:block; margin-top:3px; color:#5d7285; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .dashboardAccordionActions { display:flex; align-items:center; gap:10px; flex:0 0 auto; }
+    .accordionToggle {
+      border:1px solid #8faec4; background:#f8fbfd; color:#073763;
+      border-radius:999px; padding:8px 13px; font-weight:900;
+    }
+    .dashboardAccordionBody { display:none; padding:12px; background:#f4f8fb; border-top:1px solid #bfd1de; }
+    .dashboardAccordionItem.open .dashboardAccordionBody { display:block; }
+    .dashboardAccordionBody .busCard { margin:0; box-shadow:none !important; }
+</style>
   </head>
   <body>
     <div class="title">G10 Transport — Rapport journalier — fins de service</div>
