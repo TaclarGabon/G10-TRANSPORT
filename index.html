@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>G10 Transports - V12.1 Firebase</title>
+  <title>G10 Transports - V12.9 Démo Premium</title>
   <style>
     :root {
       --navy:#073763;
@@ -558,7 +558,56 @@
     .time-red { background:#fef2f2; border-color:#fca5a5; color:#b91c1c; }
     .scheduleNote { margin-top:10px; padding:10px 12px; border-radius:12px; font-weight:900; }
     @media(max-width:800px){ .timeGrid{grid-template-columns:1fr 1fr;} }
-</style>
+
+
+    /* V12.9 — Thème premium sombre pour la démonstration */
+    body {
+      color:#e8f1f8;
+      background:
+        radial-gradient(circle at 88% 12%, rgba(21,150,107,.16), transparent 30%),
+        radial-gradient(circle at 18% 80%, rgba(215,167,47,.10), transparent 34%),
+        linear-gradient(180deg,#0b1726,#101f31 55%,#0b1726);
+    }
+    .main { background:transparent; }
+    .pageHeader h2, .screenTitle, h2, h3, h4 { color:#f4f8fc !important; }
+    .panel, .miniCard, .busCard, .stat, .crewBox, .timeBox, .empty, .dangerZone,
+    .modalCard, .kpiStrip > div, .card, .contentCard {
+      background:#152b42 !important;
+      border-color:#2f506d !important;
+      color:#e8f1f8 !important;
+      box-shadow:0 14px 30px rgba(0,0,0,.22);
+    }
+    .busCard.assigned { background:#14364a !important; border-color:#25a978 !important; }
+    .busCard.route { background:#173447 !important; border-color:#d7a72f !important; }
+    .softGold { background:#332b1d !important; border-color:#8b6a20 !important; }
+    .muted, .busInfo p, .brand p, .scheduleNote small { color:#a9bed0 !important; }
+    label, .stat span, .timeBox span { color:#b9ccdc !important; }
+    .stat strong, .timeBox strong, .busInfo h4, .crewBox b { color:#ffffff !important; }
+    input, select, textarea {
+      background:#0f2235 !important;
+      color:#f7fbff !important;
+      border-color:#3d617d !important;
+    }
+    input::placeholder, textarea::placeholder { color:#829bb0 !important; }
+    option { background:#0f2235; color:#f7fbff; }
+    .tabBtn, .btn.light { background:#17324d !important; color:#eaf4ff !important; border-color:#395f7d !important; }
+    .tabBtn.active { background:#0b4f8a !important; color:#fff !important; }
+    .reportTable th { background:#0c2942 !important; color:#fff !important; }
+    .reportTable td { background:#142a40 !important; color:#e8f1f8 !important; border-color:#31506a !important; }
+    .reportTable tfoot td { background:#0d3550 !important; }
+    .time-blue { background:#163852 !important; border-color:#4384b4 !important; color:#cfeaff !important; }
+    .time-green { background:#123e33 !important; border-color:#25a978 !important; color:#c9ffe7 !important; }
+    .time-orange { background:#493418 !important; border-color:#d99520 !important; color:#ffe5a8 !important; }
+    .time-red { background:#4a2027 !important; border-color:#d95a65 !important; color:#ffd3d6 !important; }
+    .incidentPanel { background:#352719 !important; border-color:#b87819 !important; }
+    .badge.gray { background:#31445a !important; color:#d9e7f2 !important; }
+    .demoBanner {
+      margin:0 0 16px; padding:14px 16px; border-radius:16px;
+      background:linear-gradient(90deg,#0e4c72,#136b61); border:1px solid #43a9a0;
+      color:#fff; box-shadow:0 12px 26px rgba(0,0,0,.20);
+    }
+
+  </style>
 </head>
 <body>
   <div class="app">
@@ -1562,6 +1611,55 @@ function loadDemoPlanning() {
   });
   save('g10_demo_v11_buses',buses); toast('Planning de démonstration chargé.'); renderPlanning();
 }
+function loadDemoScenarios() {
+  if (!confirm('Charger les données de démonstration complètes ? Les affectations, horaires, ventes et statuts actuels seront remplacés.')) return;
+  const d = gabonTodayISO();
+  report = [];
+  groups.forEach((g, i) => { g.busId = String(i + 1); });
+  const scenarios = [
+    {id:1, route:'lbv-lam', plan:'07:00', duration:240, dep:'06:55', arr:'10:58', sold:23, status:'Arrivé à Lambaréné', note:'Départ en avance • arrivée en avance'},
+    {id:2, route:'lbv-mou', plan:'07:00', duration:360, dep:'07:00', arr:'13:00', sold:21, status:'Arrivé à Mouila', note:'Départ et arrivée à l’heure'},
+    {id:3, route:'lbv-oye', plan:'07:00', duration:420, dep:'07:20', arr:'14:35', sold:20, status:'Arrivé à Oyem', note:'Départ et arrivée en retard'},
+    {id:4, route:'lbv-bit', plan:'07:00', duration:480, dep:'06:50', arr:'', sold:23, status:'En route vers Bitam', note:'Départ en avance • trajet en cours'},
+    {id:5, route:'lbv-mak', plan:'07:00', duration:540, dep:'07:10', arr:'', sold:18, status:'En route vers Makokou', note:'Départ en retard • trajet en cours'},
+    {id:6, route:'lam-lbv', plan:'14:00', duration:240, dep:'14:15', arr:'18:25', sold:19, status:'Arrivé à Libreville / PK8', note:'Retour vers Libreville • arrivée en retard'}
+  ];
+  scenarios.forEach(sc => {
+    const b = busById(sc.id);
+    const r = routeById(sc.route);
+    Object.assign(b, {
+      routeId:sc.route, outboundRouteId: sc.route === 'lam-lbv' ? 'lbv-lam' : sc.route,
+      tripMode:'round', planningConfigured:true, plannedDate:d, plannedDeparture:sc.plan,
+      plannedDuration:sc.duration, plannedArrival:addMinutesToTime(sc.plan,sc.duration),
+      plannedOutboundDate:d, plannedOutboundDeparture:sc.plan, plannedOutboundDuration:sc.duration,
+      plannedOutboundArrival:addMinutesToTime(sc.plan,sc.duration),
+      plannedReturnDate:d, plannedReturnDeparture:'14:00', plannedReturnDuration:sc.duration,
+      plannedReturnArrival:addMinutesToTime('14:00',sc.duration),
+      departureTime:sc.dep, arrivalTime:sc.arr, sold:sc.sold, status:sc.status,
+      serviceActive:true, closed:false, awaitingReturn:false, serviceStartTime:sc.dep,
+      serviceEndTime:'', incidentActive:false, incidentType:'', incidentNote:'', demoNote:sc.note
+    });
+    if (sc.arr) {
+      report.push({
+        tripId:`DEMO-BUS${sc.id}-${sc.route.toUpperCase()}`, date:d, bus:sc.id, axis:r.name,
+        plannedDate:d, plannedDeparture:sc.plan, departureTime:sc.dep,
+        departureDiff:signedTimeDiff(sc.dep,sc.plan), departureComment:timingLabel(signedTimeDiff(sc.dep,sc.plan),'Départ'),
+        plannedArrival:addMinutesToTime(sc.plan,sc.duration), arrivalTime:sc.arr,
+        arrivalDiff:signedTimeDiff(sc.arr,addMinutesToTime(sc.plan,sc.duration)),
+        arrivalComment:timingLabel(signedTimeDiff(sc.arr,addMinutesToTime(sc.plan,sc.duration)),'Arrivée'),
+        group:`Groupe ${sc.id}`, chauffeur:groups[sc.id-1]?.chauffeur||'', chargeur:groups[sc.id-1]?.chargeur||'',
+        capacity:b.capacity, sold:sc.sold, remaining:Math.max(0,b.capacity-sc.sold), price:r.price,
+        total:sc.sold*r.price, status:sc.route==='lam-lbv'?'Retour clôturé':'Trajet démo', direction:sc.route==='lam-lbv'?'Retour':'Aller'
+      });
+    }
+  });
+  save('g10_demo_v11_groups', groups);
+  save('g10_demo_v11_buses', buses);
+  save('g10_demo_v11_report', report);
+  toast('Scénario démo complet chargé : avance, ponctualité, retard, trajets en cours et retour.');
+  renderPlanning(); renderFollow(); renderDashboard(); renderDriverFleetStatus();
+}
+
 function timeToMinutes(time) {
   if (!time || !/^\d{1,2}:\d{2}$/.test(time)) return null;
   const [h,m] = time.split(':').map(Number); return h*60+m;
@@ -1629,7 +1727,7 @@ function renderPlanning() {
   const assigned=buses.filter(b=>groupByBus(b.id));
   if(!assigned.length){document.getElementById('opContent').innerHTML='<div class="empty">Assignez d’abord les groupes aux bus.</div>';return;}
   document.getElementById('opContent').innerHTML=`
-    <div class="miniCard softGold" style="margin-bottom:16px;"><h4>2. Affectation des axes et horaires</h4><p class="muted">Planifiez d’abord l’aller. Activez l’option Aller-retour seulement lorsqu’un retour doit être programmé. Tous les horaires sont affichés au format 24 heures, par tranches de 15 minutes.</p><div class="actionRow" style="margin-top:10px;"><button class="btn green" onclick="loadDemoPlanning()">Charger les horaires de démonstration</button><button class="btn light" onclick="resetDay()">Réinitialiser le test</button></div></div>
+    <div class="miniCard softGold" style="margin-bottom:16px;"><h4>2. Affectation des axes et horaires</h4><p class="muted">Planifiez d’abord l’aller. Activez l’option Aller-retour seulement lorsqu’un retour doit être programmé. Tous les horaires sont affichés au format 24 heures, par tranches de 15 minutes.</p><div class="actionRow" style="margin-top:10px;"><button class="btn green" onclick="loadDemoScenarios()">Charger le scénario démo complet</button><button class="btn light" onclick="loadDemoPlanning()">Charger uniquement les horaires</button><button class="btn light" onclick="resetDay()">Réinitialiser le test</button></div></div>
     <div class="grid2">${assigned.map(b=>{
       const g=groupByBus(b.id);
       const selected=b.planningConfigured ? (b.outboundRouteId||b.routeId||'') : '';
@@ -1679,6 +1777,7 @@ function busCardSummary(b) {
     </div>
     ${b.departureTime?`<div class="scheduleNote ${timingClass(depDiff)}">${esc(timingLabel(depDiff,'Départ'))}</div>`:''}
     ${b.arrivalTime?`<div class="scheduleNote ${timingClass(arrDiff)}">${esc(timingLabel(arrDiff,'Arrivée'))}</div>`:''}
+    ${b.demoNote?`<div class="scheduleNote time-blue"><b>Cas de démonstration :</b> ${esc(b.demoNote)}</div>`:''}
     ${b.incidentActive?`<div class="incidentLive">⚠ ${esc(b.status)}<br><small>${esc(b.incidentNote||'Aucun commentaire')}</small></div>`:''}
     <div class="grid3" style="margin-top:12px;"><div class="stat"><span>Places vendues</span><strong>${b.sold}</strong></div><div class="stat"><span>Places restantes</span><strong>${remaining(b)}</strong></div><div class="stat"><span>Recette</span><strong>${money(receipt(b))}</strong></div></div>
   </div>`;
