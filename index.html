@@ -649,9 +649,6 @@
       border-color:#83c5ba !important;
       color:#fff !important;
     }
-    .dashboardAccordionItem { background:#edf5f9 !important; border-color:#a9c2d4 !important; }
-    .dashboardAccordionHead { background:linear-gradient(90deg,#dcebf4,#f1f7fa) !important; color:#073763 !important; }
-    .dashboardAccordionBody { background:#f7fafc !important; }
 </style>
 </head>
 <body>
@@ -2160,41 +2157,12 @@ function renderDriverBus() {
   `;
 }
 
-const dashboardExpandedBuses = new Set();
-
-function toggleDashboardBus(busId) {
-  const id = Number(busId);
-  if (dashboardExpandedBuses.has(id)) dashboardExpandedBuses.delete(id);
-  else dashboardExpandedBuses.add(id);
-  renderDashboard();
-}
-
-function dashboardBusAccordion(b) {
-  const g = groupByBus(b.id);
-  const r = routeById(b.routeId);
-  const open = dashboardExpandedBuses.has(Number(b.id));
-  const axis = g && r ? r.name : 'Aucun axe assigné';
-  return `<div class="dashboardAccordionItem ${open ? 'open' : ''}">
-    <button class="dashboardAccordionHead" type="button" onclick="toggleDashboardBus(${b.id})" aria-expanded="${open}">
-      <span class="dashboardAccordionTitle">
-        <span class="busNum">${b.id}</span>
-        <span class="dashboardAccordionTitleText"><strong>Bus ${b.id}</strong><span>${esc(axis)}</span></span>
-      </span>
-      <span class="dashboardAccordionActions">
-        <span class="badge ${statusClass(b.status)}">${esc(b.status)}</span>
-        <span class="accordionToggle">${open ? 'Fermer' : 'Ouvrir'}</span>
-      </span>
-    </button>
-    <div class="dashboardAccordionBody">${busCardSummary(b)}</div>
-  </div>`;
-}
-
 function renderDashboard() {
   const totalSold = buses.reduce((s,b) => s + Number(b.sold || 0), 0);
   const totalReceipt = buses.reduce((s,b) => s + receipt(b), 0);
   const enRoute = buses.filter(b => isTravelingStatus(b.status)).length;
   const arrived = buses.filter(b => String(b.status).startsWith('Arrivé') || b.status === 'Fin de service').length;
-  const rows = buses.map(dashboardBusAccordion).join('');
+  const rows = buses.map(busCardSummary).join('');
 
   document.getElementById('dashboardContent').innerHTML = `
     <div class="kpiStrip">
@@ -2205,7 +2173,7 @@ function renderDashboard() {
     </div>
 
     <h4 style="color:var(--navy); margin:22px 0 12px;">Suivi des bus</h4>
-    <div class="dashboardAccordion">${rows}</div>
+    <div class="grid2">${rows}</div>
 
     <h4 style="color:var(--navy); margin:22px 0 12px;">Rapport du jour clôturé</h4>
     ${renderReportTable()}
@@ -2402,29 +2370,6 @@ function exportReport() {
       border-color:#71bdb4 !important;
       color:#fff !important;
     }
-    .dashboardAccordion { display:grid; gap:12px; }
-    .dashboardAccordionItem {
-      border:1px solid #a9c2d4; border-radius:18px; overflow:hidden;
-      background:#e8f1f7; box-shadow:0 9px 20px rgba(7,55,99,.09);
-    }
-    .dashboardAccordionHead {
-      width:100%; border:0; padding:15px 17px; cursor:pointer;
-      display:flex; align-items:center; justify-content:space-between; gap:14px;
-      background:linear-gradient(90deg,#dcebf4,#edf5f9); color:#073763; text-align:left;
-    }
-    .dashboardAccordionHead:hover { background:linear-gradient(90deg,#d1e5f1,#e6f1f6); }
-    .dashboardAccordionTitle { display:flex; align-items:center; gap:12px; min-width:0; }
-    .dashboardAccordionTitleText { min-width:0; }
-    .dashboardAccordionTitleText strong { display:block; font-size:18px; }
-    .dashboardAccordionTitleText span { display:block; margin-top:3px; color:#5d7285; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .dashboardAccordionActions { display:flex; align-items:center; gap:10px; flex:0 0 auto; }
-    .accordionToggle {
-      border:1px solid #8faec4; background:#f8fbfd; color:#073763;
-      border-radius:999px; padding:8px 13px; font-weight:900;
-    }
-    .dashboardAccordionBody { display:none; padding:12px; background:#f4f8fb; border-top:1px solid #bfd1de; }
-    .dashboardAccordionItem.open .dashboardAccordionBody { display:block; }
-    .dashboardAccordionBody .busCard { margin:0; box-shadow:none !important; }
 </style>
   </head>
   <body>
