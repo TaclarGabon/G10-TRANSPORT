@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>G10 Transports - V12.11 Démo claire</title>
+  <title>G10 Transports - V12.13 Démo claire</title>
   <style>
     :root {
       --navy:#073763;
@@ -609,7 +609,7 @@
 
   
 
-    /* V12.11 — Thème bleu clair lisible */
+    /* V12.13 — Thème bleu clair lisible */
     body {
       color:#10243a !important;
       background:linear-gradient(180deg,#dce9f2 0%,#edf5f9 52%,#d7e5ee 100%) !important;
@@ -2157,6 +2157,7 @@ function renderDriverBus() {
   `;
 }
 
+// Direction sans accordéon : affichage direct de toutes les cartes bus.
 function renderDashboard() {
   const totalSold = buses.reduce((s,b) => s + Number(b.sold || 0), 0);
   const totalReceipt = buses.reduce((s,b) => s + receipt(b), 0);

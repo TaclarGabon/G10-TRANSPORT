@@ -14,3 +14,6 @@ Déploiement GitHub :
 1. Décompresser le ZIP.
 2. Téléverser les six fichiers dans G10-TRANSPORT.
 3. Commit conseillé : Version V12.8 planning demo horaires fixes interurbains
+
+
+V12.13 : suppression définitive des cases Ouvrir/Fermer dans Direction.
