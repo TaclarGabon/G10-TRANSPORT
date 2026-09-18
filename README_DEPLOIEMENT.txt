@@ -1,19 +1,29 @@
-G10 Transport — V12.8 Démo Firebase
+G10 TRANSPORT — VERSION FINALE CANDIDATE
 
-Fonctions ajoutées :
-- Durées de démonstration préenregistrées par axe.
-- Départ aller proposé à 07:00.
-- Lambaréné : retour le même jour à 14:00.
-- Mouila, Oyem, Bitam et Makokou : retour le lendemain à 07:00.
-- Calcul automatique des arrivées prévisionnelles.
-- Bouton « Charger les horaires de démonstration ».
-- Bouton « Réinitialiser le test » conservé.
-- Horaires en format 24 h et par tranches de 15 minutes.
+1. INTERURBAIN
+- Ouvrir index.html.
+- Interface historique conservée.
+- 4 bus interurbains uniquement (Bus 1 à 4).
+- Groupes = chauffeurs uniquement; aides chauffeurs retirés.
+- Axes/tarifs confirmés :
+  Libreville ↔ Lambaréné : 8 000 FCFA/place
+  Libreville ↔ Mouila : 10 000 FCFA/place
+  Libreville ↔ Oyem : 12 000 FCFA/place
+  Libreville ↔ Bitam : 15 000 FCFA/place
+  Libreville ↔ Makokou : 17 000 FCFA/place
+- De nouveaux axes peuvent toujours être créés depuis Administration.
 
-Déploiement GitHub :
-1. Décompresser le ZIP.
-2. Téléverser les six fichiers dans G10-TRANSPORT.
-3. Commit conseillé : Version V12.8 planning demo horaires fixes interurbains
+2. SCOLAIRE
+- Ouvrir scolaire/index.html.
+- Bus 5 et 6 réservés au scolaire.
+- Abonnement mensuel : 60 000 FCFA.
+- Tarif journalier : 1 500 FCFA (périmètre exact à confirmer avant production).
+- Rotations types : matin, retours 13:30, 15:00, 17:00.
+- Circuits détaillés à configurer quand G10 les transmettra.
+- Aperçu portail Parent inclus; GPS/notifications réelles à connecter ultérieurement.
 
+3. FLOTTE GLOBALE
+- 6 bus au total : 4 Interurbain + 2 Scolaire.
 
-V12.13 : suppression définitive des cases Ouvrir/Fermer dans Direction.
+4. IMPORTANT
+- Les immatriculations, capacités exactes, kilométrages et autres données réelles restent à remplacer dès réception des informations officielles de Mlle Boulingui.

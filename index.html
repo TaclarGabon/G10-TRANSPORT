@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>G10 Transports - V12.13 Démo claire</title>
+  <title>G10 Transports - Interurbain</title>
   <style>
     :root {
       --navy:#073763;
@@ -799,7 +799,7 @@ let db = null;
 let stateRef = null;
 
 const ACCESS_PINS = { admin:'1234', operations:'2345', driver:'1111', dashboard:'9999' };
-const DRIVER_BUS_PINS = {1:'001',2:'002',3:'003',4:'004',5:'005',6:'006'};
+const DRIVER_BUS_PINS = {1:'001',2:'002',3:'003',4:'004'};
 
 function hasMasterAccess() {
   return sessionStorage.getItem('g10_master_access') === 'true';
@@ -878,23 +878,21 @@ function requestAccess(screenId) {
 
 
 const defaultGroups = [
-  {id:1, chauffeur:"Martin Obiang", chauffeurTel:"077 12 34 56", chargeur:"Patrick Mba", chargeurTel:"066 98 76 54", busId:""},
-  {id:2, chauffeur:"James Ndong", chauffeurTel:"077 22 33 44", chargeur:"Alain Nguema", chargeurTel:"065 45 67 89", busId:""},
-  {id:3, chauffeur:"Brice Essono", chauffeurTel:"077 33 44 55", chargeur:"Régis Abessolo", chargeurTel:"066 11 22 33", busId:""},
-  {id:4, chauffeur:"Yannick Nziengui", chauffeurTel:"077 44 55 66", chargeur:"Dieudonné Mezui", chargeurTel:"065 33 22 11", busId:""},
-  {id:5, chauffeur:"Chris Makaya", chauffeurTel:"077 55 66 77", chargeur:"Hervé Moukala", chargeurTel:"066 22 11 44", busId:""},
-  {id:6, chauffeur:"Steeve Nguema", chauffeurTel:"077 66 77 88", chargeur:"Fabrice Mbadinga", chargeurTel:"065 77 88 99", busId:""}
+  {id:1, chauffeur:"Martin Obiang", chauffeurTel:"077 12 34 56", busId:""},
+  {id:2, chauffeur:"James Ndong", chauffeurTel:"077 22 33 44", busId:""},
+  {id:3, chauffeur:"Brice Essono", chauffeurTel:"077 33 44 55", busId:""},
+  {id:4, chauffeur:"Yannick Nziengui", chauffeurTel:"077 44 55 66", busId:""}
 ];
 
 const defaultRoutes = [
-  {id:"lbv-lam", code:"LBV-LAM", pairCode:"LAM↔LBV", name:"Libreville / PK8 → Lambaréné", price:5000, depart:"Départ PK8", arrive:"Arrivée Lambaréné"},
-  {id:"lam-lbv", code:"LAM-LBV", pairCode:"LAM↔LBV", name:"Lambaréné → Libreville / PK8", price:5000, depart:"Départ Lambaréné", arrive:"Arrivée PK8"},
+  {id:"lbv-lam", code:"LBV-LAM", pairCode:"LAM↔LBV", name:"Libreville / PK8 → Lambaréné", price:8000, depart:"Départ PK8", arrive:"Arrivée Lambaréné"},
+  {id:"lam-lbv", code:"LAM-LBV", pairCode:"LAM↔LBV", name:"Lambaréné → Libreville / PK8", price:8000, depart:"Départ Lambaréné", arrive:"Arrivée PK8"},
   {id:"lbv-mou", code:"LBV-MOU", pairCode:"LBV↔MOU", name:"Libreville / PK8 → Mouila", price:10000, depart:"Départ PK8", arrive:"Arrivée Mouila"},
   {id:"mou-lbv", code:"MOU-LBV", pairCode:"LBV↔MOU", name:"Mouila → Libreville / PK8", price:10000, depart:"Départ Mouila", arrive:"Arrivée PK8"},
-  {id:"lbv-oye", code:"LBV-OYE", pairCode:"LBV↔OYE", name:"Libreville / PK8 → Oyem", price:15000, depart:"Départ PK8", arrive:"Arrivée Oyem"},
-  {id:"oye-lbv", code:"OYE-LBV", pairCode:"LBV↔OYE", name:"Oyem → Libreville / PK8", price:15000, depart:"Départ Oyem", arrive:"Arrivée PK8"},
-  {id:"lbv-bit", code:"LBV-BIT", pairCode:"BIT↔LBV", name:"Libreville / PK8 → Bitam", price:17000, depart:"Départ PK8", arrive:"Arrivée Bitam"},
-  {id:"bit-lbv", code:"BIT-LBV", pairCode:"BIT↔LBV", name:"Bitam → Libreville / PK8", price:17000, depart:"Départ Bitam", arrive:"Arrivée PK8"},
+  {id:"lbv-oye", code:"LBV-OYE", pairCode:"LBV↔OYE", name:"Libreville / PK8 → Oyem", price:12000, depart:"Départ PK8", arrive:"Arrivée Oyem"},
+  {id:"oye-lbv", code:"OYE-LBV", pairCode:"LBV↔OYE", name:"Oyem → Libreville / PK8", price:12000, depart:"Départ Oyem", arrive:"Arrivée PK8"},
+  {id:"lbv-bit", code:"LBV-BIT", pairCode:"BIT↔LBV", name:"Libreville / PK8 → Bitam", price:15000, depart:"Départ PK8", arrive:"Arrivée Bitam"},
+  {id:"bit-lbv", code:"BIT-LBV", pairCode:"BIT↔LBV", name:"Bitam → Libreville / PK8", price:15000, depart:"Départ Bitam", arrive:"Arrivée PK8"},
   {id:"lbv-mak", code:"LBV-MAK", pairCode:"LBV↔MAK", name:"Libreville / PK8 → Makokou", price:17000, depart:"Départ PK8", arrive:"Arrivée Makokou"},
   {id:"mak-lbv", code:"MAK-LBV", pairCode:"LBV↔MAK", name:"Makokou → Libreville / PK8", price:17000, depart:"Départ Makokou", arrive:"Arrivée PK8"}
 ];
@@ -903,9 +901,7 @@ const defaultBuses = [
   {id:1, capacity:23, plate:"G10-001-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:"", awaitingReturn:false},
   {id:2, capacity:23, plate:"G10-002-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:"", awaitingReturn:false},
   {id:3, capacity:23, plate:"G10-003-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:"", awaitingReturn:false},
-  {id:4, capacity:23, plate:"G10-004-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:"", awaitingReturn:false},
-  {id:5, capacity:23, plate:"G10-005-AA", routeId:"lbv-mou", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:"", awaitingReturn:false},
-  {id:6, capacity:23, plate:"G10-006-AA", routeId:"lbv-bit", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:"", awaitingReturn:false}
+  {id:4, capacity:23, plate:"G10-004-AA", routeId:"lbv-lam", sold:0, status:"Hors service", departureTime:"", arrivalTime:"", closed:false, serviceActive:false, serviceStartTime:"", serviceEndTime:"", incidentActive:false, incidentType:"", incidentNote:"", incidentStartTime:"", incidentEndTime:"", resumeTime:"", previousStatus:"", plannedDate:"", plannedDeparture:"", plannedDuration:240, plannedArrival:"", earlyDepartureAuthorized:false, earlyDepartureAuthorizedAt:"", earlyDepartureAuthorizedBy:"", awaitingReturn:false}
 ];
 
 function cloneData(value) {
@@ -930,6 +926,10 @@ let groups = load('g10_demo_v11_groups', defaultGroups);
 let routes = load('g10_demo_v11_routes', defaultRoutes);
 let buses = load('g10_demo_v11_buses', defaultBuses);
 let report = load('g10_demo_v11_report', []);
+
+// V13 Interurbain : 4 bus dédiés à l'interurbain; les bus 5 et 6 sont réservés au scolaire.
+groups = groups.slice(0,4).map((g,i)=>({id:i+1, chauffeur:g.chauffeur||'', chauffeurTel:g.chauffeurTel||'', busId:(String(g.busId||'') && Number(g.busId)<=4)?String(g.busId):''}));
+buses = buses.filter(b=>Number(b.id)>=1 && Number(b.id)<=4);
 
 // Migration V12 : enrichir les anciennes données sans les effacer.
 buses.forEach(b => {
@@ -973,7 +973,7 @@ function statePayload() {
     routes: cloneData(routes),
     buses: cloneData(buses),
     report: cloneData(report),
-    version: 'V12.5',
+    version: 'V13-Interurbain',
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 }
@@ -1010,9 +1010,9 @@ function renderCurrentScreen() {
 function applyRemoteState(data) {
   applyingRemoteState = true;
   try {
-    if (Array.isArray(data.groups)) groups = data.groups;
+    if (Array.isArray(data.groups)) groups = data.groups.slice(0,4).map((g,i)=>({id:i+1, chauffeur:g.chauffeur||'', chauffeurTel:g.chauffeurTel||'', busId:(String(g.busId||'') && Number(g.busId)<=4)?String(g.busId):''}));
     if (Array.isArray(data.routes)) routes = data.routes;
-    if (Array.isArray(data.buses)) buses = data.buses.map(normalizeBusState);
+    if (Array.isArray(data.buses)) buses = data.buses.map(normalizeBusState).filter(b=>Number(b.id)>=1 && Number(b.id)<=4);
     if (Array.isArray(data.report)) report = data.report;
     persistLocalState();
     renderCurrentScreen();
@@ -1063,7 +1063,7 @@ async function initializeFirebaseSync() {
 function money(n) { return Number(n || 0).toLocaleString('fr-FR') + ' FCFA'; }
 function esc(s) { return String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
 function nowTime() { return new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}); }
-function groupReady(g) { return Boolean(g.chauffeur && g.chargeur); }
+function groupReady(g) { return Boolean(g.chauffeur); }
 function groupByBus(busId) { return groups.find(g => String(g.busId) === String(busId)); }
 function busById(id) { return buses.find(b => b.id === Number(id)); }
 function routeById(id) { return routes.find(r => r.id === id) || {id:'',code:'',pairCode:'',name:'Aucun axe assigné',price:0,depart:'Départ',arrive:'Arrivée'}; }
@@ -1281,8 +1281,6 @@ function renderAdminGroups() {
         <div class="grid2">
           <div><label>Nom chauffeur</label><input id="g_ch" value="${esc(g.chauffeur)}" placeholder="Nom du chauffeur"></div>
           <div><label>Téléphone chauffeur</label><input id="g_cht" value="${esc(g.chauffeurTel)}" placeholder="Téléphone chauffeur"></div>
-          <div><label>Nom aide chauffeur</label><input id="g_cg" value="${esc(g.chargeur)}" placeholder="Nom de l’aide chauffeur"></div>
-          <div><label>Téléphone aide chauffeur</label><input id="g_cgt" value="${esc(g.chargeurTel)}" placeholder="Téléphone aide chauffeur"></div>
         </div>
         <div class="actionRow" style="margin-top:16px;">
           <button class="btn green" onclick="saveGroupAndNext()">${isLast ? 'Enregistrer et terminer' : 'Enregistrer et suivant'}</button>
@@ -1296,8 +1294,6 @@ function saveGroupAndNext() {
   const g = groups.find(x => x.id === selectedGroup);
   g.chauffeur = document.getElementById('g_ch').value.trim();
   g.chauffeurTel = document.getElementById('g_cht').value.trim();
-  g.chargeur = document.getElementById('g_cg').value.trim();
-  g.chargeurTel = document.getElementById('g_cgt').value.trim();
   save('g10_demo_v11_groups', groups);
   if (selectedGroup < groups.length) {
     selectedGroup++;
@@ -1595,7 +1591,7 @@ function renderAssign() {
     }).join('');
     return `<div class="miniCard ${currentLocked ? 'softGold' : ''}">
       <h4>Groupe ${g.id}</h4>
-      <p class="muted">Chauffeur : <b>${esc(g.chauffeur || 'Non renseigné')}</b><br>Aide chauffeur : <b>${esc(g.chargeur || 'Non renseigné')}</b></p>
+      <p class="muted">Chauffeur : <b>${esc(g.chauffeur || 'Non renseigné')}</b></p>
       <select onchange="assignGroup(${g.id}, this.value)" ${(groupReady(g) && !currentLocked) ? '' : 'disabled'}>
         <option value="">-- Choisir bus --</option>${options}
       </select>
@@ -1662,9 +1658,7 @@ function loadDemoScenarios() {
     {id:1, route:'lbv-lam', plan:'07:00', duration:240, dep:'06:55', arr:'10:58', sold:23, status:'Arrivé à Lambaréné', note:'Départ en avance • arrivée en avance'},
     {id:2, route:'lbv-mou', plan:'07:00', duration:360, dep:'07:00', arr:'13:00', sold:21, status:'Arrivé à Mouila', note:'Départ et arrivée à l’heure'},
     {id:3, route:'lbv-oye', plan:'07:00', duration:420, dep:'07:20', arr:'14:35', sold:20, status:'Arrivé à Oyem', note:'Départ et arrivée en retard'},
-    {id:4, route:'lbv-bit', plan:'07:00', duration:480, dep:'06:50', arr:'', sold:23, status:'En route vers Bitam', note:'Départ en avance • trajet en cours'},
-    {id:5, route:'lbv-mak', plan:'07:00', duration:540, dep:'07:10', arr:'', sold:18, status:'En route vers Makokou', note:'Départ en retard • trajet en cours'},
-    {id:6, route:'lam-lbv', plan:'14:00', duration:240, dep:'14:15', arr:'18:25', sold:19, status:'Arrivé à Libreville / PK8', note:'Retour vers Libreville • arrivée en retard'}
+    {id:4, route:'lbv-bit', plan:'07:00', duration:480, dep:'06:50', arr:'', sold:23, status:'En route vers Bitam', note:'Départ en avance • trajet en cours'}
   ];
   scenarios.forEach(sc => {
     const b = busById(sc.id);
@@ -1689,7 +1683,7 @@ function loadDemoScenarios() {
         plannedArrival:addMinutesToTime(sc.plan,sc.duration), arrivalTime:sc.arr,
         arrivalDiff:signedTimeDiff(sc.arr,addMinutesToTime(sc.plan,sc.duration)),
         arrivalComment:timingLabel(signedTimeDiff(sc.arr,addMinutesToTime(sc.plan,sc.duration)),'Arrivée'),
-        group:`Groupe ${sc.id}`, chauffeur:groups[sc.id-1]?.chauffeur||'', chargeur:groups[sc.id-1]?.chargeur||'',
+        group:`Groupe ${sc.id}`, chauffeur:groups[sc.id-1]?.chauffeur||'',
         capacity:b.capacity, sold:sc.sold, remaining:Math.max(0,b.capacity-sc.sold), price:r.price,
         total:sc.sold*r.price, status:sc.route==='lam-lbv'?'Retour clôturé':'Trajet démo', direction:sc.route==='lam-lbv'?'Retour':'Aller'
       });
@@ -1812,7 +1806,7 @@ function busCardSummary(b) {
   const depDiff=signedTimeDiff(b.departureTime,b.plannedDeparture), arrDiff=signedTimeDiff(b.arrivalTime,b.plannedArrival);
   return `<div class="busCard ${isTravelingStatus(b.status)?'route':(g?'assigned':'')}">
     <div class="busTop"><div class="busLeft"><div class="busNum">${b.id}</div><div class="busInfo"><h4>Bus ${b.id}</h4><p>${g ? esc(r.name) : 'Aucun axe assigné'}</p></div></div><span class="badge ${statusClass(b.status)}">${esc(b.status)}</span></div>
-    <div class="crewBox">${g?`Chauffeur : <b>${esc(g.chauffeur)}</b><br>Aide chauffeur : <b>${esc(g.chargeur)}</b>`:'Non affecté'}</div>
+    <div class="crewBox">${g?`Chauffeur : <b>${esc(g.chauffeur)}</b>`:'Non affecté'}</div>
     <div class="timeGrid">
       <div class="timeBox time-blue"><span>Départ prévu</span><strong>${esc(b.plannedDeparture||'—')}</strong></div>
       <div class="timeBox ${timingClass(depDiff)}"><span>Départ réel</span><strong>${esc(b.departureTime||'—')}</strong></div>
@@ -1848,7 +1842,7 @@ function renderDriverLogin() {
       <div class="grid2"><div><label>Bus affecté</label><select id="driverBusSelect">
         ${assigned.map(b=>{const g=groupByBus(b.id); const active=b.serviceActive?' — Session active à reprendre':''; return `<option value="${b.id}">Bus ${b.id} - ${esc(g.chauffeur)} - ${esc(routeById(b.routeId).name)}${active}</option>`;}).join('')}
       </select></div><div><label>PIN du bus</label><input id="driverPin" type="password" inputmode="numeric" placeholder="Ex : 001"></div></div>
-      <div class="empty" style="margin-top:14px;text-align:left;background:#eff6ff;border-color:#93c5fd;color:#1e3a8a;"><b>PIN de démonstration :</b> Bus 1 = 001, Bus 2 = 002, Bus 3 = 003, Bus 4 = 004, Bus 5 = 005, Bus 6 = 006.</div>
+      <div class="empty" style="margin-top:14px;text-align:left;background:#eff6ff;border-color:#93c5fd;color:#1e3a8a;"><b>PIN :</b> Bus 1 = 001, Bus 2 = 002, Bus 3 = 003, Bus 4 = 004.</div>
       <div class="actionRow" style="margin-top:16px;"><button class="btn green" onclick="openDriverBus()">Connexion / Reprendre</button><button class="btn light" onclick="openScreen('home')">Fermer</button></div>
       <div id="driverError" class="empty" style="display:none;color:#991b1b;background:#fef2f2;border-color:#fecaca;margin-top:12px;"></div>
     </div>`;
@@ -1987,7 +1981,6 @@ function endService() {
     serviceEndTime: b.serviceEndTime || '',
     group: g ? 'Groupe ' + g.id : '',
     chauffeur: g ? g.chauffeur : '',
-    chargeur: g ? g.chargeur : '',
     capacity: b.capacity,
     sold: b.sold,
     remaining: remaining(b),
@@ -2097,8 +2090,7 @@ function renderDriverBus() {
           <span class="badge ${statusClass(b.status)}">${esc(b.status)}</span>
         </div>
         <div class="crewBox">
-          Chauffeur : <b>${esc(g.chauffeur)}</b><br>
-          Aide chauffeur : <b>${esc(g.chargeur)}</b>
+          Chauffeur : <b>${esc(g.chauffeur)}</b>
         </div>
         <div class="timeGrid">
           <div class="timeBox time-blue"><span>Date prévue</span><strong>${esc(b.plannedDate || '—')}</strong></div>
@@ -2198,22 +2190,22 @@ function renderReportTable() {
         <thead>
           <tr>
             <th>Date</th><th>Bus</th><th>Axe</th><th>Sens</th><th>Départ prévu</th><th>Départ réel</th><th>Commentaire départ</th><th>Arrivée prévue</th><th>Arrivée réelle</th><th>Commentaire arrivée</th>
-            <th>Groupe</th><th>Chauffeur</th><th>Aide chauffeur</th><th>Capacité</th>
+            <th>Groupe</th><th>Chauffeur</th><th>Capacité</th>
             <th>Vendues</th><th>Restantes</th><th>Prix/place</th><th>Recette</th><th>Statut</th>
           </tr>
         </thead>
         <tbody>
           ${report.map(r => `
             <tr>
-              <td>${esc(r.plannedDate || r.date)}</td><td>Bus ${r.bus}</td><td>${esc(r.axis)}</td><td>${esc(r.plannedDeparture || "")}</td><td>${esc(r.departureTime)}</td><td>${esc(r.departureComment || "")}</td><td>${esc(r.plannedArrival || "")}</td><td>${esc(r.arrivalTime)}</td><td>${esc(r.arrivalComment || "")}</td>
-              <td>${esc(r.group)}</td><td>${esc(r.chauffeur)}</td><td>${esc(r.chargeur)}</td><td>${r.capacity}</td>
+              <td>${esc(r.plannedDate || r.date)}</td><td>Bus ${r.bus}</td><td>${esc(r.axis)}</td><td>${esc(r.direction || "")}</td><td>${esc(r.plannedDeparture || "")}</td><td>${esc(r.departureTime)}</td><td>${esc(r.departureComment || "")}</td><td>${esc(r.plannedArrival || "")}</td><td>${esc(r.arrivalTime)}</td><td>${esc(r.arrivalComment || "")}</td>
+              <td>${esc(r.group)}</td><td>${esc(r.chauffeur)}</td><td>${r.capacity}</td>
               <td>${r.sold}</td><td>${r.remaining}</td><td>${money(r.price)}</td><td><strong>${money(r.total)}</strong></td><td>${esc(r.status)}</td>
             </tr>
           `).join('')}
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="17">TOTAL GÉNÉRAL</td>
+            <td colspan="16">TOTAL GÉNÉRAL</td>
             <td colspan="2">${money(totalAmount)}</td>
           </tr>
         </tfoot>
@@ -2223,7 +2215,7 @@ function renderReportTable() {
 }
 
 function resetDay() {
-  const ok = confirm('Réinitialiser complètement la journée de test ? Les noms des chauffeurs, aides chauffeurs, tarifs et capacités seront conservés. Les affectations des bus, ventes, statuts, heures et rapports seront supprimés.');
+  const ok = confirm('Réinitialiser complètement la journée de test ? Les noms des chauffeurs, tarifs et capacités seront conservés. Les affectations des bus, ventes, statuts, heures et rapports seront supprimés.');
   if (!ok) return;
 
   // Retirer toutes les affectations Groupe → Bus.
@@ -2292,7 +2284,6 @@ function exportReport() {
       <td>${esc(r.arrivalComment || '')}</td>
       <td>${esc(r.group)}</td>
       <td>${esc(r.chauffeur)}</td>
-      <td>${esc(r.chargeur)}</td>
       <td style="text-align:center;">${r.capacity}</td>
       <td style="text-align:center;">${r.sold}</td>
       <td style="text-align:center;">${r.remaining}</td>
@@ -2381,7 +2372,7 @@ function exportReport() {
       <thead>
         <tr>
           <th>Date</th><th>Bus</th><th>Axe</th><th>Départ prévu</th><th>Départ réel</th><th>Commentaire départ</th><th>Arrivée prévue</th><th>Arrivée réelle</th><th>Commentaire arrivée</th>
-          <th>Groupe</th><th>Chauffeur</th><th>Aide chauffeur</th><th>Capacité</th>
+          <th>Groupe</th><th>Chauffeur</th><th>Capacité</th>
           <th>Places vendues</th><th>Places restantes</th><th>Prix par place</th><th>Recette totale</th><th>Statut</th>
         </tr>
       </thead>
